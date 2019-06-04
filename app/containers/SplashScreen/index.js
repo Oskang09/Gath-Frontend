@@ -4,9 +4,9 @@ import AsyncStorage from '@react-native-community/async-storage';
 import PropTypes from 'prop-types';
 // import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 
-import Firebase, { App } from 'react-native-firebase';
+import Firebase from 'react-native-firebase';
 import Feather, { FeatherSocket } from 'feathersjs-sdk';
-import AppSingleton from '../../util/singleton';
+import AppSingleton from 'util/singleton';
 
 export default class SplashScreen extends React.PureComponent {
     
@@ -26,7 +26,7 @@ export default class SplashScreen extends React.PureComponent {
         AppSingleton.user = AppSingleton.authenticate.currentUser;
         setTimeout(() => {
             if (AppSingleton.user) {
-                this.props.navigation.navigate('home');
+                this.props.navigation.navigate('main');
             } else {
                this.props.navigation.navigate('login');
             }
@@ -37,12 +37,12 @@ export default class SplashScreen extends React.PureComponent {
         this.initialise();
         return (
             <View>
-
+                <Text>Loading</Text> 
             </View>
         );
     }
 };
 
-AuthScreen.propTypes = {
+SplashScreen.propTypes = {
 
 };

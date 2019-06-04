@@ -1,10 +1,20 @@
 import React, { Component } from 'react';
-import AppNavigator from './app/navigator.js';
+import { YellowBox } from 'react-native';
+import { Provider as PaperProvider } from 'react-native-paper';
+import AppNavigator from 'app/navigator';
+
+YellowBox.ignoreWarnings([
+    'Unrecognized WebSocket connection option(s)',
+    'Warning',
+    'Remote',
+]);
 
 export default class App extends Component {
     render() {
         return (
-            <AppNavigator />
+            <PaperProvider>
+                <AppNavigator />
+            </PaperProvider>
         );
     }
 }

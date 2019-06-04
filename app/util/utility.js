@@ -15,6 +15,16 @@ export function dataChecking(object) {
     return obj;
 }
 
+export const compose = (...enhancers) => {
+    return (WrappedComponent) => {
+        let Component = WrappedComponent;
+        for (const enhancer of enhancers) {
+            Component = enhancer(WrappedComponent);
+        }
+        return Component;
+    };
+};
+
 export const setDataByPath = (data, ...argsArr) => {
     let args = argsArr;
     if (argsArr[0].constructor === Array) {
@@ -31,7 +41,9 @@ export const setDataByPath = (data, ...argsArr) => {
     return obj;
 };
 
-export default {
-    dataChecking,
-    setDataByPath,
+export const objectLoop = (object, cb, ignore) => {
+    for (const key of Object.keys(object)) {
+        if (ignore.includes(key)) { continue; }
+        cb(key, object[key]);
+    }
 };
