@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "581937881114",
+    "firebase_url": "https://gathfyp2019.firebaseio.com",
+    "project_id": "gathfyp2019",
+    "storage_bucket": "gathfyp2019.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:581937881114:android:b354615b68f88436",
+        "android_client_info": {
+          "package_name": "com.gath"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "581937881114-5qu1120djetsl7pkhghmkufmg5793rli.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyArErReVXCqiy_9pFioEU_9zNer_p3XSJw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "581937881114-5qu1120djetsl7pkhghmkufmg5793rli.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

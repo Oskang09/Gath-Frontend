@@ -1,9 +1,10 @@
 import React from 'react';
-import { AsyncStorage, View } from 'react-native';
+import { View, Text } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 import PropTypes from 'prop-types';
 // import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 
-// import Firebase from 'react-native-firebase';
+import Firebase from 'react-native-firebase';
 import Feather, { FeatherSocket } from 'feathersjs-sdk';
 import AppSingleton from '../../util/singleton';
 
@@ -21,8 +22,8 @@ export default class AuthScreen extends React.PureComponent {
                 })
             }
         });
-        // AppSingleton.authenticate = Firebase.auth();
-        // AppSingleton.user = AppSingleton.authenticate.currentUser;
+        AppSingleton.authenticate = Firebase.auth();
+        AppSingleton.user = AppSingleton.authenticate.currentUser;
         // AppSingleton.authenticate().onAuthStateChanged(
         //     (user) => {
         //         this.props.navigation.navigate(user ? 'home' : 'login');
