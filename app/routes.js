@@ -1,9 +1,9 @@
-import AuthScreen from './containers/SplashScreen';
+import SplashScreen from './containers/SplashScreen';
 import HomeScreen from './containers/HomeScreen';
 import LoginScreen from './containers/LoginScreen';
 
 export default {
-    auth: AuthScreen,
+    splash: SplashScreen,
     login: LoginScreen,
     home: HomeScreen,
 };
