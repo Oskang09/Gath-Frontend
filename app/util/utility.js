@@ -13,13 +13,24 @@ export function dataChecking(object) {
         obj = obj[args[i]];
     }
     return obj;
-}
+};
+
+export const injector = (build) => {
+    return function () {
+        const decorators = arguments;
+        return typeof arguments[0] !== 'string'
+            ? build(...decorators)
+            : function (WrappedComponent) {
+                return build(WrappedComponent, ...decorators);
+            };
+    };
+};
 
 export const compose = (...enhancers) => {
     return (WrappedComponent) => {
         let Component = WrappedComponent;
         for (const enhancer of enhancers) {
-            Component = enhancer(WrappedComponent);
+            Component = enhancer(Component);
         }
         return Component;
     };

@@ -1,7 +1,7 @@
-import RouterSetting from './routes';
+import RouterSetting from './config/routes';
 import { createAppContainer, createSwitchNavigator } from 'react-navigation';
 import { createMaterialBottomTabNavigator } from 'react-navigation-material-bottom-tabs';
-import { objectLoop } from 'util/utility';
+import { objectLoop } from '#utility';
 
 const isRoute = (route) => typeof route._type === 'string' && typeof route._setting === 'object';
 const buildRouter = (route) => {
@@ -20,6 +20,4 @@ const buildRouter = (route) => {
     return route;
 };
 
-export default createAppContainer(
-    buildRouter(RouterSetting)
-);
+export default createAppContainer(buildRouter(RouterSetting));

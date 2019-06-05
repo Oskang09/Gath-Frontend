@@ -1,6 +1,6 @@
-import SplashScreen from 'containers/SplashScreen';
-import HomeScreen from 'containers/HomeScreen';
-import LoginScreen from 'containers/LoginScreen';
+import SplashScreen from '#containers/SplashScreen';
+import HomeScreen from '#containers/HomeScreen';
+import LoginScreen from '#containers/LoginScreen';
 
 export default {
     _type: 'switch',
@@ -14,6 +14,6 @@ export default {
         _setting: {
             initialRouteName: 'home',
         },
-        home: HomeScreen
+        home: HomeScreen,
     },
 }

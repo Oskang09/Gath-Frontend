@@ -1,22 +1,26 @@
 import React from 'react';
 import { Snackbar } from 'react-native-paper';
+import { injector } from '#utility';
 
-/**
- * @example Accessing from HOC Component using `this.props.snackbar('message')`
- * @param {Component} [WrappedComponent] HOC Components for Inject 
- */
-function withSnackbar(WrappedComponent) {
+function buildComponent(
+    WrappedComponent,
+    snackbar = 'snackbar'
+) {
     return class extends React.Component {
         state = { visible: false, message: '' };
     
-        showSnackbar = (msg) => {
+        showSnackbar = (message) => {
             this.setState({
                 visible: true,
-                message: msg
+                message
             });
         }
         
         render() {
+            const newProps = Object.assign({
+                [snackbar]: this.showSnackbar
+            }, this.props);
+
             return (
                 <>
                     <Snackbar
@@ -32,8 +36,7 @@ function withSnackbar(WrappedComponent) {
                         {this.state.message}
                     </Snackbar>
                     <WrappedComponent
-                        snackbar={this.showSnackbar} 
-                        {...this.props}
+                        {...newProps}
                     />
                 </>
             );
@@ -41,6 +44,4 @@ function withSnackbar(WrappedComponent) {
     };
 };
 
-export {
-    withSnackbar
-};
+export default injector(buildComponent);

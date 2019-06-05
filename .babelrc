@@ -4,11 +4,11 @@
         [
             "module-resolver", {
                 "alias": {
-                    "app": "./app",
-                    "containers": "./app/containers",
-                    "components": "./app/components",
-                    "util": "./app/util",
-                    "extension": "./app/extensions"
+                    "#app": "./app",
+                    "#containers": "./app/containers",
+                    "#utility": "./app/util/utility",
+                    "#extension": "./app/extensions",
+                    "#assets": "./app/assets"
                 }
             }
         ]
