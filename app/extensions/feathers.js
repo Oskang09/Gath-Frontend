@@ -1,4 +1,5 @@
 import React from 'react';
+import AsyncStorage from '@react-native-community/async-storage';
 import Feather, { FeatherSocket } from 'feathersjs-sdk';
 import { injector } from '#utility';
 
@@ -13,12 +14,14 @@ function buildComponent(
     WrappedComponent, 
     decorator = 'socket', 
     connect = 'connect', 
-    disconnect = 'disconnect'
+    disconnect = 'disconnect',
+    user = 'featherUser',
 ) {
     return class extends React.Component {
         render() {
             const newProps = Object.assign({
                 [decorator]: feather,
+                [user]: feather.getUser(),
                 [connect]: (cb) => socket.on('connect', cb),
                 [disconnect]: (cb) => socket.on('disconnect', cb),
             }, this.props);

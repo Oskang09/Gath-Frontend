@@ -6,12 +6,14 @@ const authenticate = Firebase.auth();
 function buildComponent(
     WrappedComponent, 
     login = 'login',
-    user = 'user'
+    logout = 'logout',
+    user = 'firebaseUser'
 ) {
     return class extends React.Component {
         render() {
             const newProps = Object.assign({
                 [login]: (email, password) => authenticate.signInWithEmailAndPassword(email, password),
+                [logout]: () => authenticate.signOut(),
                 [user]: authenticate.currentUser,
             }, this.props);
             

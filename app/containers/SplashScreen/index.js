@@ -1,24 +1,28 @@
 import React from 'react';
 import withFirebase from '#extension/firebase';
+import withFeather from '#extension/feathers';
 
 import { View, Text } from 'react-native';
 import { compose } from '#utility';
 
 export class SplashScreen extends React.PureComponent {
     
-    initialise = () => {
-        setTimeout(() => {
-            if (this.props.user) {
-                this.props.navigation.navigate('main');
-            } else {
-                // this.props.navigation.navigate('main');
-                this.props.navigation.navigate('login');
+    checkAuth = async () => {
+        if (this.props.firebaseUser) {
+            const firebaseUser = this.props.firebaseUser;
+            try {
+                await this.props.socket.authenticate({ token: await firebaseUser.getIdToken() }, 'custom');
+                this.props.navigation.navigate('home'); 
+            } catch (error) {
+                this.props.navigation.navigate('login'); 
             }
-        }, 1000);
+        } else {
+            this.props.navigation.navigate('login'); 
+        }
     }
 
     render() {
-        this.initialise();
+        this.checkAuth();
         return (
             <View>
                 <Text>Loading</Text> 
@@ -28,5 +32,6 @@ export class SplashScreen extends React.PureComponent {
 };
 
 export default compose(
-    withFirebase
+    withFirebase,
+    withFeather
 )(SplashScreen);

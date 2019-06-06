@@ -2440,10 +2440,10 @@ fbjs@^1.0.0:
     setimmediate "^1.0.5"
     ua-parser-js "^0.7.18"
 
-feathersjs-sdk@^1.0.3:
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/feathersjs-sdk/-/feathersjs-sdk-1.0.3.tgz#dbc879d24745b06982fa48ce70862f212f2d1e05"
-  integrity sha512-lVXNqVYI+7MiGu8veOkimDnqILgaejY1GKmbi0lDoHmKE1GFvtfmGPG6gCILYxyPfmApoPF1vaO3N3G5se9q5A==
+feathersjs-sdk@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/feathersjs-sdk/-/feathersjs-sdk-1.0.4.tgz#b95a7a043f5421aa81079c7fb4360f318915ce1f"
+  integrity sha512-dAKyNipyoAWd5WIOy8A4E6mPbIMTMFFJZr4J67Go9bUTFutQoX6lFi4FJN4PFfCH9jSXOvXItBV+zYn22HwOWw==
   dependencies:
     "@feathersjs/client" "^3.7.8"
 

@@ -1,6 +1,7 @@
 import React from 'react';
 import withFirebase from '#extension/firebase';
 import withPixel from '#extension/pixels';
+import withFeather from '#extension/feathers';
 
 import { View } from 'react-native';
 import { Avatar, TextInput, Button, Text } from 'react-native-paper';
@@ -49,37 +50,59 @@ export class LoginScreen extends React.PureComponent {
                     />
                 </View>
                 <View>
-                <Button
-                    width={this.props.getX(35)}
-                    mode="contained"
-                    loading={this.state.loading}
-                    onPress={async () => {
-                        if (!this.state.loading) {
-                            this.setState({
-                                loading: true,
-                                error: null
-                            });
-
-                            try {
-                                await this.props.login(this.state.username, this.state.password);
-                                this.props.navigation.navigate('home');
-                            } catch (error) {
-                                this.setState({
-                                    loading: false,
-                                    error: 'Error occurs: ' + JSON.stringify(error.message)
-                                });
-                            }
-                        }
-                    }}
-                >
-                    LOGIN
-                </Button>
-                {
-                    this.state.error && 
-                    <View>
-                        <Text>{this.state.error}</Text>
+                    <View
+                        style={{
+                            flexDirection: 'row'
+                        }}
+                    >
+                        <Button
+                            width={this.props.getX(35)}
+                            mode="contained"
+                            loading={this.state.loading}
+                            onPress={async () => {
+                                if (!this.state.username || !this.state.password) {
+                                    this.setState({
+                                        error: `Error occurs: Empty username or password`
+                                    });
+                                } else {
+                                    if (!this.state.loading) {
+                                        this.setState({
+                                            loading: true,
+                                            error: null
+                                        });
+    
+                                        try {
+                                            const firebaseUser = await this.props.login(this.state.username, this.state.password);
+                                            await this.props.socket.authenticate({ token: await firebaseUser.user.getIdToken() }, 'custom');
+                                            this.props.navigation.navigate('home');
+                                        } catch (error) {
+                                            this.setState({
+                                                loading: false,
+                                                error: 'Error occurs: ' + JSON.stringify(error)
+                                            });
+                                        }
+                                    }
+                                }
+                            }}
+                        >
+                            LOGIN
+                        </Button>
+                        <Button
+                            width={this.props.getX(35)}
+                            style={{
+                                marginLeft: this.props.getX(5)
+                            }}
+                            mode="contained"
+                            loading={this.state.loading}
+                            onPress={ () => {} }
+                        >
+                            SIGNUP
+                        </Button>
                     </View>
-                }
+                    {
+                        this.state.error && 
+                        <Text>{this.state.error}</Text>
+                    }
                 </View>
             </View>
         );
@@ -88,5 +111,6 @@ export class LoginScreen extends React.PureComponent {
 
 export default compose(
     withFirebase,
-    withPixel
+    withPixel,
+    withFeather
 )(LoginScreen);
