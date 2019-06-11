@@ -9,11 +9,5 @@ export default {
     },
     splash: SplashScreen,
     login: LoginScreen,
-    main: {
-        _type: 'material-bottom',
-        _setting: {
-            initialRouteName: 'home',
-        },
-        home: HomeScreen,
-    },
+    home: HomeScreen,
 }

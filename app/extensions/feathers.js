@@ -12,18 +12,20 @@ const feather = new Feather({ transport: { default: socket }});
 
 function buildComponent(
     WrappedComponent, 
-    decorator = 'socket', 
-    connect = 'connect', 
-    disconnect = 'disconnect',
-    user = 'featherUser',
+    decorator = 'feather',
 ) {
     return class extends React.Component {
         render() {
             const newProps = Object.assign({
-                [decorator]: feather,
-                [user]: feather.getUser(),
-                [connect]: (cb) => socket.on('connect', cb),
-                [disconnect]: (cb) => socket.on('disconnect', cb),
+                [decorator]: {
+                    socket: feather,
+                    getUser: () => feather.getUser(),
+                    connect: (cb) => socket.on('connect', cb),
+                    disconnect: (cb) => socket.on('disconnect', cb),
+                    login: (payload, strategy) => feather.authenticate(payload, strategy),
+                    logout: () => feather.logout(),
+
+                }
             }, this.props);
 
             return (

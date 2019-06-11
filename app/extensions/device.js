@@ -9,14 +9,15 @@ const getYdp = (percent) => PixelRatio.roundToNearestPixel((screenHeight * parse
 
 function buildComponent(
     WrappedComponent, 
-    x = 'getX',
-    y = 'getY'
+    decorator = 'device'
 ) {
     return class extends React.Component {
         render() {
             const newProps = Object.assign({
-                [x]: getXdp,
-                [y]: getYdp,
+                [decorator]: {
+                    getX: getXdp,
+                    getY: getYdp,
+                }
             }, this.props);
             
             return (
