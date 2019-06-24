@@ -11,7 +11,6 @@ export class SplashScreen extends React.PureComponent {
         const firebaseUser = this.props.firebase.getUser();
         if (firebaseUser) {
             try {
-                await this.props.feather.login({ token: await firebaseUser.getIdToken() }, 'custom');
                 this.props.navigation.navigate('home'); 
             } catch (error) {
                 this.props.navigation.navigate('login'); 

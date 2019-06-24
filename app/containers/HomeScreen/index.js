@@ -5,6 +5,7 @@ import withDevice from '#extension/device';
 
 // import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 import { View, Text, ScrollView } from 'react-native';
+import Async from 'react-async';
 import { compose } from '#utility';
 import { Button, Searchbar, Card, Title, Paragraph } from 'react-native-paper';
 
@@ -18,8 +19,6 @@ export class HomeScreen extends React.PureComponent {
     }
 
     render() {
-        // console.info(this.props.firebase.getUser());
-        // console.info(this.props.feather.getUser());
         const { searchQuery } = this.state;
         return (
             <ScrollView
@@ -56,6 +55,17 @@ export class HomeScreen extends React.PureComponent {
                             padding: 15
                         }}
                     >
+                        <Async promise={}>
+                            <Async.Pending>
+                                
+                            </Async.Pending>
+                            <Async.Fulfilled>
+
+                            </Async.Fulfilled>
+                            <Async.Rejected>
+                                
+                            </Async.Rejected>
+                        </Async>
                         <Card width={this.props.device.getX('33')}>
                             <Card.Cover 
                                 style={{ height: this.props.device.getY('15') }}

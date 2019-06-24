@@ -61,7 +61,7 @@ export class LoginScreen extends React.PureComponent {
                         }}
                     >
                         <Button
-                            width={this.props.getX(35)}
+                            width={this.props.device.getX(35)}
                             mode="contained"
                             loading={this.state.loading}
                             onPress={async () => {
@@ -102,7 +102,6 @@ export class LoginScreen extends React.PureComponent {
                                         });
                                         try {
                                             await confirmCode.confirm(code);
-                                            await this.props.feather.login({ token: await this.props.firebase.getUser().getIdToken() }, 'custom');
                                             this.props.navigation.navigate('home');
                                         } catch (error) {
                                             console.info(error);

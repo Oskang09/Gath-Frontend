@@ -14,7 +14,7 @@
     },
     "dependencies": {
         "@react-native-community/async-storage": "^1.4.2",
-        "feathersjs-sdk": "^1.0.4",
+        "apisauce": "^1.0.2",
         "module-alias": "^2.2.0",
         "react": "16.8.3",
         "react-async": "^6.2.0",
