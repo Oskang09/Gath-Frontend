@@ -1,6 +1,7 @@
 import SplashScreen from '#containers/SplashScreen';
 import HomeScreen from '#containers/HomeScreen';
-import LoginScreen from '#containers/LoginScreen';
+import PhoneNumber from '#containers/RegistrationScreen/phone-number';
+import { UserDetail } from '#containers/RegistrationScreen/user-details';
 
 export default {
     _type: 'switch',
@@ -8,6 +9,13 @@ export default {
         initialRouteName: 'splash',
     },
     splash: SplashScreen,
-    login: LoginScreen,
     home: HomeScreen,
+    register: {
+        _type: 'switch',
+        _setting: {
+            initialRouteName: 'phone',
+        },
+        phone: PhoneNumber,
+        detail: UserDetail,
+    },
 }

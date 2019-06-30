@@ -2,7 +2,7 @@ import React from 'react';
 import { create } from 'apisauce';
 import { injector } from '#utility';
 
-const requester = create({ baseURL: '192.168.56.1' });
+const requester = create({ baseURL: 'http://192.168.56.1:3000/' });
 
 function buildComponent(
     WrappedComponent, 
@@ -12,9 +12,14 @@ function buildComponent(
         render() {
             const newProps = Object.assign({
                 [decorator]: {
-                    request: (method, path, body) => requester[method](path, body),
-                    addHeader: (key, value) => {
-                        requester.setHeader(key, value)
+                    request: async (method, path, body) => {
+                        const response = await requester[method.toLowerCase()](path, body)
+                        if (response.data) {
+                            return response.data;
+                        }
+                    },
+                    setToken: (token) => {
+                        requester.setHeader('gath-token', token)
                     }
                 }
             }, this.props);

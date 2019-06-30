@@ -6,6 +6,7 @@
                 "alias": {
                     "#app": "./app",
                     "#containers": "./app/containers",
+                    "#components": "./app/components",
                     "#utility": "./app/util/utility",
                     "#extension": "./app/extensions",
                     "#assets": "./app/assets"

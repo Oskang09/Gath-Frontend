@@ -1,6 +1,6 @@
 import React from 'react';
 import withFirebase from '#extension/firebase';
-import withFeather from '#extension/feathers';
+import withAPI from '#extension/apisauce';
 
 import { View, Text } from 'react-native';
 import { compose } from '#utility';
@@ -10,13 +10,10 @@ export class SplashScreen extends React.PureComponent {
     checkAuth = async () => {
         const firebaseUser = this.props.firebase.getUser();
         if (firebaseUser) {
-            try {
-                this.props.navigation.navigate('home'); 
-            } catch (error) {
-                this.props.navigation.navigate('login'); 
-            }
+            this.props.api.setToken(firebaseUser.uid);
+            this.props.navigation.navigate('home');
         } else {
-            this.props.navigation.navigate('login'); 
+            this.props.navigation.navigate('detail'); 
         }
     }
 
@@ -32,5 +29,5 @@ export class SplashScreen extends React.PureComponent {
 
 export default compose(
     withFirebase,
-    withFeather
+    withAPI
 )(SplashScreen);
