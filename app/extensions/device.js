@@ -1,5 +1,6 @@
 import React from 'react';
 import { Dimensions, PixelRatio } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 import { injector } from '#utility';
 
 const screenWidth = Dimensions.get('window').width;
@@ -17,6 +18,16 @@ function buildComponent(
                 [decorator]: {
                     getX: getXdp,
                     getY: getYdp,
+                    renderLinearContainer: (component) => <LinearGradient 
+                        colors={[ '#87EFD7',  '#BFFFF0' ]}
+                        locations={[ 0.3, 0.9 ]}
+                        useAngle={true}
+                        angle={135}
+                        angleCenter={{ x: 0.5, y: 0.5 }}
+                        style={{ flex: 1 }}
+                    >
+                        { component }
+                    </LinearGradient>
                 }
             }, this.props);
             

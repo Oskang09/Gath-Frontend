@@ -1,4 +1,4 @@
-import RouterSetting from './config/routes';
+import RouterSetting from '#app/config/routes';
 import { createAppContainer, createSwitchNavigator } from 'react-navigation';
 import { createMaterialBottomTabNavigator } from 'react-navigation-material-bottom-tabs';
 import { objectLoop } from '#utility';

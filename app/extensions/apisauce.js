@@ -15,7 +15,13 @@ function buildComponent(
                     request: async (method, path, body) => {
                         const response = await requester[method.toLowerCase()](path, body)
                         if (response.data) {
-                            return response.data;
+                            if (response.data.ok) {
+                                return response.data.result;
+                            } else {
+                                return response.data.error;
+                            }
+                        } else {
+                            return response.problem;
                         }
                     },
                     setToken: (token) => {

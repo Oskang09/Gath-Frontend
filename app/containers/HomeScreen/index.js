@@ -46,19 +46,19 @@ export class HomeScreen extends React.PureComponent {
                             {(data) => {
                                 alert(JSON.stringify(data));
                                 return (
-                                <Card width={this.props.device.getX('33')}>
-                                    <Card.Cover 
-                                        style={{ height: this.props.device.getY('15') }}
-                                        source={{ uri: 'https://images.pexels.com/photos/67636/rose-blue-flower-rose-blooms-67636.jpeg?auto=format%2Ccompress&cs=tinysrgb&dpr=1&w=500' }} 
-                                    />
-                                    <Card.Title 
-                                        title="Title"
-                                        subtitle={<Text>subtitle</Text>}
-                                        right={(props) => <Text>A</Text>}
-                                    />
-                                </Card>
-                            )
-                        }}
+                                    <Card width={this.props.device.getX('33')}>
+                                        <Card.Cover 
+                                            style={{ height: this.props.device.getY('15') }}
+                                            source={{ uri: 'https://images.pexels.com/photos/67636/rose-blue-flower-rose-blooms-67636.jpeg?auto=format%2Ccompress&cs=tinysrgb&dpr=1&w=500' }} 
+                                        />
+                                        <Card.Title 
+                                            title="Title"
+                                            subtitle={<Text>subtitle</Text>}
+                                            right={(props) => <Text>A</Text>}
+                                        />
+                                    </Card>
+                                );
+                            }}
                         </AsyncContainer>
                     </ScrollView>
                 </View>
