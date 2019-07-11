@@ -1,24 +1,25 @@
 import React from 'react';
 
-import withFirebase from '#extension/firebase';
 import withDevice from '#extension/device';
 import withAPI from '#extension/apisauce';
-import { compose } from '#utility';
-import Stepper from '#components/Stepper';
+import { compose, filterObject } from '#utility';
 import Form from '#components/Form';
 
-import { View, TouchableOpacity } from 'react-native';
+import { View, TouchableOpacity, KeyboardAvoidingView } from 'react-native';
 import { Text } from 'react-native-paper';
-import Icon from 'react-native-vector-icons/Entypo';
 
 export class UserDetail extends React.PureComponent {
 
     state = {
         name: 'NG SZE CHEN',
         age: '20',
-        cons: 'Constellation',
-        sex: 'Sex',
+        constellation: 'Constellation',
+        gender: 'Sex',
         avatar: null,
+        utag: '',
+        desc: null,
+        loading: false,
+        error: null,
     }
 
     formSetting = () => [
@@ -27,6 +28,7 @@ export class UserDetail extends React.PureComponent {
             row: 0,
             dcc: (avatar) => this.setState({ avatar }),
             setting: {
+                key: 'user-avatar',
                 value: this.state.avatar
             }
         },
@@ -39,7 +41,8 @@ export class UserDetail extends React.PureComponent {
                 width: this.props.device.getX(78),
             },
             setting: {
-                key: 'Name',
+                label: 'Name',
+                key: 'user-name',
                 value: this.state.name
             }
         },
@@ -53,34 +56,36 @@ export class UserDetail extends React.PureComponent {
                 width: this.props.device.getX(30),
             },
             setting: {
-                key: 'Age',
+                label: 'Age',
+                key: 'user-age',
                 value: this.state.age
             }
         },
         {
             type: 'picker',
             row: 2,
-            dcc: (cons) => this.setState({ cons }),
+            dcc: (constellation) => this.setState({ constellation }),
             style: {
                 width: this.props.device.getX(45),
                 marginLeft: this.props.device.getX(3),
             },
             setting: {
-                key: 'Constellation',
-                value: this.state.cons,
+                key: 'user-cons',
+                value: this.state.constellation,
                 items: [ 'Cancer' ],
             }
         },
         {
             type: 'picker',
             row: 3,
-            dcc: (sex) => this.setState({ sex }),
+            dcc: (gender) => this.setState({ gender }),
             style: {
                 width: this.props.device.getX(30),
+                marginRight: this.props.device.getX(3),
             },
             setting: {
-                key: 'Sex',
-                value: this.state.sex,
+                key: 'user-gender',
+                value: this.state.gender,
                 items: ['Male', 'Female', 'Other'],
             }
         },
@@ -89,12 +94,13 @@ export class UserDetail extends React.PureComponent {
             row: 3,
             dcc: (utag) => this.setState({ utag }),
             style: {
-                width: this.props.device.getX(48),
+                mode: 'outlined',
+                width: this.props.device.getX(45),
             },
             setting: {
-                key: 'Tag',
+                label: 'Tag',
+                key: 'user-tag',
                 value: this.state.utag,
-                prefix: '@'
             }
         },
         {
@@ -104,54 +110,60 @@ export class UserDetail extends React.PureComponent {
             style: {
                 mode: 'outlined',
                 width: this.props.device.getX(80),
-                height: this.props.device.getY(30),
+                height: this.props.device.getY(20),
             },
             setting: {
-                key: 'Introduction yourself',
+                label: 'Introduction about yourself ...',
+                key: 'user-desc',
                 value: this.state.desc
             }
         },
     ];
 
-    updateProfile = () => {
+    updateProfile = async () => {
+        if (this.state.loading) {
+            return;
+        }
+        this.setState({ loading: true, error: null });
+        try {
+            const { api, navigation } = this.props;
+            const response = await api.request(
+                'POST', 
+                `/users/profile`, 
+                filterObject(this.state, 'name', 'age', 'constellation', 'gender', 'avatar', 'utag', 'desc')
+            );
+            if (response.ok) {
+                navigation.navigate('personality');
+            } else {
+                this.setState({ loading: false, error: response.message });
+            }
+        } catch (error) {
+            this.setState({ loading: false, error });
+        }
     };
 
     render() {
         return (
-            <View style={{ flex: 1 }}>
-                <View style={{
-                    flex: 1,
-                    alignItems: 'flex-end',
-                    padding: 10
-                }}>
-                    <TouchableOpacity onPress={this.updateProfile}>
+            <KeyboardAvoidingView style={{ flex: 1 }} behavior="position">
+                <TouchableOpacity onPress={this.updateProfile}>
+                    <View style={{
+                        alignItems: 'flex-end',
+                        padding: 10
+                    }}>
                         <Text>Next Step</Text>
-                    </TouchableOpacity>
-                </View>
-                <Form 
+                    </View>
+                </TouchableOpacity>
+                <Form
                     containerStyle={{ alignItems: 'center' }}
                     rowStyle={{ flexDirection: 'row', margin: 5 }}
                     formSetting={this.formSetting()} 
                 />
-                <Stepper
-                    containerStyle={{
-                        flex: 1,
-                        alignItems: 'flex-end',
-                        justifyContent: 'flex-end', 
-                        flexDirection: 'row'
-                    }}
-                    currentStep={2}
-                    maxSteps={5}
-                    activeStep={<Icon name="dot-single" size={30} color="#672EDF" />}
-                    inactiveStep={<Icon name="dot-single" size={30} color="#000000" />}
-                />
-            </View>
+            </KeyboardAvoidingView>
         );
     }
 };
 
 export default compose(
-    withFirebase,
     withDevice,
     withAPI,
 )(UserDetail);

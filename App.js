@@ -8,8 +8,7 @@ const theme = {
     roundness: 20,
     colors: {
         ...DefaultTheme.colors,
-        primary: '#F7B500',
-        accent: '#FFF1D1',
+        primary: '#87EFD7',
     }
 };
 export default class App extends Component {

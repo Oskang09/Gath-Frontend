@@ -10,11 +10,8 @@ function AsyncContainer(props) {
                 <Text>Loading</Text>
             </Async.Pending>
             <Async.Fulfilled>
-                { this.props.children }
+                { props.children }
             </Async.Fulfilled>
-            <Async.Rejected>
-                <Text>Error</Text>
-            </Async.Rejected>
         </Async>
     )
 };

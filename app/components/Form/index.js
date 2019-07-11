@@ -5,7 +5,7 @@ import { TextInput, Avatar, Colors } from 'react-native-paper';
 
 const filterComponent = ({ type, dcc, style, setting }) => {
     if (type === 'picker') {
-        return <MaterialPicker dcc={dcc} setting={setting} style={style} />;
+        return <MaterialPicker key={setting.key} dcc={dcc} setting={setting} style={style} />;
     } else if (type === 'input') {
         return Input(dcc, style, setting);
     } else if (type === 'image') {
@@ -31,8 +31,8 @@ function Form({ containerStyle, formSetting, rowStyle }) {
         <View style={containerStyle}>
             {
                 forms.map(
-                    (form) => (
-                        <View style={rowStyle}>
+                    (form, index) => (
+                        <View key={`row-${index}`} style={rowStyle}>
                             {form}
                         </View>
                     )
@@ -42,7 +42,7 @@ function Form({ containerStyle, formSetting, rowStyle }) {
     );
 };
 
-export class MaterialPicker extends React.PureComponent {
+export class MaterialPicker extends React.Component {
     state = {
         picker: false
     }
@@ -61,9 +61,9 @@ export class MaterialPicker extends React.PureComponent {
     }
 
     render() {
-        const { value, items } = this.props.setting;
+        const { value, items, key } = this.props.setting;
         return (
-            <View style={{
+            <View key={key} style={{
                 borderRadius: 17,
                 borderWidth: 1,
                 borderColor: Colors.grey600,
@@ -77,7 +77,7 @@ export class MaterialPicker extends React.PureComponent {
                 >
                     {
                         items.map(
-                            (item) => <Picker.Item label={item} value={item} />
+                            (item) => <Picker.Item key={item} label={item} value={item} />
                         )
                     }
                 </Picker>
@@ -86,9 +86,9 @@ export class MaterialPicker extends React.PureComponent {
     }
 };
 
-function Image(dcc, { value }) {
+function Image(dcc, { key, value }) {
     return (
-        <View>
+        <View key={key}>
             <TouchableOpacity onPress={
                 async () => {
                     try {
@@ -115,11 +115,11 @@ function Image(dcc, { value }) {
     );
 }
 
-function RichText(dcc, props, { key, value }) {
+function RichText(dcc, props, { key, label, value }) {
     return (
-        <View style={{ flexDirection: 'row' }}>
+        <View key={key} style={{ flexDirection: 'row' }}>
             <TextInput
-                label={key}
+                label={label}
                 value={value}
                 onChangeText={dcc}
                 multiline={true}
@@ -129,22 +129,19 @@ function RichText(dcc, props, { key, value }) {
     );
 }
 
-function Input(dcc, props, { key, value, prefix }) {
+function Input(dcc, props, { key, label, value, noWhitespace }) {
     return (
-        <View>
+        <View key={key}>
             <TextInput
-                label={key}
-                value={prefix + value}
+                label={label}
+                value={value}
                 onChangeText={
-                    prefix ? 
-                        (value) => {
-                            if (value.length < prefix.length) {
-                                dcc(prefix);
-                            } else {
-                                dcc(value);
-                            }
-                        } :
-                        dcc
+                    (value) => {
+                        if (noWhitespace) {
+                            value = value.replace(' ', '');
+                        };
+                        return dcc(value);
+                    }
                 }
                 {...props}
             />

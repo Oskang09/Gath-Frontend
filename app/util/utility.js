@@ -1,4 +1,4 @@
-export function dataChecking(object) {
+export const dataChecking = (object) => {
     let args = Array.prototype.slice.call(arguments, 1);
     if (args[0].constructor === Array) {
         args = args[0];
@@ -34,6 +34,16 @@ export const compose = (...enhancers) => {
         }
         return Component;
     };
+};
+
+export const filterObject = (object, ...fields) => {
+    const data = {};
+    for (const key of fields) {
+        if (object[key]) {
+            data[key] = object[key];
+        }
+    }
+    return fields.length === 1 ? data[fields[0]] : data;
 };
 
 export const setDataByPath = (data, ...argsArr) => {

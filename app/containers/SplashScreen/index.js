@@ -7,18 +7,21 @@ import { compose } from '#utility';
 
 export class SplashScreen extends React.PureComponent {
     
-    checkAuth = async () => {
-        const firebaseUser = this.props.firebase.getUser();
-        if (firebaseUser) {
-            this.props.api.setToken(await firebaseUser.getIdToken());
-            this.props.navigation.navigate('detail');
-        } else {
-            this.props.navigation.navigate('detail'); 
-        }
+    checkAuthAndSetting = async () => {
+        const { navigation, api, firebase } = this.props;
+        navigation.navigate('home');
+        // await api.getServerConfig();
+        // const firebaseUser = await firebase.getUser();
+        // if (firebaseUser) {
+        //     api.setToken(await firebaseUser.getIdToken());
+        //     navigation.navigate('register');
+        // } else {
+        //     navigation.navigate('register'); 
+        // }
     }
 
     render() {
-        this.checkAuth();
+        this.checkAuthAndSetting();
         return (
             <View>
                 <Text>Loading</Text> 

@@ -1,16 +1,14 @@
 import React, { createRef } from 'react';
+import { View } from 'react-native';
+import { Text, ActivityIndicator, Button } from 'react-native-paper';
+import Confirm from 'react-native-confirmation-code-field';
 
 import withFirebase from '#extension/firebase';
 import withDevice from '#extension/device';
 import withAPI from '#extension/apisauce';
 import { compose } from '#utility';
-import Stepper from '#components/Stepper';
 import Form from '#components/Form';
-
-import { View } from 'react-native';
-import { Text, ActivityIndicator, Button } from 'react-native-paper';
-import Confirm from 'react-native-confirmation-code-field';
-import Icon from 'react-native-vector-icons/Entypo';
+import ErrorDialog from '#components/ErrorDialog';
 
 export class PhoneNumber extends React.PureComponent {
     state = {
@@ -20,24 +18,25 @@ export class PhoneNumber extends React.PureComponent {
         error: null,
         loading: false,
     }
+    confirmRef = null
 
     formSetting = () => [
         {
             type: 'input',
+            row: 0,
             dcc: (phone) => this.setState({ phone }),
-            inputProps: {
+            style: {
                 disabled: this.state.confirmCode,
                 mode: 'outlined',
                 width: 200,
             },
             setting: {
-                key: 'Phone Number',
+                key: 'phone-number',
+                label: 'Phone Number',
                 value: this.state.phone,
             }
         },
     ];
-
-    input = createRef();
 
     verifyPhone = async () => {
         this.setState({ loading: true, error: null });
@@ -56,14 +55,19 @@ export class PhoneNumber extends React.PureComponent {
         try {
             const firebaseUser = await this.state.confirmCode.confirm(input);
             this.props.api.setToken(await firebaseUser.getIdToken(true));
-            const apiUser = await this.props.api.request('POST', `/users/${firebaseUser.uid}`, { phone: this.state.phone });
-            if (apiUser.status === 'NEW') {
-                this.props.navigation.navigate('detail');
+            const { ok, result, message } = await this.props.api.request('POST', `/users/login`, { phone: this.state.phone, uid: firebaseUser.uid });
+            if (ok) {
+                if (result.status === 'NEW') {
+                    this.props.navigation.navigate('detail');
+                } else if (result.status === 'MEMBER') {
+                    this.props.navigation.navigate('home');
+                }
             } else {
-                this.props.navigation.navigate('home');
+                this.confirmRef.current.clear();
+                this.setState({ error: message, loading: false });
             }
         } catch (error) {
-            this.input.current.clear();
+            this.confirmRef.current.clear();
             this.setState({ error: error.message, loading: false });
         }
     }
@@ -71,18 +75,23 @@ export class PhoneNumber extends React.PureComponent {
     render() {
         return (
             <View style={{ flex: 1 }}>
+                <ErrorDialog error={this.state.error} dismiss={() => this.setState({ error: null })} />
                 <View style={{
                     flex: 1,
                     justifyContent: 'center', 
                     alignItems: 'center'
                 }}>
                     <View width={this.props.device.getX(65)} style={{ alignItems: 'center' }}>
-                        <Form formSetting={this.formSetting()} />
+                        <Form
+                            formSetting={this.formSetting()}
+                            containerStyle={{ alignItems: 'center' }}
+                            rowStyle={{ flexDirection: 'row', margin: 5 }}
+                        />
                         {
                             this.state.confirmCode 
                             ? 
                                 <Confirm
-                                    ref={this.input}
+                                    ref={ref => this.confirmRef = ref}
                                     onFulfill={this.verifyCode}
                                     keyboardType="numeric"
                                     codeLength={6}
@@ -105,23 +114,8 @@ export class PhoneNumber extends React.PureComponent {
                             this.state.loading && 
                             <ActivityIndicator size="small" animating={true}  />
                         }
-                        {
-                            this.state.error &&
-                            <Text>{ this.state.error }</Text>
-                        }
                     </View>
                 </View>
-                <Stepper
-                    containerStyle={{
-                        alignItems: 'flex-end',
-                        justifyContent: 'flex-end', 
-                        flexDirection: 'row'
-                    }}
-                    currentStep={1}
-                    maxSteps={5}
-                    activeStep={<Icon name="dot-single" size={30} color="#672EDF" />}
-                    inactiveStep={<Icon name="dot-single" size={30} color="#000000" />}
-                />
             </View>
         );
     }

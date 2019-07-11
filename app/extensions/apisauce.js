@@ -1,9 +1,10 @@
 import React from 'react';
+import AsyncStorage from '@react-native-community/async-storage';
 import { create } from 'apisauce';
 import { injector } from '#utility';
 
-const requester = create({ baseURL: 'http://192.168.56.1:3000/' });
-
+const requester = create({ baseURL: 'http://192.168.56.1:3001/' });
+const config = {};
 function buildComponent(
     WrappedComponent, 
     decorator = 'api',
@@ -15,13 +16,20 @@ function buildComponent(
                     request: async (method, path, body) => {
                         const response = await requester[method.toLowerCase()](path, body)
                         if (response.data) {
-                            if (response.data.ok) {
-                                return response.data.result;
-                            } else {
-                                return response.data.error;
-                            }
+                            return response.data;
                         } else {
-                            return response.problem;
+                            return { message: response.problem };
+                        }
+                    },
+                    getLocalConfig: () => config,
+                    getServerConfig: async () => {
+                        const localConfig = JSON.parse(await AsyncStorage.getItem('serverConfig'));
+                        const { data } = await requester.get(`/config/${localConfig ? localConfig.version.config : 0}`);
+                        if (data.result) {
+                            await AsyncStorage.setItem('serverConfig', JSON.stringify(data.result));
+                            Object.assign(config, data.result);
+                        } else {
+                            Object.assign(config, localConfig);
                         }
                     },
                     setToken: (token) => {
