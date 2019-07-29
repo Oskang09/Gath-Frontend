@@ -1,7 +1,9 @@
 import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome5';
+import { View, TouchableOpacity, Text } from 'react-native';
+import { Card, Paragraph, Appbar, Button } from 'react-native-paper';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 
+import PureList from '#components/PureList';
 import { compose } from '#utility';
 import withDevice from '#extension/device';
 import withAPI from '#extension/apisauce';
@@ -12,15 +14,16 @@ export class Personality extends React.PureComponent {
         loading: false,
         error: null,
     }
+    listController = null
 
-    toggle = (index) => {
+    toggle = (item) => {
         const { data } = this.state;
-        if (data.includes(index)) {
-            data.splice(data.indexOf(index), 1);
+        if (data.includes(item)) {
+            data.splice(data.indexOf(item), 1);
         } else {
-            data.push(index);
+            data.push(item);
         }
-        this.setState({ data });
+        this.setState({ data }, () => this.listController && this.listController.refresh());
     }
 
     updatePersonality = async () => {
@@ -36,7 +39,7 @@ export class Personality extends React.PureComponent {
                 { personality: this.state.data }
             );
             if (response.ok) {
-                navigation.navigate('badge');
+                navigation.navigate('introduction');
             } else {
                 this.setState({ loading: false, error: response.message });
             }
@@ -46,39 +49,51 @@ export class Personality extends React.PureComponent {
     }
 
     render() {
+        const { data } = this.state;
         return (
-            <View style={{ flex: 1 }}>
-                <TouchableOpacity onPress={this.updatePersonality}>
-                    <View style={{
-                        alignItems: 'flex-end',
-                        padding: 10
-                    }}>
-                        <Text>Next Step</Text>
+            <View style={{ flex: 1, alignItems: 'center' }}>
+                <Appbar>
+                    <Appbar.Content title="Gath" />
+                </Appbar>
+                <View style={{ flex: 1, flexDirection: 'column', }}>
+                    <View style={{ alignItems: 'center', flexDirection: 'row', margin: 10 }}>
+                        <View style={{ flex: 1, alignItems: 'flex-start'}}>
+                            <Text>I'm good at ...</Text>
+                        </View>
+                        <View style={{ flex: 1, alignItems: 'flex-end' }}>
+                            <Button mode="contained" width={this.props.device.getX(25)} onPress={this.updatePersonality}>
+                                <Text style={{ color: 'white' }}>NEXT</Text>
+                            </Button>
+                        </View>
                     </View>
-                </TouchableOpacity>
-                <View style={{ 
-                    flexDirection: 'row',
-                    justifyContent: 'space-around',
-                    margin: 20,
-                }}>
-                    <TouchableOpacity onPress={() => {}}>
-                        <View style={{ alignItems: 'center' }}>
-                            <Icon name='comments' size={30} />
-                            <Text>Comment</Text>
-                        </View>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => {}}>
-                        <View style={{ alignItems: 'center' }}>
-                            <Icon name='comments' size={30} />
-                            <Text>Comment</Text>
-                        </View>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => {}}>
-                        <View style={{ alignItems: 'center' }}>
-                            <Icon name='comments' size={30} />
-                            <Text>Comment</Text>
-                        </View>
-                    </TouchableOpacity>
+                    <PureList
+                        type="vertical"
+                        controller={(ctl) => this.listController = ctl}
+                        data={[
+                            'Listener', 'Listener2', 'Listener3', 'Listener4'
+                        ]}
+                        numColumns={3}
+                        render={
+                            ({ item }) => (
+                                <TouchableOpacity activeOpacity={1} onPress={() => this.toggle(item)}>
+                                    <Card
+                                        width={this.props.device.getX(25)}
+                                        style={{ margin: this.props.device.getX(2), height: 80 }}
+                                    >
+                                        <Card.Title
+                                            style={{ marginRight: 5, height: 30 }}
+                                            right={
+                                                () => data.includes(item) && <AntDesign color={this.props.device.primaryColor} name="checkcircle" size={15} />
+                                            }
+                                        />
+                                        <Card.Content>
+                                            <Paragraph style={{ textAlign: 'center' }}>{item}</Paragraph>
+                                        </Card.Content>
+                                    </Card>
+                                </TouchableOpacity>
+                            )
+                        }
+                    />
                 </View>
             </View>
         );

@@ -1,14 +1,16 @@
 import React from 'react';
-import { View } from 'react-native';
 
 import SplashScreen from '#containers/SplashScreen';
+
 import PhoneNumber from '#containers/RegistrationScreen/phone-number';
 import UserDetail from '#containers/RegistrationScreen/user-details';
+import Introduction from '#containers/RegistrationScreen/introduction';
 import Personality from '#containers/RegistrationScreen/personality';
 import Badge from '#containers/RegistrationScreen/badge';
-import EventScreen from '#containers/HomeScreen/event-screen';
 
-import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
+import EventScreen from '#containers/HomeScreen/event-screen';
+import ProfileScreen from '#containers/HomeScreen/profile-screen';
+import ShopScreen from '#containers/HomeScreen/shops-screen';
 
 export default {
     _type: 'switch',
@@ -20,22 +22,14 @@ export default {
     home: {
         _type: 'material-bottom',
         _setting: {
-            initialRouteName: 'event',
+            initialRouteName: 'shop',
             backBehavior: 'none',
             lazy: true,
             labeled: false,
         },
-        event: {
-            screen: EventScreen,
-            navigationOptions:  {
-                tabBarLabel: 'Event',
-                tabBarIcon: (
-                    <View>
-                        <MaterialIcon size={25} name="library-books" />
-                    </View>
-                ),
-            }
-        },
+        shop: ShopScreen,
+        event: EventScreen,
+        profile: ProfileScreen,
     },
     register: {
         _type: 'switch',
@@ -45,6 +39,7 @@ export default {
         },
         phone: PhoneNumber,
         detail: UserDetail,
+        introduction: Introduction,
         personality: Personality,
         badge: Badge,
     },

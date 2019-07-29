@@ -3,19 +3,23 @@ import { FlatList, ActivityIndicator } from 'react-native';
 import withAPI from '#extension/apisauce';
 import { compose } from '#utility';
 
-class FlatPaginator extends React.PureComponent {
+export class QueryableList extends React.PureComponent {
     state = {
-        page: 1,
         data: [],
         refreshing: true,
-
-        configureProps: {},
+        resetWhenRefresh: false,
+        query: null,
+        configureProps: null,
     }
 
     refreshData = async () => {
         this.setState({ refreshing: true });
-        const response = await this.props.api.request('GET', this.props.uri(this.state.page));
-        this.state.data.push(...this.props.filter(response));
+        const response = await this.props.api.request('GET', this.props.uri(this.state.query));
+        if (this.state.resetWhenRefresh) {
+            this.state.data = this.props.filter(response);
+        } else {
+            this.state.data.push(...this.props.filter(response));
+        }
         this.setState({
             data: this.state.data,
             refreshing: false
@@ -23,16 +27,23 @@ class FlatPaginator extends React.PureComponent {
     }
 
     updatePage = () => {
-        this.setState({ page: this.state.page + 1 }, this.refreshData);
+        this.setState({ 
+            query: {
+                ...this.state.query,
+                ...this.props.updateQuery(this.state.query)
+            }
+        }, this.refreshData);
     }
 
     componentDidMount() {
-        if (this.props.type === 'topDown') {
+        if (this.props.type === 'vertical') {
             this.setState({
+                query: this.props.initQuery,
+                resetWhenRefresh: this.props.resetWhenRefresh,
                 configureProps: {
                     ...this.props.extraProps,
-                    showsVerticalScrollIndicator: false,
                     horizontal: false,
+                    showsVerticalScrollIndicator: false,
                     onEndReachedThreshold: 0.5,
                     onEndReached: this.updatePage,
                     ListFooterComponent: () => {
@@ -40,12 +51,14 @@ class FlatPaginator extends React.PureComponent {
                     },
                 },
             }, this.refreshData);
-        } else if (this.props.type === 'leftRight') {
+        } else if (this.props.type === 'horizontal') {
             this.setState({
+                query: this.props.initQuery,
+                resetWhenRefresh: this.props.resetWhenRefresh,
                 configureProps: {
                     ...this.props.extraProps,
                     showsHorizontalScrollIndicator: false,
-                    horizontal: true,
+                    horizontal: true
                 },
             }, this.refreshData);
         }
@@ -61,8 +74,8 @@ class FlatPaginator extends React.PureComponent {
                 initialNumToRender={this.state.data.length}
                 refreshing={this.state.refreshing}
                 key={this.props.key}
-                listKey={this.props.key}
-                keyExtractor={(item, index) => `list-${index}`}
+                listKey={(item, index) => ` ql-${index}`}
+                keyExtractor={(item, index) => `ql-${index}`}
                 numColumns={this.props.numColumns}
                 renderItem={this.props.render}
                 {...this.state.configureProps}
@@ -73,4 +86,4 @@ class FlatPaginator extends React.PureComponent {
 
 export default compose(
     withAPI
-)(FlatPaginator);
+)(QueryableList);

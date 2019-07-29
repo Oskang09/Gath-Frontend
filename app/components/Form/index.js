@@ -3,15 +3,15 @@ import ImagePicker from 'react-native-image-crop-picker';
 import { View, Picker, TouchableOpacity } from 'react-native';
 import { TextInput, Avatar, Colors } from 'react-native-paper';
 
-const filterComponent = ({ type, dcc, style, setting }) => {
+const filterComponent = ({ type, dcc, props, setting }) => {
     if (type === 'picker') {
-        return <MaterialPicker key={setting.key} dcc={dcc} setting={setting} style={style} />;
+        return <MaterialPicker key={setting.key} dcc={dcc} setting={setting} {...props} />;
     } else if (type === 'input') {
-        return Input(dcc, style, setting);
+        return Input(dcc, props, setting);
     } else if (type === 'image') {
         return Image(dcc, setting);
     } else if (type === 'richtext') {
-        return RichText(dcc, style, setting);
+        return RichText(dcc, props, setting);
     }
 };
 
@@ -42,7 +42,7 @@ function Form({ containerStyle, formSetting, rowStyle }) {
     );
 };
 
-export class MaterialPicker extends React.Component {
+export class MaterialPicker extends React.PureComponent {
     state = {
         picker: false
     }
@@ -73,7 +73,7 @@ export class MaterialPicker extends React.Component {
                 <Picker
                     style={{ marginTop: 2, marginLeft: 5 }}
                     selectedValue={value}
-                    onValueChange={() => {}}
+                    onValueChange={this.choose}
                 >
                     {
                         items.map(

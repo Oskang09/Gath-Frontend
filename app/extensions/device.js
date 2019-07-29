@@ -18,16 +18,7 @@ function buildComponent(
                 [decorator]: {
                     getX: getXdp,
                     getY: getYdp,
-                    renderLinearContainer: (component) => <LinearGradient 
-                        colors={[ '#87EFD7',  '#BFFFF0' ]}
-                        locations={[ 0.3, 0.9 ]}
-                        useAngle={true}
-                        angle={135}
-                        angleCenter={{ x: 0.5, y: 0.5 }}
-                        style={{ flex: 1 }}
-                    >
-                        { component }
-                    </LinearGradient>
+                    primaryColor: '#87EFD7',
                 }
             }, this.props);
             

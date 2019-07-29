@@ -5,19 +5,19 @@ import withAPI from '#extension/apisauce';
 import { compose, filterObject } from '#utility';
 import Form from '#components/Form';
 
-import { View, TouchableOpacity, KeyboardAvoidingView } from 'react-native';
-import { Text } from 'react-native-paper';
+import { View } from 'react-native';
+import { Text, Card, Button, Appbar } from 'react-native-paper';
 
 export class UserDetail extends React.PureComponent {
 
     state = {
         name: 'NG SZE CHEN',
         age: '20',
-        constellation: 'Constellation',
-        gender: 'Sex',
+        constellation: 'Aries',
+        gender: 'Male',
         avatar: null,
         utag: '',
-        desc: null,
+
         loading: false,
         error: null,
     }
@@ -36,7 +36,7 @@ export class UserDetail extends React.PureComponent {
             type: 'input',
             row: 1,
             dcc: (name) => this.setState({ name }),
-            style: {
+            props: {
                 mode: 'outlined',
                 width: this.props.device.getX(78),
             },
@@ -50,7 +50,7 @@ export class UserDetail extends React.PureComponent {
             type: 'input',
             row: 2,
             dcc: (age) => this.setState({ age }),
-            style: {
+            props: {
                 mode: 'outlined',
                 keyboardType: 'numeric',
                 width: this.props.device.getX(30),
@@ -65,25 +65,31 @@ export class UserDetail extends React.PureComponent {
             type: 'picker',
             row: 2,
             dcc: (constellation) => this.setState({ constellation }),
-            style: {
-                width: this.props.device.getX(45),
-                marginLeft: this.props.device.getX(3),
+            props: {
+                style: {
+                    width: this.props.device.getX(45),
+                    marginLeft: this.props.device.getX(3),
+                }
             },
             setting: {
+                label: 'Constellation',
                 key: 'user-cons',
                 value: this.state.constellation,
-                items: [ 'Cancer' ],
+                items: this.props.api.getConfig().constellation,
             }
         },
         {
             type: 'picker',
             row: 3,
             dcc: (gender) => this.setState({ gender }),
-            style: {
-                width: this.props.device.getX(30),
-                marginRight: this.props.device.getX(3),
+            props: {
+                style: {
+                    width: this.props.device.getX(30),
+                    marginRight: this.props.device.getX(3),
+                }
             },
             setting: {
+                label: 'Gender',
                 key: 'user-gender',
                 value: this.state.gender,
                 items: ['Male', 'Female', 'Other'],
@@ -93,29 +99,14 @@ export class UserDetail extends React.PureComponent {
             type: 'input',
             row: 3,
             dcc: (utag) => this.setState({ utag }),
-            style: {
+            props: {
                 mode: 'outlined',
                 width: this.props.device.getX(45),
             },
             setting: {
-                label: 'Tag',
+                label: 'Alias',
                 key: 'user-tag',
                 value: this.state.utag,
-            }
-        },
-        {
-            type: 'richtext',
-            row: 4,
-            dcc: (desc) => this.setState({ desc }),
-            style: {
-                mode: 'outlined',
-                width: this.props.device.getX(80),
-                height: this.props.device.getY(20),
-            },
-            setting: {
-                label: 'Introduction about yourself ...',
-                key: 'user-desc',
-                value: this.state.desc
             }
         },
     ];
@@ -130,7 +121,7 @@ export class UserDetail extends React.PureComponent {
             const response = await api.request(
                 'POST', 
                 `/users/profile`, 
-                filterObject(this.state, 'name', 'age', 'constellation', 'gender', 'avatar', 'utag', 'desc')
+                filterObject(this.state, 'name', 'age', 'constellation', 'gender', 'avatar', 'utag')
             );
             if (response.ok) {
                 navigation.navigate('personality');
@@ -144,21 +135,27 @@ export class UserDetail extends React.PureComponent {
 
     render() {
         return (
-            <KeyboardAvoidingView style={{ flex: 1 }} behavior="position">
-                <TouchableOpacity onPress={this.updateProfile}>
-                    <View style={{
-                        alignItems: 'flex-end',
-                        padding: 10
-                    }}>
-                        <Text>Next Step</Text>
-                    </View>
-                </TouchableOpacity>
-                <Form
-                    containerStyle={{ alignItems: 'center' }}
-                    rowStyle={{ flexDirection: 'row', margin: 5 }}
-                    formSetting={this.formSetting()} 
-                />
-            </KeyboardAvoidingView>
+            <View style={{ flex: 1 }}>
+                <Appbar>
+                    <Appbar.Content title="Gath" />
+                </Appbar>
+                <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }} behavior="position">
+                    <Card width={this.props.device.getX(90)}>
+                        <Card.Content>
+                            <Form
+                                containerStyle={{ alignItems: 'center' }}
+                                rowStyle={{ flexDirection: 'row', margin: 5 }}
+                                formSetting={this.formSetting()} 
+                            />
+                        </Card.Content>
+                        <Card.Actions style={{ justifyContent: 'center' }}>
+                            <Button mode="contained" width={this.props.device.getX(25)} onPress={this.updateProfile}>
+                                <Text style={{ color: 'white' }}>NEXT</Text>
+                            </Button>
+                        </Card.Actions>
+                    </Card>
+                </View>
+            </View>
         );
     }
 };

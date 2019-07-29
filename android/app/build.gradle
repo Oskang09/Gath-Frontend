@@ -139,6 +139,7 @@ android {
 }
 
 dependencies {
+    implementation project(':react-native-webview-bridge')
     implementation project(':react-native-linear-gradient')
     implementation project(':react-native-image-crop-picker')
     implementation project(':react-native-vector-icons')
@@ -165,3 +166,8 @@ task copyDownloadableDepsToLibs(type: Copy) {
 
 apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
 apply plugin: 'com.google.gms.google-services'
+
+project.afterEvaluate {
+    apply from: '../../node_modules/react-native-zss-rich-text-editor/htmlCopy.gradle';
+    copyEditorHtmlToAppAssets(file('../../node_modules/react-native-zss-rich-text-editor'))
+}

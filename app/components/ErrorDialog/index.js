@@ -8,9 +8,7 @@ function ErrorDialog({ error, dismiss }) {
             <Dialog
                 visible={error}
                 onDismiss={dismiss}
-                theme={{
-                    roundness: 5,
-                }}
+                theme={{ roundness: 5 }}
             >
                 <Dialog.Content>
                     <Paragraph>{error}</Paragraph>

@@ -9,15 +9,14 @@ export class SplashScreen extends React.PureComponent {
     
     checkAuthAndSetting = async () => {
         const { navigation, api, firebase } = this.props;
-        navigation.navigate('home');
-        // await api.getServerConfig();
-        // const firebaseUser = await firebase.getUser();
-        // if (firebaseUser) {
-        //     api.setToken(await firebaseUser.getIdToken());
-        //     navigation.navigate('register');
-        // } else {
-        //     navigation.navigate('register'); 
-        // }
+        await api.loadConfig();
+        const firebaseUser = await firebase.getUser();
+        if (firebaseUser) {
+            api.setToken(await firebaseUser.getIdToken());
+            navigation.navigate('home');
+        } else {
+            navigation.navigate('register'); 
+        }
     }
 
     render() {

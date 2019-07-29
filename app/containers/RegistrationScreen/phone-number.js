@@ -1,52 +1,52 @@
 import React, { createRef } from 'react';
 import { View } from 'react-native';
-import { Text, ActivityIndicator, Button } from 'react-native-paper';
+import { Text, ActivityIndicator, Button, Card, Appbar } from 'react-native-paper';
 import Confirm from 'react-native-confirmation-code-field';
 
 import withFirebase from '#extension/firebase';
 import withDevice from '#extension/device';
 import withAPI from '#extension/apisauce';
+import withError from '#extension/error';
+
 import { compose } from '#utility';
 import Form from '#components/Form';
-import ErrorDialog from '#components/ErrorDialog';
 
 export class PhoneNumber extends React.PureComponent {
     state = {
         phone: '+60187824152',
         code: '',
         confirmCode: null,
-        error: null,
         loading: false,
     }
-    confirmRef = null
+    confirmRef = createRef()
 
     formSetting = () => [
         {
             type: 'input',
             row: 0,
             dcc: (phone) => this.setState({ phone }),
-            style: {
+            props: {
                 disabled: this.state.confirmCode,
                 mode: 'outlined',
-                width: 200,
+                width: this.props.device.getX(45),
             },
             setting: {
                 key: 'phone-number',
-                label: 'Phone Number',
                 value: this.state.phone,
             }
         },
     ];
 
     verifyPhone = async () => {
-        this.setState({ loading: true, error: null });
+        this.setState({ loading: true });
         try {
             this.setState({
                 confirmCode: await this.props.firebase.login(this.state.phone),
                 loading: false,
-            });
+            }, () => this.confirmRef.current.focus());
         } catch (error) {
-            this.setState({ error: error.message, loading: false });
+            this.props.showError(error.message);
+            this.setState({ loading: false });
         }
     }
 
@@ -64,57 +64,69 @@ export class PhoneNumber extends React.PureComponent {
                 }
             } else {
                 this.confirmRef.current.clear();
-                this.setState({ error: message, loading: false });
+                this.props.showError(message);
+                this.setState({ loading: false });
             }
         } catch (error) {
             this.confirmRef.current.clear();
-            this.setState({ error: error.message, loading: false });
+            this.props.showError(error.message);
+            this.setState({ loading: false });
         }
     }
 
     render() {
         return (
             <View style={{ flex: 1 }}>
-                <ErrorDialog error={this.state.error} dismiss={() => this.setState({ error: null })} />
-                <View style={{
-                    flex: 1,
-                    justifyContent: 'center', 
-                    alignItems: 'center'
-                }}>
-                    <View width={this.props.device.getX(65)} style={{ alignItems: 'center' }}>
-                        <Form
-                            formSetting={this.formSetting()}
-                            containerStyle={{ alignItems: 'center' }}
-                            rowStyle={{ flexDirection: 'row', margin: 5 }}
-                        />
-                        {
-                            this.state.confirmCode 
-                            ? 
-                                <Confirm
-                                    ref={ref => this.confirmRef = ref}
-                                    onFulfill={this.verifyCode}
-                                    keyboardType="numeric"
-                                    codeLength={6}
-                                    containerProps={{
-                                        style: {
-                                            marginTop: this.props.device.getY(7)
-                                        }
-                                    }}
-                                />
-                            :
-                                <View style={{ marginTop: this.props.device.getY(3) }}>
-                                    <Button mode="contained" onPress={this.verifyPhone}>
-                                        <Text style={{ color: 'white' }}>TAC</Text>
-                                    </Button>
-                                </View>
-                        }
-                    </View>
-                    <View style={{ marginTop: this.props.device.getY(10) }}>
-                        {
-                            this.state.loading && 
-                            <ActivityIndicator size="small" animating={true}  />
-                        }
-                    </View>
+                <Appbar>
+                    <Appbar.Content title="Gath" />
+                </Appbar>
+                <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                    <Text>Enter your phone number</Text>
+                    <Form
+                        formSetting={this.formSetting()}
+                        containerStyle={{ alignItems: 'center' }}
+                        rowStyle={{ flexDirection: 'row', margin: 5 }}
+                    />
+                    {
+                        !this.state.confirmCode && (
+                            <View style={{ marginTop: this.props.device.getY(3) }}>
+                                <Button mode="contained" onPress={this.verifyPhone}>
+                                    <Text style={{ color: 'white' }}>REQUEST FOR TAC</Text>
+                                </Button>
+                            </View>
+                        )
+                    }
+                    {
+                        this.state.confirmCode && (
+                            <Confirm
+                                ref={this.confirmRef}
+                                onFulfill={this.verifyCode}
+                                keyboardType="numeric"
+                                activeColor={this.props.device.primaryColor}
+                                inactiveColor={this.props.device.primaryColor}
+                                codeLength={6}
+                                containerProps={{
+                                    style: {
+                                        flex: 0,
+                                        marginTop: this.props.device.getY(3)
+                                    }
+                                }}
+                                cellProps={{
+                                    style: {
+                                        color: 'black',
+                                        fontSize: 17
+                                    }
+                                }}
+                            />
+                        )
+                    }
+                    {
+                        this.state.loading && (
+                            <View style={{ marginTop: this.props.device.getY(3) }}>
+                                <ActivityIndicator size="small" animating={true}  />
+                            </View>
+                        )
+                    }
                 </View>
             </View>
         );
@@ -125,4 +137,5 @@ export default compose(
     withFirebase,
     withDevice,
     withAPI,
+    withError
 )(PhoneNumber);

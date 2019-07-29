@@ -1,9 +1,8 @@
 import React from 'react';
-import AsyncStorage from '@react-native-community/async-storage';
 import { create } from 'apisauce';
 import { injector } from '#utility';
 
-const requester = create({ baseURL: 'http://192.168.56.1:3001/' });
+const requester = create({ baseURL: 'http://192.168.56.1:3000/' });
 const config = {};
 function buildComponent(
     WrappedComponent, 
@@ -21,20 +20,17 @@ function buildComponent(
                             return { message: response.problem };
                         }
                     },
-                    getLocalConfig: () => config,
-                    getServerConfig: async () => {
-                        const localConfig = JSON.parse(await AsyncStorage.getItem('serverConfig'));
-                        const { data } = await requester.get(`/config/${localConfig ? localConfig.version.config : 0}`);
-                        if (data.result) {
-                            await AsyncStorage.setItem('serverConfig', JSON.stringify(data.result));
+                    loadConfig: async () => {
+                        const { data } = await requester.get(`/config`);
+                        if (data) {
                             Object.assign(config, data.result);
-                        } else {
-                            Object.assign(config, localConfig);
                         }
                     },
+                    getConfig: () => config,
                     setToken: (token) => {
                         requester.setHeader('gath-token', token)
-                    }
+                    },
+                    staticResource: (path) => `${requester.getBaseURL()}${path}`
                 }
             }, this.props);
 

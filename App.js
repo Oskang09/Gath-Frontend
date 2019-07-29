@@ -5,7 +5,7 @@ import AppRouter from './Router';
 const theme = {
     ...DefaultTheme,
     dark: false,
-    roundness: 20,
+    roundness: 5,
     colors: {
         ...DefaultTheme.colors,
         primary: '#87EFD7',
