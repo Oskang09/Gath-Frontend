@@ -1,10 +1,13 @@
 import React from 'react';
 import { View, TouchableOpacity, Text } from 'react-native';
-import { Card, Paragraph, Appbar, Button } from 'react-native-paper';
+import { Card, Paragraph, Button } from 'react-native-paper';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import Icon from 'react-native-vector-icons';
+import Appbar from '#components/Appbar';
 
 import PureList from '#components/PureList';
 import { compose } from '#utility';
+import withError from '#extension/error';
 import withDevice from '#extension/device';
 import withAPI from '#extension/apisauce';
 
@@ -41,10 +44,10 @@ export class Personality extends React.PureComponent {
             if (response.ok) {
                 navigation.navigate('introduction');
             } else {
-                this.setState({ loading: false, error: response.message });
+                this.setState({ loading: false }, () => this.props.showError(response.message));
             }
         } catch (error) {
-            this.setState({ loading: false, error });
+            this.setState({ loading: false }, () => this.props.showError(error));
         }
     }
 
@@ -52,9 +55,7 @@ export class Personality extends React.PureComponent {
         const { data } = this.state;
         return (
             <View style={{ flex: 1, alignItems: 'center' }}>
-                <Appbar>
-                    <Appbar.Content title="Gath" />
-                </Appbar>
+                <Appbar />
                 <View style={{ flex: 1, flexDirection: 'column', }}>
                     <View style={{ alignItems: 'center', flexDirection: 'row', margin: 10 }}>
                         <View style={{ flex: 1, alignItems: 'flex-start'}}>
@@ -68,14 +69,12 @@ export class Personality extends React.PureComponent {
                     </View>
                     <PureList
                         type="vertical"
-                        controller={(ctl) => this.listController = ctl}
-                        data={[
-                            'Listener', 'Listener2', 'Listener3', 'Listener4'
-                        ]}
+                        ref={(ctl) => this.listController = ctl}
+                        data={this.props.api.getConfig().personality}
                         numColumns={3}
                         render={
                             ({ item }) => (
-                                <TouchableOpacity activeOpacity={1} onPress={() => this.toggle(item)}>
+                                <TouchableOpacity activeOpacity={1} onPress={() => this.toggle(item.display)}>
                                     <Card
                                         width={this.props.device.getX(25)}
                                         style={{ margin: this.props.device.getX(2), height: 80 }}
@@ -83,11 +82,12 @@ export class Personality extends React.PureComponent {
                                         <Card.Title
                                             style={{ marginRight: 5, height: 30 }}
                                             right={
-                                                () => data.includes(item) && <AntDesign color={this.props.device.primaryColor} name="checkcircle" size={15} />
+                                                () => data.includes(item.display) && <AntDesign color={this.props.device.primaryColor} name="checkcircle" size={15} />
                                             }
                                         />
-                                        <Card.Content>
-                                            <Paragraph style={{ textAlign: 'center' }}>{item}</Paragraph>
+                                        <Card.Content style={{ alignItems: 'center' }}>
+                                            <Icon {...item.icon} />
+                                            <Paragraph>{item.display}</Paragraph>
                                         </Card.Content>
                                     </Card>
                                 </TouchableOpacity>
@@ -102,5 +102,6 @@ export class Personality extends React.PureComponent {
 
 export default compose(
     withDevice,
-    withAPI
+    withAPI,
+    withError
 )(Personality);

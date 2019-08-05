@@ -1,17 +1,18 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, Image } from 'react-native';
-import { Appbar, Button } from 'react-native-paper';
+import { Button } from 'react-native-paper';
+import Appbar from '#components/Appbar';
 
 import PureList from '#components/PureList';
 import { compose } from '#utility';
 import withDevice from '#extension/device';
 import withAPI from '#extension/apisauce';
+import withError from '#extension/error';
 
 export class Badge extends React.PureComponent {
     state = {
         data: [],
         loading: false,
-        error: null,
     }
     listController = null
 
@@ -20,7 +21,9 @@ export class Badge extends React.PureComponent {
         if (data.includes(item)) {
             data.splice(data.indexOf(item), 1);
         } else {
-            data.push(item);
+            if (data.length < 4) {
+                data.push(item);
+            }
         }
         this.setState({ data }, () => this.listController && this.listController.refresh());
     }
@@ -35,15 +38,15 @@ export class Badge extends React.PureComponent {
             const response = await api.request(
                 'POST', 
                 `/users/profile`,
-                { badge: this.state.data }
+                { badge: this.state.data, status: 'REGISTERED' }
             );
             if (response.ok) {
                 navigation.navigate('home');
             } else {
-                this.setState({ loading: false, error: response.message });
+                this.setState({ loading: false }, () => this.props.showError(response.message));
             }
         } catch (error) {
-            this.setState({ loading: false, error });
+            this.setState({ loading: false }, () => this.props.showError(error));
         }
     }
 
@@ -51,9 +54,7 @@ export class Badge extends React.PureComponent {
         const { data } = this.state;
         return (
             <View style={{ flex: 1, alignItems: 'center' }}>
-                <Appbar>
-                    <Appbar.Content title="Gath" />
-                </Appbar>
+                <Appbar />
                 <View style={{ flex: 1, flexDirection: 'column', alignItems: 'center', width: this.props.device.getX(100) }}>
                     <View style={{ alignItems: 'center', flexDirection: 'row', margin: 10 }}>
                         <View style={{ flex: 1, alignItems: 'flex-start'}}>
@@ -67,7 +68,7 @@ export class Badge extends React.PureComponent {
                     </View>
                     <PureList
                         type="vertical"
-                        controller={(ctl) => this.listController = ctl}
+                        ref={(ctl) => this.listController = ctl}
                         data={this.props.api.getConfig().badges}
                         numColumns={4}
                         render={
@@ -76,7 +77,7 @@ export class Badge extends React.PureComponent {
                                 return (
                                     <TouchableOpacity activeOpacity={1} onPress={() => this.toggle(item)}>
                                         <Image
-                                            source={{ uri: this.props.api.staticResource(`images/badges/${item}.png`) }}
+                                            source={{ uri: this.props.api.staticResource(`/images/badges/${item}.png`) }}
                                             resizeMethod="resize"
                                             style={{
                                                 width: devicePixel,
@@ -98,5 +99,6 @@ export class Badge extends React.PureComponent {
 
 export default compose(
     withDevice,
-    withAPI
+    withAPI,
+    withError
 )(Badge);

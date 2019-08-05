@@ -7,33 +7,51 @@ export class Caccordion extends React.PureComponent {
         open: false,
     }
 
-    openAccordion = () => {
-        this.setState({ open: true })
+    renderTitle = () => {
+        const { title, subtitle } = this.props;
+        if (!title && !subtitle) {
+            return null;
+        }
+        return (
+            <Card.Title
+                title={typeof title === 'function' ? title(this.state.open) : title}
+                titleStyle={{ fontSize: 15 }}
+                subtitle={typeof subtitle === 'function' ? subtitle(this.state.open) : subtitle}
+            />
+        );
     }
 
-    closeAccordion = () => {
-        this.setState({ open: false });
-    }
-
-    renderButton = () => (
-        <TouchableOpacity onPress={ this.state.open ? this.closeAccordion : this.openAccordion }>
-            <View style={{ alignItems: 'center' }}>
-                <Text>Show {this.state.open ? 'Less' : 'More'}</Text>
-            </View>
-        </TouchableOpacity>
-    );
+    toggleAccordion = () => this.setState({ open: !this.state.open })
 
     render() {
         const { open } = this.state;
-        const { content, cardStyle, title, collapsed } = this.props;
+        const { children, containerStyle, collapsed, showButton } = this.props;
+        if (showButton) {
+            return (
+                <Card style={containerStyle}>
+                    { this.renderTitle() }
+                    <Card.Content>
+                        { children }
+                        { open && collapsed}
+                        <TouchableOpacity activeOpacity={1} onPress={this.toggleAccordion}>
+                            <View style={{ alignItems: 'center' }}>
+                                <Text>Show {this.state.open ? 'Less' : 'More'}</Text>
+                            </View>
+                        </TouchableOpacity>
+                    </Card.Content>
+                </Card>
+            );
+        }
         return (
-            <Card style={cardStyle}>
-                <Card.Title title={title} subtitle={!open && collapsed} />
-                <Card.Content>
-                    { open && content }
-                    { this.renderButton() }
-                </Card.Content>
-            </Card>
+            <TouchableOpacity activeOpacity={1} onPress={this.toggleAccordion}>
+                <Card style={containerStyle}>
+                    { this.renderTitle() }
+                    <Card.Content>
+                        { children }
+                        { open && collapsed }
+                    </Card.Content>
+                </Card>
+            </TouchableOpacity>
         );
     }
 };

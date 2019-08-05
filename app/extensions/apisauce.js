@@ -2,7 +2,7 @@ import React from 'react';
 import { create } from 'apisauce';
 import { injector } from '#utility';
 
-const requester = create({ baseURL: 'http://192.168.56.1:3000/' });
+const requester = create({ baseURL: 'http://192.168.56.1:3000' });
 const config = {};
 function buildComponent(
     WrappedComponent, 
@@ -19,7 +19,7 @@ function buildComponent(
                         } else {
                             return { message: response.problem };
                         }
-                    },
+                    }, 
                     loadConfig: async () => {
                         const { data } = await requester.get(`/config`);
                         if (data) {
@@ -30,15 +30,12 @@ function buildComponent(
                     setToken: (token) => {
                         requester.setHeader('gath-token', token)
                     },
+                    cdn: (path) => `https://firebasestorage.googleapis.com/v0/b/gathfyp2019.appspot.com/o/${path}?alt=media`,
                     staticResource: (path) => `${requester.getBaseURL()}${path}`
                 }
             }, this.props);
 
-            return (
-                <WrappedComponent
-                    {...newProps}
-                />
-            );
+            return <WrappedComponent {...newProps} />;
         }
     };
 };

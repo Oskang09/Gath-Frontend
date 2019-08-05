@@ -1,11 +1,12 @@
 import React from 'react';
 
 import { Image, View, Text, ScrollView } from 'react-native';
-import { Card, Avatar, Badge } from 'react-native-paper';
+import { Card, Avatar, Badge, Paragraph } from 'react-native-paper';
 import Caccordion from '#components/Caccordion';
 import QueryableList from '#components/QueryableList';
-import Appbar from './appbar';
+import Appbar from '#components/Appbar';
 import AsyncContainer from '#components/AsyncContainer';
+import PureList from '#components/PureList';
 
 import withDevice from '#extension/device';
 import withAPI from '#extension/apisauce';
@@ -29,109 +30,78 @@ export class ProfileScreen extends React.PureComponent {
     renderProfile = () => {
         return (
             <AsyncContainer promise={this.state.profile}>
-                {({ gender, constellation, name, utag, badge }) => (
-                    <Card 
-                        style={{ 
+                {({ id, gender, desc, constellation, name, utag, badge }) => (
+                    <Caccordion
+                        containerStyle={{ 
                             marginTop: 10,
                             marginLeft: this.props.device.getX(20),
                             marginRight: this.props.device.getX(20)
                         }}
+                        collapsed={
+                            <View>
+                                <Text>{desc}</Text>
+                            </View>
+                        }
                     >
-                        <Card.Content>
-                            <View style={{ alignItems: 'center' }}>
-                                <Avatar.Image
-                                    source={require('#assets/icon.jpg')}
-                                    size={64}
-                                />
-                                <Text>{name}</Text>
-                                <Text>@{utag}</Text>
-                            </View>
-                            <View style={{ flexDirection: 'row', marginTop: 10, justifyContent: 'center' }}>
-                                <Avatar.Icon
-                                    style={{ marginRight: 10 }}
-                                    size={32}
-                                    icon={
-                                        () => <MaterialCommunityIcon size={16} name={`gender-${gender.toLowerCase()}`} />
-                                    }
-                                />
-                                <Avatar.Icon
-                                    style={{ marginRight: 10 }}
-                                    size={32}
-                                    icon={
-                                        () => <MaterialCommunityIcon size={16} name={`zodiac-${constellation.toLowerCase()}`} />
-                                    }
-                                />
-                            </View>
-                            <View style={{ flexDirection: 'row', marginTop: 10, justifyContent: 'space-around' }}>
-                                {
-                                    Object.keys(badge).map(
-                                        (badge_name) => {
-                                            const devicePixel = this.props.device.getX(15);
-                                            return (
-                                                <Image
-                                                    key={`badge-${badge_name}`}
-                                                    source={{ uri: this.props.api.staticResource(`images/badges/${badge_name}.png`) }}
-                                                    resizeMethod="resize"
-                                                    style={{
-                                                        width: devicePixel,
-                                                        height: devicePixel,
-                                                    }}
-                                                />
-                                            );
-                                        }
-                                    )
+                        <View style={{ marginTop: 10, alignItems: 'center' }}>
+                            <Avatar.Image
+                                source={{ uri: this.props.api.cdn(`users-${id}`) }}
+                                size={64}
+                            />
+                            <Text>{name}</Text>
+                            <Text>@{utag}</Text>
+                        </View>
+                        <View style={{ flexDirection: 'row', marginTop: 10, justifyContent: 'center' }}>
+                            <Avatar.Icon
+                                style={{ marginRight: 10 }}
+                                size={32}
+                                icon={
+                                    () => <MaterialCommunityIcon size={16} name={`gender-${gender.toLowerCase()}`} />
                                 }
-                            </View>
-                        </Card.Content>
-                    </Card>
+                            />
+                            <Avatar.Icon
+                                style={{ marginRight: 10 }}
+                                size={32}
+                                icon={
+                                    () => <MaterialCommunityIcon size={16} name={`zodiac-${constellation.toLowerCase()}`} />
+                                }
+                            />
+                        </View>
+                        <View style={{ flexDirection: 'row', marginTop: 10, justifyContent: 'space-around' }}>
+                            {
+                                Object.keys(badge).map(
+                                    (badge_name) => {
+                                        const devicePixel = this.props.device.getX(17);
+                                        return (
+                                            <Image
+                                                key={`badge-${badge_name}`}
+                                                source={{ uri: this.props.api.staticResource(`/images/badges/${badge_name}.png`) }}
+                                                resizeMethod="resize"
+                                                style={{ width: devicePixel, height: devicePixel }}
+                                            />
+                                        );
+                                    }
+                                )
+                            }
+                        </View>
+                    </Caccordion>
                 )}
             </AsyncContainer>
         );
     }
 
-    renderUpcomingEvent = () => {
-        return (
-            <Card
-                style={{
-                    marginTop: 10,
-                    marginLeft: this.props.device.getX(10),
-                    marginRight: this.props.device.getX(10)
-                }}
-            >
-                <Card.Title
-                    title="Upcoming Events"
-                    subtitle="John Cena discussion"
-                    right={() => <Text style={{ marginRight: 20 }}>coming ...</Text>}
-                />
-            </Card>
-        )
-    }
-
     renderComments = () => {
         return (
-            <Card
-                style={{
-                    marginTop: 10,
-                    marginLeft: this.props.device.getX(10),
-                    marginRight: this.props.device.getX(10)
-                }}
-            >
-                <Card.Title title="Comments" subtitle="15 badge votes, 20 comments" />
-            </Card>
-        )
-    }
-
-    renderPersonality = () => {
-        return (
             <Caccordion
-                title="Good At..."
-                collapsed="Test"
-                cardStyle={{
+                title="Comments"
+                subtitle={(open) => !open && "15 badge votes, 20 comments"}
+                containerStyle={{
                     marginTop: 10,
                     marginLeft: this.props.device.getX(10),
                     marginRight: this.props.device.getX(10)
                 }}
-                content={
+                showButton={true}
+                collapsed={
                     <View>
                         <Text>Something</Text>
                         <Text>Somethi1ng</Text>
@@ -144,6 +114,44 @@ export class ProfileScreen extends React.PureComponent {
                     </View>
                 }
             />
+        )
+    }
+
+    renderPersonality = () => {
+        return (
+            <AsyncContainer promise={this.state.profile}>
+                {
+                    ({ personality }) => {
+                        return (
+                            <Caccordion
+                                title="Good At..."
+                                containerStyle={{
+                                    marginTop: 10,
+                                    marginLeft: this.props.device.getX(10),
+                                    marginRight: this.props.device.getX(10)
+                                }}
+                                showButton={true}
+                                collapsed={<Text>None</Text>}
+                            >
+                                <PureList
+                                    type="vertical"
+                                    data={personality}
+                                    numColumns={3}
+                                    render={
+                                        ({ item }) => (
+                                            <Card style={{ flex: 1, margin: this.props.device.getX(2)}}>
+                                                <Card.Content>
+                                                    <Paragraph style={{ textAlign: 'center' }}>{item}</Paragraph>
+                                                </Card.Content>
+                                            </Card>
+                                        )
+                                    }
+                                />
+                            </Caccordion>
+                        );
+                    }
+                }
+            </AsyncContainer>
         );
     }
 
@@ -156,7 +164,7 @@ export class ProfileScreen extends React.PureComponent {
                     marginRight: this.props.device.getX(10)
                 }}
             >
-                <Card.Title title="Event History" />
+                <Card.Title title="Event History" titleStyle={{ fontSize: 15 }} />
                 <Card.Content>
                     <QueryableList
                         type="vertical"
@@ -165,7 +173,7 @@ export class ProfileScreen extends React.PureComponent {
                         initQuery={{ page: 1 }}
                         updateQuery={(query) => ({ page: query.page + 1 })}
                         uri={(query) => `https://randomuser.me/api?results=50&page=${query.page}`}
-                        filter={(response) => response.results}
+                        extract={(response) => response.results}
                         render={
                             ({ item }) => (
                                 <Card style={{ flex: 1, margin: 5 }}>
@@ -190,12 +198,11 @@ export class ProfileScreen extends React.PureComponent {
     render() {
         return (
             <View style={{ flex: 1 }}>
-                <Appbar />
+                <Appbar profileBar={true} />
                 <ScrollView showsVerticalScrollIndicator={false}>
                     <View style={{ marginBottom: 10 }}>
                         { this.renderProfile() }
                         { this.renderPersonality() }
-                        { this.renderUpcomingEvent() }
                         { this.renderComments() }
                         { this.renderEventHistory() }
                     </View>

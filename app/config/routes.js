@@ -12,13 +12,22 @@ import EventScreen from '#containers/HomeScreen/event-screen';
 import ProfileScreen from '#containers/HomeScreen/profile-screen';
 import ShopScreen from '#containers/HomeScreen/shops-screen';
 
+import CreateEvent from '#containers/CreateEventScreen';
+import Notification from '#containers/NotificationScreen';
+import Events from '#containers/EventScreen';
+import Voucher from '#containers/VoucherScreen';
+
 export default {
     _type: 'switch',
     _setting: {
         initialRouteName: 'splash',
-        backBehavior: 'initialRoute'
+        backBehavior: 'none'
     },
     splash: SplashScreen,
+    create_event: CreateEvent,
+    events: Events,
+    notifications: Notification,
+    vouchers: Voucher,
     home: {
         _type: 'material-bottom',
         _setting: {

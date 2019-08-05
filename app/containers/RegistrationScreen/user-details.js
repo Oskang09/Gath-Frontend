@@ -1,12 +1,14 @@
 import React from 'react';
 
-import withDevice from '#extension/device';
-import withAPI from '#extension/apisauce';
-import { compose, filterObject } from '#utility';
+import { View } from 'react-native';
+import { Text, Card, Button } from 'react-native-paper';
+import Appbar from '#components/Appbar';
 import Form from '#components/Form';
 
-import { View } from 'react-native';
-import { Text, Card, Button, Appbar } from 'react-native-paper';
+import withDevice from '#extension/device';
+import withAPI from '#extension/apisauce';
+import withError from '#extension/error';
+import { compose, filterObject } from '#utility';
 
 export class UserDetail extends React.PureComponent {
 
@@ -19,7 +21,6 @@ export class UserDetail extends React.PureComponent {
         utag: '',
 
         loading: false,
-        error: null,
     }
 
     formSetting = () => [
@@ -27,8 +28,8 @@ export class UserDetail extends React.PureComponent {
             type: 'image',
             row: 0,
             dcc: (avatar) => this.setState({ avatar }),
+            key: 'user-avatar',
             setting: {
-                key: 'user-avatar',
                 value: this.state.avatar
             }
         },
@@ -36,13 +37,13 @@ export class UserDetail extends React.PureComponent {
             type: 'input',
             row: 1,
             dcc: (name) => this.setState({ name }),
+            key: 'user-name',
             props: {
                 mode: 'outlined',
                 width: this.props.device.getX(78),
             },
             setting: {
                 label: 'Name',
-                key: 'user-name',
                 value: this.state.name
             }
         },
@@ -50,6 +51,7 @@ export class UserDetail extends React.PureComponent {
             type: 'input',
             row: 2,
             dcc: (age) => this.setState({ age }),
+            key: 'user-age',
             props: {
                 mode: 'outlined',
                 keyboardType: 'numeric',
@@ -57,7 +59,6 @@ export class UserDetail extends React.PureComponent {
             },
             setting: {
                 label: 'Age',
-                key: 'user-age',
                 value: this.state.age
             }
         },
@@ -65,6 +66,7 @@ export class UserDetail extends React.PureComponent {
             type: 'picker',
             row: 2,
             dcc: (constellation) => this.setState({ constellation }),
+            key: 'user-cons',
             props: {
                 style: {
                     width: this.props.device.getX(45),
@@ -73,7 +75,6 @@ export class UserDetail extends React.PureComponent {
             },
             setting: {
                 label: 'Constellation',
-                key: 'user-cons',
                 value: this.state.constellation,
                 items: this.props.api.getConfig().constellation,
             }
@@ -82,6 +83,7 @@ export class UserDetail extends React.PureComponent {
             type: 'picker',
             row: 3,
             dcc: (gender) => this.setState({ gender }),
+            key: 'user-gender',
             props: {
                 style: {
                     width: this.props.device.getX(30),
@@ -90,7 +92,6 @@ export class UserDetail extends React.PureComponent {
             },
             setting: {
                 label: 'Gender',
-                key: 'user-gender',
                 value: this.state.gender,
                 items: ['Male', 'Female', 'Other'],
             }
@@ -99,13 +100,13 @@ export class UserDetail extends React.PureComponent {
             type: 'input',
             row: 3,
             dcc: (utag) => this.setState({ utag }),
+            key: 'user-tag',
             props: {
                 mode: 'outlined',
                 width: this.props.device.getX(45),
             },
             setting: {
                 label: 'Alias',
-                key: 'user-tag',
                 value: this.state.utag,
             }
         },
@@ -115,7 +116,7 @@ export class UserDetail extends React.PureComponent {
         if (this.state.loading) {
             return;
         }
-        this.setState({ loading: true, error: null });
+        this.setState({ loading: true });
         try {
             const { api, navigation } = this.props;
             const response = await api.request(
@@ -126,19 +127,17 @@ export class UserDetail extends React.PureComponent {
             if (response.ok) {
                 navigation.navigate('personality');
             } else {
-                this.setState({ loading: false, error: response.message });
+                this.setState({ loading: false }, () => this.props.showError(response.message));
             }
         } catch (error) {
-            this.setState({ loading: false, error });
+            this.setState({ loading: false }, () => this.props.showError(error));
         }
     };
 
     render() {
         return (
             <View style={{ flex: 1 }}>
-                <Appbar>
-                    <Appbar.Content title="Gath" />
-                </Appbar>
+                <Appbar />
                 <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }} behavior="position">
                     <Card width={this.props.device.getX(90)}>
                         <Card.Content>
@@ -163,4 +162,5 @@ export class UserDetail extends React.PureComponent {
 export default compose(
     withDevice,
     withAPI,
+    withError
 )(UserDetail);

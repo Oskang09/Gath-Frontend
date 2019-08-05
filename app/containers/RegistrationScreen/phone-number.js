@@ -1,6 +1,7 @@
 import React, { createRef } from 'react';
 import { View } from 'react-native';
-import { Text, ActivityIndicator, Button, Card, Appbar } from 'react-native-paper';
+import { Text, ActivityIndicator, Button } from 'react-native-paper';
+import Appbar from '#components/Appbar';
 import Confirm from 'react-native-confirmation-code-field';
 
 import withFirebase from '#extension/firebase';
@@ -25,13 +26,13 @@ export class PhoneNumber extends React.PureComponent {
             type: 'input',
             row: 0,
             dcc: (phone) => this.setState({ phone }),
+            key: 'phone-number',
             props: {
                 disabled: this.state.confirmCode,
                 mode: 'outlined',
                 width: this.props.device.getX(45),
             },
             setting: {
-                key: 'phone-number',
                 value: this.state.phone,
             }
         },
@@ -59,27 +60,23 @@ export class PhoneNumber extends React.PureComponent {
             if (ok) {
                 if (result.status === 'NEW') {
                     this.props.navigation.navigate('detail');
-                } else if (result.status === 'MEMBER') {
+                } else if (result.status === 'REGISTERED') {
                     this.props.navigation.navigate('home');
                 }
             } else {
                 this.confirmRef.current.clear();
-                this.props.showError(message);
-                this.setState({ loading: false });
+                this.setState({ loading: false }, () => this.props.showError(message));
             }
         } catch (error) {
             this.confirmRef.current.clear();
-            this.props.showError(error.message);
-            this.setState({ loading: false });
+            this.setState({ loading: false }, () => this.props.showError(error.message));
         }
     }
 
     render() {
         return (
             <View style={{ flex: 1 }}>
-                <Appbar>
-                    <Appbar.Content title="Gath" />
-                </Appbar>
+                <Appbar /> 
                 <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
                     <Text>Enter your phone number</Text>
                     <Form

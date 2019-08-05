@@ -1,8 +1,8 @@
 import React from 'react';
 
 import { View, Text } from 'react-native';
-import { Card } from 'react-native-paper';
-import Appbar from './appbar';
+import { Card, FAB } from 'react-native-paper';
+import Appbar from '#components/Appbar';
 
 import { compose } from '#utility';
 import withFirebase from '#extension/firebase';
@@ -12,15 +12,30 @@ import QueryableList from '#components/QueryableList';
 
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 
-class EventScreen extends React.PureComponent {
+export class EventScreen extends React.PureComponent {
     state = {
         data: this.props.api.request('GET', '/events'),
+    }
+    
+    renderFAB = () => {
+        return (
+            <FAB
+                style={{ position: 'absolute', margin: 16, right: 0, bottom: 0 }}
+                icon={
+                    (props) => <MaterialIcon {...props} color="#ffffff" name="add"/>
+                }
+                small={true}
+                onPress={
+                    () => this.props.navigation.navigate('create_event')
+                }
+            />
+        );
     }
 
     render() {
         return (
             <View style={{ flex: 1 }}>
-                <Appbar />
+                <Appbar search={true} />
                 <QueryableList
                     type="vertical"
                     numColumns={2}
@@ -28,7 +43,7 @@ class EventScreen extends React.PureComponent {
                     initQuery={{ page: 1 }}
                     updateQuery={(query) => ({ page: query.page + 1 })}
                     uri={(query) => `https://randomuser.me/api?results=50&page=${query.page}`}
-                    filter={(response) => response.results}
+                    extract={(response) => response.results}
                     header={
                         <View style={{ flex: 1 }}>
                             <Text style={{ marginLeft: 10, fontSize: 18, fontWeight: 'bold' }}>My Events</Text>
@@ -40,7 +55,7 @@ class EventScreen extends React.PureComponent {
                                 containerStyle={{ flex: 1 }}
                                 resetWhenRefresh={true}
                                 uri={(query) => `https://randomuser.me/api?results=50&page=${query.page}`}
-                                filter={(response) => response.results}
+                                extract={(response) => response.results}
                                 render={
                                     ({ item }) => (
                                         <Card style={{ margin: 10 }} width={this.props.device.getX('33')}>
@@ -66,7 +81,7 @@ class EventScreen extends React.PureComponent {
                                 containerStyle={{ flex: 1 }}
                                 resetWhenRefresh={true}
                                 uri={(query) => `https://randomuser.me/api?results=50&page=${query.page}`}
-                                filter={(response) => response.results}
+                                extract={(response) => response.results}
                                 render={
                                     ({ item }) => (
                                         <Card style={{ margin: 10 }} width={this.props.device.getX('33')}>
@@ -102,6 +117,7 @@ class EventScreen extends React.PureComponent {
                         )
                     }
                 />
+                { this.renderFAB() }
             </View>
         );
     }
