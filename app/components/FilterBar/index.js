@@ -28,7 +28,6 @@ export class FilterBar extends React.Component {
         this.setState(
             { data },
             () => {
-                this.filterController.refresh();
                 if (this.props.onFilterChange) {
                     this.props.onFilterChange();
                 }
@@ -40,7 +39,7 @@ export class FilterBar extends React.Component {
         const { data } = this.state;
         const { title, device, items } = this.props;
         return (
-            <View style={{ flexDirection: 'row', alignItems: 'center', margin: 5 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 5 }}>
                 <Text style={{ marginLeft: 10, marginRight: 10 }}>{title}</Text>
                 <PureList
                     type="horizontal"

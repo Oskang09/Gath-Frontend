@@ -1,11 +1,13 @@
 import React from 'react';
+import { View } from 'react-native';
 import { Card, TouchableRipple, Paragraph, List } from 'react-native-paper';
-import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import moment from 'moment';
 import { compose } from '#utility';
 import withDevice from '#extension/device';
 import withAPI from '#extension/apisauce';
 
-export class ShopCard extends React.PureComponent {
+export class EventCard extends React.PureComponent {
+
     getStyles = (type) => {
         switch (type) {
             case 'vertical':
@@ -17,35 +19,34 @@ export class ShopCard extends React.PureComponent {
                 return {
                     flex: 1,
                     margin: 10,
-                    width: this.props.device.getX('33')
+                    width: this.props.device.getX('45')
                 };
         }
     }
 
     render() {
-        // TODO: LONG PRESS SHOW SHOP INFO DIALOG
         const { type, onPress, data } = this.props;
         return (
             <TouchableRipple style={this.getStyles(type)} onPress={onPress}>
                 <Card>
                     <Card.Cover 
                         style={{ height: this.props.device.getY('20') }}
-                        source={{ uri: this.props.api.cdn(`shop-${data.id}.jpg`) }} 
+                        source={{ uri: this.props.api.cdn(`event-${data.id}.jpg`) }} 
                     />
-                    <Card.Title
+                    <List.Item
                         title={data.name}
                         titleStyle={{ fontSize: 15 }}
-                        subtitle={data.locate}
-                        subtitleStyle={{ fontSize: 11 }}
+                        description={
+                            (props) => {
+                                return (
+                                    <View>
+                                        <Paragraph style={{ color: props.color, fontSize: 11 }}>{moment(data.start_time).format('ddd, HH:mm')}</Paragraph>
+                                        <Paragraph style={{ color: props.color, fontSize: 11 }}>{data.location}</Paragraph>
+                                    </View>
+                                );
+                            }
+                        }
                     />
-                    <Card.Content style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
-                        <MaterialIcon size={16} name="fire" color="orange" />
-                        <MaterialIcon size={16} name="fire" color="orange" />
-                        <MaterialIcon size={16} name="fire" color="orange" />
-                        <MaterialIcon size={16} name="fire" color="orange" />
-                        <MaterialIcon size={16} name="fire" />
-                        <Paragraph style={{ fontSize: 11, marginLeft: 2 }}>(26)</Paragraph>
-                    </Card.Content>
                 </Card>
             </TouchableRipple>
         );
@@ -55,4 +56,4 @@ export class ShopCard extends React.PureComponent {
 export default compose(
     withDevice,
     withAPI
-)(ShopCard);
+)(EventCard);

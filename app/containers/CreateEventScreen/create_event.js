@@ -54,7 +54,7 @@ export class CreateEventScreen extends React.Component {
             dcc: (start_time) => this.setState({ start_time }),
             key: 'start',
             props: {
-                width: this.props.device.getX(85),
+                width: this.props.device.getX(45),
             },
             setting: {
                 label: 'Event Start',
@@ -63,13 +63,13 @@ export class CreateEventScreen extends React.Component {
         },
         {
             type: 'picker',
-            row: 2,
+            row: 1,
             dcc: (type) => this.setState({ type }),
             key: 'type',
             props: {
                 style: {
-                    width: this.props.device.getX(40),
-                    marginRight: this.props.device.getX(5),
+                    marginLeft: this.props.device.getX(2),
+                    width: this.props.device.getX(38),
                 }
             },
             setting: {
@@ -85,7 +85,7 @@ export class CreateEventScreen extends React.Component {
             key: 'tags',
             props: {
                 mode: 'outlined',
-                width: this.props.device.getX(40),
+                width: this.props.device.getX(85),
             },
             setting: {
                 label: 'Event Tag',

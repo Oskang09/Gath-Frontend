@@ -1,9 +1,11 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, Image } from 'react-native';
-import { Button } from 'react-native-paper';
-import Appbar from '#components/Appbar';
+import { Button, Card } from 'react-native-paper';
 
+import Appbar from '#components/Appbar';
 import PureList from '#components/PureList';
+import CarouselList from '#components/CarouselList';
+
 import { compose } from '#utility';
 import withDevice from '#extension/device';
 import withAPI from '#extension/apisauce';
@@ -36,7 +38,7 @@ export class Badge extends React.PureComponent {
         try {
             const { api, navigation } = this.props;
             const response = await api.request(
-                'POST', 
+                'POST',
                 `/users/profile`,
                 { badge: this.state.data, status: 'REGISTERED' }
             );
@@ -57,7 +59,7 @@ export class Badge extends React.PureComponent {
                 <Appbar />
                 <View style={{ flex: 1, flexDirection: 'column', alignItems: 'center', width: this.props.device.getX(100) }}>
                     <View style={{ alignItems: 'center', flexDirection: 'row', margin: 10 }}>
-                        <View style={{ flex: 1, alignItems: 'flex-start'}}>
+                        <View style={{ flex: 1, alignItems: 'flex-start' }}>
                             <Text>Badge represent you ...</Text>
                         </View>
                         <View style={{ flex: 1, alignItems: 'flex-end' }}>
@@ -74,6 +76,30 @@ export class Badge extends React.PureComponent {
                         render={
                             ({ item }) => {
                                 const devicePixel = this.props.device.getX(25);
+                                return (
+                                    <TouchableOpacity activeOpacity={1} onPress={() => this.toggle(item)}>
+                                        <Image
+                                            source={{ uri: this.props.api.staticResource(`/images/badges/${item}.png`) }}
+                                            resizeMethod="resize"
+                                            style={{
+                                                width: devicePixel,
+                                                height: devicePixel,
+                                                borderWidth: 0.5,
+                                                borderColor: data.includes(item) ? 'black' : 'white'
+                                            }}
+                                        />
+                                    </TouchableOpacity>
+                                );
+                            }
+                        }
+                    />
+                    <CarouselList
+                        data={this.props.api.getConfig().badges}
+                        containerWidth={this.props.device.getX(50)}
+                        itemWidth={this.props.device.getX(45)}
+                        render={
+                            ({ item }) => {
+                                const devicePixel = this.props.device.getX(45);
                                 return (
                                     <TouchableOpacity activeOpacity={1} onPress={() => this.toggle(item)}>
                                         <Image

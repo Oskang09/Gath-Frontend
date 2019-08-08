@@ -6,12 +6,13 @@ import Caccordion from '#components/Caccordion';
 import QueryableList from '#components/QueryableList';
 import Appbar from '#components/Appbar';
 import AsyncContainer from '#components/AsyncContainer';
-import PureList from '#components/PureList';
+import PersonalityCard from '#components/PersonalityCard';
 
 import withDevice from '#extension/device';
 import withAPI from '#extension/apisauce';
 import { compose } from '#utility';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import PureList from '../../components/PureList';
 
 export class ProfileScreen extends React.PureComponent {
     state = {
@@ -123,31 +124,15 @@ export class ProfileScreen extends React.PureComponent {
                 {
                     ({ personality }) => {
                         return (
-                            <Caccordion
-                                title="Good At..."
-                                containerStyle={{
-                                    marginTop: 10,
-                                    marginLeft: this.props.device.getX(10),
-                                    marginRight: this.props.device.getX(10)
-                                }}
-                                showButton={true}
-                                collapsed={<Text>None</Text>}
-                            >
-                                <PureList
-                                    type="vertical"
-                                    data={personality}
-                                    numColumns={3}
-                                    render={
-                                        ({ item }) => (
-                                            <Card style={{ flex: 1, margin: this.props.device.getX(2)}}>
-                                                <Card.Content>
-                                                    <Paragraph style={{ textAlign: 'center' }}>{item}</Paragraph>
-                                                </Card.Content>
-                                            </Card>
-                                        )
-                                    }
-                                />
-                            </Caccordion>
+                            <PureList
+                                type="horizontal"
+                                data={personality}
+                                render={
+                                    ({ item }) => (
+                                        <PersonalityCard name={item} data={this.props.api.getConfig().personality[item]} />
+                                    )
+                                }
+                            />
                         );
                     }
                 }

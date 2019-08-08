@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, FlatList, ActivityIndicator } from 'react-native';
+import { FlatList, ActivityIndicator } from 'react-native';
 import FilterBar from '#components/FilterBar';
 import withAPI from '#extension/apisauce';
 import { compose } from '#utility';
@@ -11,42 +11,61 @@ export class QueryableList extends React.PureComponent {
         resetWhenRefresh: false,
         query: null,
         configureProps: null,
+        error: null,
     }
     _isMounted = false
 
     refreshData = async () => {
         this.setState({ refreshing: true });
-        const response = await this.props.api.request('GET', this.props.uri(this.state.query));
+        
+        const { _meta, ok, result, error } = await this.props.api.request('GET', this.props.uri(this.state.query));
         if (!this._isMounted) {
             return null;
         }
-        if (this.state.resetWhenRefresh) {
-            this.state.data = this.props.extract(response);
+
+        if (result && ok) {
+            if (this.props.resetWhenRefresh) {
+                this.state.data = result;
+            } else {
+                this.state.data.push(...result);
+            }
+
+            if (_meta && this.props.type === 'vertical') {
+                const isEnd = _meta.currentPage >= _meta.pageCount;
+                this.setState({
+                    data: this.state.data,
+                    refreshing: false,
+                    configureProps: {
+                        ...this.state.configureProps,
+                        onEndReached: isEnd ? undefined : this.updateQuery({ page: _meta.currentPage + 1 }),
+                        onEndReachedThreshold: isEnd ? undefined : 0.5,
+                        ListFooterComponent: isEnd ? 
+                            this.props.footer :
+                            this.state.refreshing && <ActivityIndicator />,
+                    }
+                });
+            } else {
+                this.setState({
+                    data: this.state.data,
+                    refreshing: false,
+                });
+            }
         } else {
-            this.state.data.push(...this.props.extract(response));
+            this.setState({
+                data: this.state.data,
+                refreshing: false,
+                error
+            });
         }
-        this.setState({
-            data: this.state.data,
-            refreshing: false
-        });
     }
 
     updateQuery = (query) => {
-        if (query) {
-            this.setState({
-                query: {
-                    ...this.state.query,
-                    ...query,
-                }
-            }, this.refreshData);
-        } else {
-            this.setState({
-                query: {
-                    ...this.state.query,
-                    ...this.props.updateQuery(this.state.query)
-                }
-            }, this.refreshData);
-        }
+        this.setState({
+            query: {
+                ...this.state.query,
+                ...query,
+            }
+        }, this.refreshData);
     }
 
     componentWillUnmount() {
@@ -65,11 +84,8 @@ export class QueryableList extends React.PureComponent {
                 resetWhenRefresh: this.props.resetWhenRefresh,
                 configureProps: {
                     ...this.props.extraProps,
-                    horizontal: false,
                     showsVerticalScrollIndicator: false,
-                    ListFooterComponent: () => {
-                        return this.state.refreshing ? <ActivityIndicator /> : null;
-                    },
+                    horizontal: false,
                 },
             }, this.refreshData);
         } else if (this.props.type === 'horizontal') {

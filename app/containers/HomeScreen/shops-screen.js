@@ -1,41 +1,35 @@
 import React from 'react';
-
+import moment from 'moment';
 import { View, Text, TouchableOpacity } from 'react-native';
-import { Card } from 'react-native-paper';
+import { Card, List, Paragraph } from 'react-native-paper';
+import EntypoIcon from 'react-native-vector-icons/Entypo';
+import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+
 import QueryableList from '#components/QueryableList';
 import Appbar from '#components/Appbar';
-
 import { compose } from '#utility';
 import withDevice from '#extension/device';
 import withAPI from '#extension/apisauce';
 
-import EntypoIcon from 'react-native-vector-icons/Entypo';
-
 export class ShopScreen extends React.PureComponent {
-    state = {
-        posts: this.props.api.request('GET', '/posts')
-    }
-    listController = null
-
     render() {
         return (
             <View style={{ flex: 1 }}>
                 <Appbar />
                 <QueryableList
-                    ref={(ref) => this.listController = ref}
                     type="vertical"
                     resetWhenRefresh={true}
                     numColumns={1}
                     containerStyle={{ flex: 1 }}
                     initQuery={{ page: 1 }}
                     updateQuery={(query) => ({ page: query.page + 1 })}
-                    uri={(query) => `/posts`}
+                    uri={(query) => `/posts?test=true`}
                     extract={(response) => response.result}
                     filter={[
                         {
                             key: 'location',
                             title: 'Location',
-                            items: [ '1', '2' ],
+                            items: ['1', '2'],
                             name: 'locate',
                         }
                     ]}
@@ -46,18 +40,37 @@ export class ShopScreen extends React.PureComponent {
                     }
                     render={
                         ({ item }) => (
-                            <TouchableOpacity onPress={() => {}}>
-                                <View style={{ 
-                                    flex: 1, 
-                                    marginLeft: 20, 
-                                    marginRight: 20,
-                                    marginTop: 20
-                                }}>
+                            <TouchableOpacity onPress={() => { }}>
+                                <View 
+                                    style={{
+                                        flex: 1,
+                                        marginLeft: 20,
+                                        marginRight: 20,
+                                        marginTop: 10
+                                    }}
+                                >
                                     <Card>
-                                        <Card.Cover source={{ uri: '' }} />
-                                        <Card.Content>
-                                            <Text>Testing</Text>
-                                        </Card.Content>
+                                        <Card.Cover source={{ uri: this.props.api.cdn(`post-${item.id}.jpg`) }} />
+                                        <List.Item
+                                            title={item.title}
+                                            titleStyle={{ fontSize: 15 }}
+                                            description={
+                                                (props) => {
+                                                    return (
+                                                        <View style={{ flexDirection: 'row', justifyContent: 'flex-start' }}>
+                                                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                                <MaterialIcon size={14} style={{ marginRight: 5 }} name="clock-outline" />
+                                                                <Paragraph style={{ fontSize: 11 }}>{moment(item.createdAt).format('DD/MM/YYYY')}</Paragraph>
+                                                            </View>
+                                                            <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 7 }}>
+                                                                <MaterialIcon size={14} style={{ marginRight: 5 }} name="store" />
+                                                                <Paragraph style={{ fontSize: 11 }}>{item.shop.name}</Paragraph>
+                                                            </View>
+                                                        </View>
+                                                    );
+                                                }
+                                            }
+                                        />
                                     </Card>
                                 </View>
                             </TouchableOpacity>
