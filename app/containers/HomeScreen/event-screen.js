@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { View, Text } from 'react-native';
-import { Card, FAB } from 'react-native-paper';
+import { FAB } from 'react-native-paper';
 import Appbar from '#components/Appbar';
 import EventCard from '#components/EventCard';
 
@@ -16,6 +16,13 @@ import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 export class EventScreen extends React.PureComponent {
     state = {
         data: this.props.api.request('GET', '/events'),
+    }
+
+    handleClickEventCard = (data) => {
+        this.props.navigation.navigate({
+            routeName: 'event_detail',
+            params: data
+        });
     }
     
     renderFAB = () => {
@@ -44,7 +51,7 @@ export class EventScreen extends React.PureComponent {
                 uri={(query) => `/events/me`}
                 render={
                     ({ item }) => (
-                        <EventCard type="horizontal" data={item} onPress={() => {}} />
+                        <EventCard type="horizontal" data={item} onPress={this.handleClickEventCard} />
                     )
                 }
             />
@@ -70,7 +77,7 @@ export class EventScreen extends React.PureComponent {
                     }
                     render={
                         ({ item }) => (
-                            <EventCard type="vertical" data={item} onPress={() => {}} />
+                            <EventCard type="vertical" data={item} onPress={this.handleClickEventCard} />
                         )
                     }
                 />
@@ -80,9 +87,4 @@ export class EventScreen extends React.PureComponent {
     }
 };
 
-const Screen = compose(withFirebase, withAPI, withDevice)(EventScreen);
-Screen.navigationOptions = {
-    tabBarIcon: <MaterialIcon size={25} name="library-books" />
-};
-
-export default Screen;
+export default compose(withFirebase, withAPI, withDevice)(EventScreen);

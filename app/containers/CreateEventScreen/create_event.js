@@ -13,11 +13,11 @@ import { compose, filterObject } from '#utility';
 
 export class CreateEventScreen extends React.Component {
     state = {
-        name: '',
-        start: new Date(),
-        type: '',
-        tags: '',
-        banner: null,
+        name: this.props.getState().name,
+        start: this.props.getState().start || Date.now(),
+        type: this.props.getState().type,
+        tags: this.props.getState().tags,
+        banner: this.props.getState().banner,
     }
 
     imageSetting = () => [
@@ -93,6 +93,15 @@ export class CreateEventScreen extends React.Component {
             }
         },
     ];
+
+    componentWillMount() {
+        this.props.backHandler(
+            () => {
+                // TODO: dialog ask for quit and navigate to event_listing
+                return true;
+            }
+        );
+    }
 
     nextStep = () => {
         this.props.nextStep(

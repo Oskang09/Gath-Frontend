@@ -9,6 +9,10 @@ import withAPI from '#extension/apisauce';
 import { compose } from '#utility';
 
 export class CreateEventForm extends React.Component {
+    state = {
+        onBack: null,
+    }
+
     render() {
         return (
             <StepContainer
@@ -16,7 +20,6 @@ export class CreateEventForm extends React.Component {
                 onComplete={
                     async (state) => {
                         const result = await this.props.api.request('POST', '/events', state);
-                        
                         this.props.navigation.navigate('home');
                     }
                 }

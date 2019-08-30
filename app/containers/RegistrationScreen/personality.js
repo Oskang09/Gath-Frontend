@@ -1,9 +1,8 @@
 import React from 'react';
-import { View, TouchableOpacity, Text } from 'react-native';
-import { Card, Paragraph, Button } from 'react-native-paper';
+import { View, Text } from 'react-native';
+import { Button } from 'react-native-paper';
 
 import Appbar from '#components/Appbar';
-import Icon from '#components/Icon';
 import PureList from '#components/PureList';
 import PersonalityCard from '#components/PersonalityCard';
 
@@ -16,7 +15,6 @@ export class Personality extends React.PureComponent {
     state = {
         data: [],
         loading: false,
-        error: null,
     }
     listController = null
 
@@ -25,6 +23,9 @@ export class Personality extends React.PureComponent {
         if (data.includes(item)) {
             data.splice(data.indexOf(item), 1);
         } else {
+            if (data.length >= 5) {
+                return this.props.showError('Only can choose five.');
+            }
             data.push(item);
         }
         this.setState({ data }, () => this.listController && this.listController.refresh());
@@ -34,21 +35,17 @@ export class Personality extends React.PureComponent {
         if (this.state.loading) {
             return;
         }
-        this.setState({ loading: true, error: null });
+        this.setState({ loading: true });
         try {
             const { api, navigation } = this.props;
-            const response = await api.request(
+            await api.request(
                 'POST', 
                 `/users/profile`,
                 { personality: this.state.data }
             );
-            if (response.ok) {
-                navigation.navigate('introduction');
-            } else {
-                this.setState({ loading: false }, () => this.props.showError(response.message));
-            }
+            navigation.navigate('introduction');
         } catch (error) {
-            this.setState({ loading: false }, () => this.props.showError(error));
+            this.setState({ loading: false }, () => this.props.showError(error.message));
         }
     }
 

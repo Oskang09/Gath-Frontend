@@ -41,18 +41,14 @@ export class Introduction extends React.PureComponent {
         this.setState({ loading: true });
         try {
             const { api, navigation } = this.props;
-            const response = await api.request(
+            await api.request(
                 'POST', 
                 `/users/profile`,
-                { desc: this.state.desc }
+                { desc: this.state.desc, status: 'REGISTERED' }
             );
-            if (response.ok) {
-                navigation.navigate('badge');
-            } else {
-                this.setState({ loading: false }, () => this.props.showError(response.message));
-            }
+            navigation.navigate('home');
         } catch (error) {
-            this.setState({ loading: false }, () => this.props.showError(error));
+            this.setState({ loading: false }, () => this.props.showError(error.message));
         }
     }
 

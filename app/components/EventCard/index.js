@@ -27,7 +27,7 @@ export class EventCard extends React.PureComponent {
     render() {
         const { type, onPress, data } = this.props;
         return (
-            <TouchableRipple style={this.getStyles(type)} onPress={onPress}>
+            <TouchableRipple style={this.getStyles(type)} onPress={() => onPress(data)}>
                 <Card>
                     <Card.Cover 
                         style={{ height: this.props.device.getY('20') }}

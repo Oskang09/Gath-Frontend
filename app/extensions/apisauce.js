@@ -15,11 +15,13 @@ function buildComponent(
                     request: async (method, path, body) => {
                         const response = await requester[method.toLowerCase()](path, body)
                         if (response.data) {
-                            return response.data;
+                            if (!response.data.ok) throw Error(response.data.message || response.data.error);
+                            if (response.data._meta) return response.data;
+                            return response.data.result;
                         } else {
                             return { message: response.problem };
                         }
-                    }, 
+                    },
                     loadConfig: async () => {
                         const { data } = await requester.get(`/config`);
                         if (data) {

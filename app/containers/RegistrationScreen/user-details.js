@@ -119,18 +119,14 @@ export class UserDetail extends React.PureComponent {
         this.setState({ loading: true });
         try {
             const { api, navigation } = this.props;
-            const response = await api.request(
+            await api.request(
                 'POST', 
                 `/users/profile`, 
                 filterObject(this.state, 'name', 'age', 'constellation', 'gender', 'avatar', 'utag')
             );
-            if (response.ok) {
-                navigation.navigate('personality');
-            } else {
-                this.setState({ loading: false }, () => this.props.showError(response.message));
-            }
+            navigation.navigate('personality');
         } catch (error) {
-            this.setState({ loading: false }, () => this.props.showError(error));
+            this.setState({ loading: false }, () => this.props.showError(error.message));
         }
     };
 

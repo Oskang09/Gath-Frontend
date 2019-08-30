@@ -12,7 +12,7 @@ import { compose, filterObject } from '#utility';
 
 export class EventDescription extends React.PureComponent {
     state = {
-        desc: null,
+        desc: this.props.getState().desc,
         loading: false,
     }
     confirmRef = createRef()

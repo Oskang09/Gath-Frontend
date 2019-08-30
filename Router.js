@@ -1,5 +1,5 @@
 import RouterSetting from '#app/config/routes';
-import { createAppContainer, createSwitchNavigator } from 'react-navigation';
+import { createAppContainer, createSwitchNavigator, createStackNavigator } from 'react-navigation';
 import { createMaterialBottomTabNavigator } from 'react-navigation-material-bottom-tabs';
 import { objectLoop } from '#utility';
 
@@ -15,6 +15,8 @@ const buildRouter = (route) => {
             return createMaterialBottomTabNavigator(routes, setting);
         } else if (type === 'switch') {
             return createSwitchNavigator(routes, setting);
+        } else if (type === 'stack') {
+            return createStackNavigator(routes, setting);
         }
     }
     return route;

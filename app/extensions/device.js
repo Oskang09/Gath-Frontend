@@ -18,6 +18,12 @@ function buildComponent(
                 [decorator]: {
                     getX: getXdp,
                     getY: getYdp,
+                    marginXY: (x, y) => ({
+                        marginLeft: x,
+                        marginRight: x,
+                        marginTop: y,
+                        marginBottom: y
+                    }),
                     primaryColor: '#87EFD7',
                 }
             }, this.props);

@@ -16,77 +16,76 @@ import PureList from '../../components/PureList';
 
 export class ProfileScreen extends React.PureComponent {
     state = {
-        profile: new Promise(
-            async (resolve, reject) => {
-                const response = await this.props.api.request('GET', 'users/profile');
-                if (response.ok) {
-                    resolve(response.result);
-                } else {
-                    reject(response.message);
-                }
-            }
-        ),
+        profile: this.props.api.request('GET', 'users/profile')
     }
 
     renderProfile = () => {
         return (
             <AsyncContainer promise={this.state.profile}>
-                {({ id, gender, desc, constellation, name, utag, badge }) => (
-                    <Caccordion
-                        containerStyle={{ 
-                            marginTop: 10,
-                            marginLeft: this.props.device.getX(20),
-                            marginRight: this.props.device.getX(20)
-                        }}
-                        collapsed={
-                            <View>
-                                <Text>{desc}</Text>
-                            </View>
+                {({ id, gender, desc, constellation, name, utag, badge }) => {
+                    const badges = Object.keys(badge);
+                    if (badges.length < 4) {
+                        for (let i = badges.length; i < 4; i++) {
+                            badges.push('empty-badge');
                         }
-                    >
-                        <View style={{ marginTop: 10, alignItems: 'center' }}>
-                            <Avatar.Image
-                                source={{ uri: this.props.api.cdn(`users-${id}`) }}
-                                size={64}
-                            />
-                            <Text>{name}</Text>
-                            <Text>@{utag}</Text>
-                        </View>
-                        <View style={{ flexDirection: 'row', marginTop: 10, justifyContent: 'center' }}>
-                            <Avatar.Icon
-                                style={{ marginRight: 10 }}
-                                size={32}
-                                icon={
-                                    () => <MaterialCommunityIcon size={16} name={`gender-${gender.toLowerCase()}`} />
-                                }
-                            />
-                            <Avatar.Icon
-                                style={{ marginRight: 10 }}
-                                size={32}
-                                icon={
-                                    () => <MaterialCommunityIcon size={16} name={`zodiac-${constellation.toLowerCase()}`} />
-                                }
-                            />
-                        </View>
-                        <View style={{ flexDirection: 'row', marginTop: 10, justifyContent: 'space-around' }}>
-                            {
-                                Object.keys(badge).map(
-                                    (badge_name) => {
-                                        const devicePixel = this.props.device.getX(17);
-                                        return (
-                                            <Image
-                                                key={`badge-${badge_name}`}
-                                                source={{ uri: this.props.api.staticResource(`/images/badges/${badge_name}.png`) }}
-                                                resizeMethod="resize"
-                                                style={{ width: devicePixel, height: devicePixel }}
-                                            />
-                                        );
-                                    }
-                                )
+                    }
+                    return (
+                        <Caccordion
+                            containerStyle={{ 
+                                marginTop: 10,
+                                marginLeft: this.props.device.getX(20),
+                                marginRight: this.props.device.getX(20)
+                            }}
+                            collapsed={
+                                <View>
+                                    <Text>{desc}</Text>
+                                </View>
                             }
-                        </View>
-                    </Caccordion>
-                )}
+                        >
+                            <View style={{ marginTop: 10, alignItems: 'center' }}>
+                                <Avatar.Image
+                                    source={{ uri: this.props.api.cdn(`user-${id}`) }}
+                                    size={64}
+                                />
+                                <Text>{name}</Text>
+                                <Text>@{utag}</Text>
+                            </View>
+                            <View style={{ flexDirection: 'row', marginTop: 10, justifyContent: 'center' }}>
+                                <Avatar.Icon
+                                    style={{ marginRight: 10 }}
+                                    size={32}
+                                    icon={
+                                        () => <MaterialCommunityIcon size={16} name={`gender-${gender.toLowerCase()}`} />
+                                    }
+                                />
+                                <Avatar.Icon
+                                    style={{ marginRight: 10 }}
+                                    size={32}
+                                    icon={
+                                        () => <MaterialCommunityIcon size={16} name={`zodiac-${constellation.toLowerCase()}`} />
+                                    }
+                                />
+                            </View>
+                            <View style={{ flexDirection: 'row', marginTop: 10, justifyContent: 'space-around' }}>
+                                {
+                                    badges.map(
+                                        (badge_name, index) => {
+                                            const devicePixel = this.props.device.getX(17);
+                                            return (
+                                                <Image
+                                                    key={`badge-${badge_name}-${index}`}
+                                                    source={{ uri: this.props.api.staticResource(`/images/badges/${badge_name}.png`) }}
+                                                    resizeMethod="resize"
+                                                    style={{ width: devicePixel, height: devicePixel }}
+                                                />
+                                            );
+                                        }
+                                    )
+                                }
+                            </View>
+                        </Caccordion>
+                    );
+                }}
             </AsyncContainer>
         );
     }
@@ -197,9 +196,4 @@ export class ProfileScreen extends React.PureComponent {
     }
 }
 
-const Screen = compose(withDevice, withAPI)(ProfileScreen);
-Screen.navigationOptions = {
-    tabBarIcon: <MaterialCommunityIcon size={25} name="face-profile" />
-};
-
-export default Screen;
+export default compose(withDevice, withAPI)(ProfileScreen);

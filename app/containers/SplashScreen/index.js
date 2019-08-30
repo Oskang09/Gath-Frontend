@@ -16,15 +16,17 @@ export class SplashScreen extends React.PureComponent {
         }
 
         api.setToken(await firebaseUser.getIdToken());
-        const user = await api.request('GET', '/users/profile');
-        if (!user.ok) {
+        
+        try {
+            const user = await api.request('GET', '/users/profile');
+            if (user.status === 'NEW') {
+                return navigation.navigate('detail');
+            }
+            if (user.status === 'REGISTERED') {
+                return navigation.navigate('home');
+            } 
+        } catch (error) {
             return navigation.navigate('register');
-        }
-        if (user.result.status === 'NEW') {
-            return navigation.navigate('user-detail');
-        }
-        if (user.result.status === 'REGISTERED') {
-            return navigation.navigate('personality');
         }
     }
 

@@ -5,7 +5,7 @@ import { TextInput } from 'react-native-paper';
 function RichText({
     dcc,
     props,
-    setting: { label, value}
+    setting: { label, value }
 }) {
     return (
         <View style={{ flexDirection: 'row' }}>

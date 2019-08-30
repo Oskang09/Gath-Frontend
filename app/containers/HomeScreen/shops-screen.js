@@ -1,8 +1,7 @@
 import React from 'react';
 import moment from 'moment';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, Image } from 'react-native';
 import { Card, List, Paragraph } from 'react-native-paper';
-import EntypoIcon from 'react-native-vector-icons/Entypo';
 import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import QueryableList from '#components/QueryableList';
@@ -18,13 +17,11 @@ export class ShopScreen extends React.PureComponent {
                 <Appbar />
                 <QueryableList
                     type="vertical"
-                    resetWhenRefresh={true}
                     numColumns={1}
                     containerStyle={{ flex: 1 }}
                     initQuery={{ page: 1 }}
                     updateQuery={(query) => ({ page: query.page + 1 })}
-                    uri={(query) => `/posts?test=true`}
-                    extract={(response) => response.result}
+                    uri={(query) => `/posts?page=${query.page}`}
                     filter={[
                         {
                             key: 'location',
@@ -35,7 +32,8 @@ export class ShopScreen extends React.PureComponent {
                     ]}
                     footer={
                         <View style={{ flex: 1, alignItems: 'center', margin: 10 }}>
-                            <Text>End here</Text>
+                            <Image style={{ width: 64, height: 64 }} source={require('#assets/fail.png')} />
+                            <Text>There is no more ...</Text>
                         </View>
                     }
                     render={
@@ -50,7 +48,7 @@ export class ShopScreen extends React.PureComponent {
                                     }}
                                 >
                                     <Card>
-                                        <Card.Cover source={{ uri: this.props.api.cdn(`post-${item.id}.jpg`) }} />
+                                        <Card.Cover source={{ uri: this.props.api.cdn(`post-${item.id}`) }} />
                                         <List.Item
                                             title={item.title}
                                             titleStyle={{ fontSize: 15 }}
@@ -82,10 +80,4 @@ export class ShopScreen extends React.PureComponent {
     }
 };
 
-
-
-const Screen = compose(withDevice, withAPI)(ShopScreen);
-Screen.navigationOptions = {
-    tabBarIcon: <EntypoIcon size={25} name="newsletter" />
-};
-export default Screen;
+export default compose(withDevice, withAPI)(ShopScreen);

@@ -6,16 +6,18 @@ import PhoneNumber from '#containers/RegistrationScreen/phone-number';
 import UserDetail from '#containers/RegistrationScreen/user-details';
 import Introduction from '#containers/RegistrationScreen/introduction';
 import Personality from '#containers/RegistrationScreen/personality';
-import Badge from '#containers/RegistrationScreen/badge';
 
 import EventScreen from '#containers/HomeScreen/event-screen';
 import ProfileScreen from '#containers/HomeScreen/profile-screen';
 import ShopScreen from '#containers/HomeScreen/shops-screen';
 
 import CreateEvent from '#containers/CreateEventScreen';
+import EventDetail from '#containers/EventDetailScreen';
+
 import Notification from '#containers/NotificationScreen';
-import Events from '#containers/EventScreen';
 import Voucher from '#containers/VoucherScreen';
+
+import Icon from '#components/Icon';
 
 export default {
     _type: 'switch',
@@ -24,32 +26,48 @@ export default {
         backBehavior: 'none'
     },
     splash: SplashScreen,
+
+    event_detail: EventDetail,
     create_event: CreateEvent,
-    events: Events,
+    
     notifications: Notification,
     vouchers: Voucher,
+
     home: {
         _type: 'material-bottom',
         _setting: {
-            initialRouteName: 'shop',
+            initialRouteName: 'event_list',
             backBehavior: 'none',
             lazy: true,
             labeled: false,
+            defaultNavigationOptions: ({ navigation }) => ({
+                tabBarIcon: () => {
+                    const { routeName } = navigation.state;
+                    if (routeName === 'event_list') {
+                        return <Icon package="materialicons" name="library-books" size={25} />;
+                    }
+                    if (routeName === 'profile') {
+                        return <Icon package="materialcommunityicons" name="face-profile" size={25} />;
+                    }
+
+                    if (routeName === 'shop_list') {
+                        return <Icon package="entypo" name="newsletter" size={25} />;
+                    }
+                }
+            })
         },
-        shop: ShopScreen,
-        event: EventScreen,
+        shop_list: ShopScreen,
+        event_list: EventScreen,
         profile: ProfileScreen,
     },
     register: {
         _type: 'switch',
         _setting: {
             initialRouteName: 'phone',
-            backBehavior: 'none'
         },
         phone: PhoneNumber,
         detail: UserDetail,
         introduction: Introduction,
         personality: Personality,
-        badge: Badge,
     },
 };

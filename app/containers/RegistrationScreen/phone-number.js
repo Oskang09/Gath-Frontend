@@ -56,16 +56,11 @@ export class PhoneNumber extends React.PureComponent {
         try {
             const firebaseUser = await this.state.confirmCode.confirm(input);
             this.props.api.setToken(await firebaseUser.getIdToken(true));
-            const { ok, result, message } = await this.props.api.request('POST', `/users/login`, { phone: this.state.phone, uid: firebaseUser.uid });
-            if (ok) {
-                if (result.status === 'NEW') {
-                    this.props.navigation.navigate('detail');
-                } else if (result.status === 'REGISTERED') {
-                    this.props.navigation.navigate('home');
-                }
-            } else {
-                this.confirmRef.current.clear();
-                this.setState({ loading: false }, () => this.props.showError(message));
+            const result = await this.props.api.request('POST', `/users/login`, { phone: this.state.phone, uid: firebaseUser.uid });
+            if (result.status === 'NEW') {
+                this.props.navigation.navigate('detail');
+            } else if (result.status === 'REGISTERED') {
+                this.props.navigation.navigate('home');
             }
         } catch (error) {
             this.confirmRef.current.clear();
