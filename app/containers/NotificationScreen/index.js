@@ -1,7 +1,10 @@
 import React from 'react';
 import { View, Image } from 'react-native';
 import { List } from 'react-native-paper';
+
+import { compose } from '#utility';
 import Appbar from '#components/Appbar';
+import withBack from '#extension/backhandler';
 
 export class NotificationScreen extends React.PureComponent {
     render() {
@@ -57,4 +60,6 @@ export class NotificationScreen extends React.PureComponent {
     }
 };
 
-export default NotificationScreen;
+export default compose(
+    withBack("profile"),
+)(NotificationScreen);

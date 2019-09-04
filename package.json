@@ -24,7 +24,7 @@
         "react-native-firebase": "^5.4.2",
         "react-native-gesture-handler": "^1.3.0",
         "react-native-image-crop-picker": "^0.24.1",
-        "react-native-linear-gradient": "^2.5.4",
+        "react-native-image-fallback": "^0.1.1",
         "react-native-modal-datetime-picker": "^7.5.0",
         "react-native-paper": "^2.16.0",
         "react-native-snap-carousel": "^3.8.0",

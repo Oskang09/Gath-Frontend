@@ -1,11 +1,11 @@
 import React from 'react';
-import { View, Text, Image } from 'react-native';
+import { View, Text } from 'react-native';
 
+import Image from '#components/Image';
 import Appbar from '#components/Appbar';
 import QueryableList from '#components/QueryableList';
 import ShopCard from '#components/ShopCard';
 
-import withError from '#extension/error';
 import withAPI from '#extension/apisauce';
 import withDevice from '#extension/device';
 
@@ -63,5 +63,4 @@ export class ShopList extends React.Component {
 export default compose(
     withAPI,
     withDevice,
-    withError
 )(ShopList);

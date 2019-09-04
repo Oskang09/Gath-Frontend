@@ -1,6 +1,8 @@
 import React from 'react';
 import { View } from 'react-native';
 import { Card, TouchableRipple, Paragraph, List } from 'react-native-paper';
+
+import Image from '#components/Image';
 import moment from 'moment';
 import { compose } from '#utility';
 import withDevice from '#extension/device';
@@ -29,9 +31,9 @@ export class EventCard extends React.PureComponent {
         return (
             <TouchableRipple style={this.getStyles(type)} onPress={() => onPress(data)}>
                 <Card>
-                    <Card.Cover 
-                        style={{ height: this.props.device.getY('20') }}
-                        source={{ uri: this.props.api.cdn(`event-${data.id}.jpg`) }} 
+                    <Image
+                        component={Card.Cover}
+                        source={this.props.api.cdn(`event-${data.id}`)}
                     />
                     <List.Item
                         title={data.name}

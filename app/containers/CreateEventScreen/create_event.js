@@ -5,7 +5,6 @@ import { Card, Button } from 'react-native-paper';
 import Form from '#components/Form';
 import Appbar from '#components/Appbar';
 
-import withError from '#extension/error';
 import withAPI from '#extension/apisauce';
 import withDevice from '#extension/device';
 
@@ -78,20 +77,6 @@ export class CreateEventScreen extends React.Component {
                 items: [ 'type1', 'type2' ]
             }
         },
-        {
-            type: 'input',
-            row: 2,
-            dcc: (tags) => this.setState({ tags }),
-            key: 'tags',
-            props: {
-                mode: 'outlined',
-                width: this.props.device.getX(85),
-            },
-            setting: {
-                label: 'Event Tag',
-                value: this.state.tags,
-            }
-        },
     ];
 
     componentWillMount() {
@@ -105,7 +90,7 @@ export class CreateEventScreen extends React.Component {
 
     nextStep = () => {
         this.props.nextStep(
-            filterObject(this.state, 'name', 'start', 'type', 'tags', 'banner')
+            filterObject(this.state, 'name', 'start', 'type', 'banner')
         );
     }
 
@@ -138,5 +123,4 @@ export class CreateEventScreen extends React.Component {
 export default compose(
     withAPI,
     withDevice,
-    withError
 )(CreateEventScreen);

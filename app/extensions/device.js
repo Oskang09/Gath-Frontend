@@ -1,6 +1,5 @@
 import React from 'react';
 import { Dimensions, PixelRatio } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
 import { injector } from '#utility';
 
 const screenWidth = Dimensions.get('window').width;

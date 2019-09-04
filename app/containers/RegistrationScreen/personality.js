@@ -7,7 +7,7 @@ import PureList from '#components/PureList';
 import PersonalityCard from '#components/PersonalityCard';
 
 import { compose } from '#utility';
-import withError from '#extension/error';
+import withDialog from '#extension/dialog';
 import withDevice from '#extension/device';
 import withAPI from '#extension/apisauce';
 
@@ -24,7 +24,7 @@ export class Personality extends React.PureComponent {
             data.splice(data.indexOf(item), 1);
         } else {
             if (data.length >= 5) {
-                return this.props.showError('Only can choose five.');
+                return this.props.showDialog('Only can choose five.');
             }
             data.push(item);
         }
@@ -45,7 +45,7 @@ export class Personality extends React.PureComponent {
             );
             navigation.navigate('introduction');
         } catch (error) {
-            this.setState({ loading: false }, () => this.props.showError(error.message));
+            this.setState({ loading: false }, () => this.props.showDialog(error.message));
         }
     }
 
@@ -67,7 +67,7 @@ export class Personality extends React.PureComponent {
                     </View>
                     <PureList
                         type="vertical"
-                        ref={(ctl) => this.listController = ctl}
+                        controller={(ctl) => this.listController = ctl}
                         data={Object.keys(this.props.api.getConfig().personality)}
                         numColumns={3}
                         render={
@@ -85,5 +85,5 @@ export class Personality extends React.PureComponent {
 export default compose(
     withDevice,
     withAPI,
-    withError
+    withDialog
 )(Personality);

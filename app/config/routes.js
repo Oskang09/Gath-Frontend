@@ -9,8 +9,9 @@ import Personality from '#containers/RegistrationScreen/personality';
 
 import EventScreen from '#containers/HomeScreen/event-screen';
 import ProfileScreen from '#containers/HomeScreen/profile-screen';
-import ShopScreen from '#containers/HomeScreen/shops-screen';
+import PostScreen from '#containers/HomeScreen/posts-screen';
 
+import PostDetail from '#containers/PostDetailScreen';
 import CreateEvent from '#containers/CreateEventScreen';
 import EventDetail from '#containers/EventDetailScreen';
 
@@ -28,6 +29,7 @@ export default {
     splash: SplashScreen,
 
     event_detail: EventDetail,
+    post_detail: PostDetail,
     create_event: CreateEvent,
     
     notifications: Notification,
@@ -50,13 +52,13 @@ export default {
                         return <Icon package="materialcommunityicons" name="face-profile" size={25} />;
                     }
 
-                    if (routeName === 'shop_list') {
+                    if (routeName === 'post_list') {
                         return <Icon package="entypo" name="newsletter" size={25} />;
                     }
                 }
             })
         },
-        shop_list: ShopScreen,
+        post_list: PostScreen,
         event_list: EventScreen,
         profile: ProfileScreen,
     },

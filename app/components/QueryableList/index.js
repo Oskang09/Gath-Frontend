@@ -15,7 +15,7 @@ export class QueryableList extends React.PureComponent {
     }
     _isMounted = false
 
-    refreshData = async () => {
+    refreshData = async (refreshType = 'default') => {
         this.setState({ refreshing: true });
         
         const { _meta, ok, result, error } = await this.props.api.request('GET', this.props.uri(this.state.query));
@@ -24,7 +24,7 @@ export class QueryableList extends React.PureComponent {
         }
 
         if (result && ok) {
-            if (this.props.resetWhenRefresh) {
+            if (refreshType.includes(this.state.resetWhenRefresh)) {
                 this.state.data = result;
             } else {
                 this.state.data.push(...result);
@@ -37,8 +37,8 @@ export class QueryableList extends React.PureComponent {
                     refreshing: false,
                     configureProps: {
                         ...this.state.configureProps,
-                        onEndReached: isEnd ? undefined : this.updateQuery({ page: _meta.currentPage + 1 }),
-                        onEndReachedThreshold: isEnd ? undefined : 0.5,
+                        onEndReached: isEnd ? undefined : this.updateQuery({ page: _meta.currentPage + 1 }, 'paginate'),
+                        onEndReachedThreshold: isEnd ? undefined : 0.7,
                         ListFooterComponent: isEnd ? 
                             this.props.footer :
                             this.state.refreshing && <ActivityIndicator />,
@@ -59,13 +59,14 @@ export class QueryableList extends React.PureComponent {
         }
     }
 
-    updateQuery = (query) => {
+    updateQuery = (query, type) => {
         this.setState({
             query: {
                 ...this.state.query,
+                page: 1,
                 ...query,
             }
-        }, this.refreshData);
+        }, () => this.refreshData(type));
     }
 
     componentWillUnmount() {
@@ -109,9 +110,7 @@ export class QueryableList extends React.PureComponent {
                         (filter) => (
                             <FilterBar
                                 onFilterChange={
-                                    (value) => this.updateQuery({
-                                        [filter.name]: value
-                                    })
+                                    (value) => this.updateQuery({ [filter.name]: value }, 'filter')
                                 }
                                 key={filter.key}
                                 title={filter.title}

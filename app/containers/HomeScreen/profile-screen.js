@@ -1,13 +1,14 @@
 import React from 'react';
 
-import { Image, View, Text, ScrollView } from 'react-native';
-import { Card, Avatar, Badge, Paragraph } from 'react-native-paper';
+import { View, Text, ScrollView } from 'react-native';
+import { Card, Avatar } from 'react-native-paper';
 import Caccordion from '#components/Caccordion';
 import QueryableList from '#components/QueryableList';
 import Appbar from '#components/Appbar';
 import AsyncContainer from '#components/AsyncContainer';
 import PersonalityCard from '#components/PersonalityCard';
 
+import Image from '#components/Image';
 import withDevice from '#extension/device';
 import withAPI from '#extension/apisauce';
 import { compose } from '#utility';
@@ -74,7 +75,7 @@ export class ProfileScreen extends React.PureComponent {
                                             return (
                                                 <Image
                                                     key={`badge-${badge_name}-${index}`}
-                                                    source={{ uri: this.props.api.staticResource(`/images/badges/${badge_name}.png`) }}
+                                                    source={this.props.api.staticResource(`/images/badges/${badge_name}.png`)}
                                                     resizeMethod="resize"
                                                     style={{ width: devicePixel, height: devicePixel }}
                                                 />

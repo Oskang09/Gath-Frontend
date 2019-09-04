@@ -1,13 +1,13 @@
 import React, { createRef } from 'react';
 import { View } from 'react-native';
-import { Text, ActivityIndicator, Button } from 'react-native-paper';
+import { Text, ActivityIndicator, Button, Dialog, Paragraph } from 'react-native-paper';
 import Appbar from '#components/Appbar';
 import Confirm from 'react-native-confirmation-code-field';
 
 import withFirebase from '#extension/firebase';
 import withDevice from '#extension/device';
 import withAPI from '#extension/apisauce';
-import withError from '#extension/error';
+import withDialog from '#extension/dialog';
 
 import { compose } from '#utility';
 import Form from '#components/Form';
@@ -46,7 +46,7 @@ export class PhoneNumber extends React.PureComponent {
                 loading: false,
             }, () => this.confirmRef.current.focus());
         } catch (error) {
-            this.props.showError(error.message);
+            this.props.showDialog(error.message);
             this.setState({ loading: false });
         }
     }
@@ -64,7 +64,7 @@ export class PhoneNumber extends React.PureComponent {
             }
         } catch (error) {
             this.confirmRef.current.clear();
-            this.setState({ loading: false }, () => this.props.showError(error.message));
+            this.setState({ loading: false }, () => this.props.showDialog(error.message));
         }
     }
 
@@ -129,5 +129,4 @@ export default compose(
     withFirebase,
     withDevice,
     withAPI,
-    withError
 )(PhoneNumber);

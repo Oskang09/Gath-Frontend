@@ -6,7 +6,7 @@ import Appbar from '#components/Appbar';
 import withFirebase from '#extension/firebase';
 import withDevice from '#extension/device';
 import withAPI from '#extension/apisauce';
-import withError from '#extension/error';
+import withDialog from '#extension/dialog';
 import { compose } from '#utility';
 import Form from '#components/Form';
 
@@ -48,7 +48,7 @@ export class Introduction extends React.PureComponent {
             );
             navigation.navigate('home');
         } catch (error) {
-            this.setState({ loading: false }, () => this.props.showError(error.message));
+            this.setState({ loading: false }, () => this.props.showDialog(error.message));
         }
     }
 
@@ -82,5 +82,5 @@ export default compose(
     withFirebase,
     withDevice,
     withAPI,
-    withError
+    withDialog
 )(Introduction);

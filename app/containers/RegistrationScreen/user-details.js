@@ -7,7 +7,7 @@ import Form from '#components/Form';
 
 import withDevice from '#extension/device';
 import withAPI from '#extension/apisauce';
-import withError from '#extension/error';
+import withDialog from '#extension/dialog';
 import { compose, filterObject } from '#utility';
 
 export class UserDetail extends React.PureComponent {
@@ -126,7 +126,7 @@ export class UserDetail extends React.PureComponent {
             );
             navigation.navigate('personality');
         } catch (error) {
-            this.setState({ loading: false }, () => this.props.showError(error.message));
+            this.setState({ loading: false }, () => this.props.showDialog(error.message));
         }
     };
 
@@ -158,5 +158,5 @@ export class UserDetail extends React.PureComponent {
 export default compose(
     withDevice,
     withAPI,
-    withError
+    withDialog
 )(UserDetail);

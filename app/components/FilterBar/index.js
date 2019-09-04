@@ -29,7 +29,7 @@ export class FilterBar extends React.Component {
             { data },
             () => {
                 if (this.props.onFilterChange) {
-                    this.props.onFilterChange();
+                    this.props.onFilterChange(data.length === 1 ? data[0] : data);
                 }
             }
         );
@@ -43,7 +43,7 @@ export class FilterBar extends React.Component {
                 <Text style={{ marginLeft: 10, marginRight: 10 }}>{title}</Text>
                 <PureList
                     type="horizontal"
-                    ref={(ctl) => this.filterController = ctl}
+                    controller={(ctl) => this.filterController = ctl}
                     containerStyle={{ flex: 1 }}
                     data={items}
                     render={

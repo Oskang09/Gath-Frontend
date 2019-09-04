@@ -7,8 +7,8 @@ export class PureList extends React.PureComponent {
     }
 
     componentDidMount() {
-        if (this.props.ref) {
-            this.props.ref(this);
+        if (this.props.controller) {
+            this.props.controller(this);
         }
     }
 

@@ -7,7 +7,6 @@ import Form from '#components/Form';
 import withFirebase from '#extension/firebase';
 import withDevice from '#extension/device';
 import withAPI from '#extension/apisauce';
-import withError from '#extension/error';
 import { compose, filterObject } from '#utility';
 
 export class EventDescription extends React.PureComponent {
@@ -70,5 +69,4 @@ export default compose(
     withFirebase,
     withDevice,
     withAPI,
-    withError
 )(EventDescription);

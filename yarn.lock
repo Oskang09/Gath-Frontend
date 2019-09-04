@@ -5357,10 +5357,12 @@ react-native-image-crop-picker@^0.24.1:
   resolved "https://registry.yarnpkg.com/react-native-image-crop-picker/-/react-native-image-crop-picker-0.24.1.tgz#4408e2bb20e3c082c0191e0acf0c8c7a1e9804ea"
   integrity sha512-M+6iFhDXPDtf++X+fvb5mKkLw2978SbyPVVQHigktgKONxtTZtBiOOtYfBUIkPaSetP20P9q4iwOu+iTaZ/R+w==
 
-react-native-linear-gradient@^2.5.4:
-  version "2.5.4"
-  resolved "https://registry.yarnpkg.com/react-native-linear-gradient/-/react-native-linear-gradient-2.5.4.tgz#dce133526f5a5510a639af94544f1ed0c984bd1e"
-  integrity sha512-FF1NhlerA4uBiS0gFIHa4FBp8/aftv4vPj14Y47lGNkYjSI94tnI6oYO3EfUxXjEyCUPiOVNKZOB9kScyjc5Ew==
+react-native-image-fallback@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/react-native-image-fallback/-/react-native-image-fallback-0.1.1.tgz#9b2d1878cbcd1a965b622e261506dca3f2a8fef4"
+  integrity sha512-gDYCMsqZ3YDXHE3k4FiybyFZunm6paGXQudM5FnYpHttMYyOjw5bAVuChAFzpCnm2zdRLqe2qN8iVx0w23BsLQ==
+  dependencies:
+    prop-types "^15.5.10"
 
 react-native-modal-datetime-picker@^7.5.0:
   version "7.5.0"

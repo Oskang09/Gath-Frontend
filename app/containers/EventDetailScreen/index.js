@@ -1,11 +1,11 @@
 import React from 'react';
-import { BackHandler } from 'react-native';
 
-import { View, Text, Image, TouchableOpacity } from 'react-native';
-import { Card, Paragraph, Avatar, Button, FAB } from 'react-native-paper';
-import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
+import { View, Text } from 'react-native';
+import { Card, Paragraph, Avatar, Button } from 'react-native-paper';
 import moment from 'moment';
 
+import Appbar from '#components/Appbar';
+import Image from '#components/Image';
 import AsyncContainer from '#components/AsyncContainer';
 import Form from '#components/Form';
 import Icon from '#components/Icon';
@@ -13,21 +13,22 @@ import PureList from '#components/PureList';
 
 import { compose } from '#utility';
 import withDevice from '#extension/device';
-import withError from '#extension/error';
+import withDialog from '#extension/dialog';
 import withAPI from '#extension/apisauce';
+import withBack from '#extension/backhandler';
 
 export class EventDetailScreen extends React.PureComponent {
 
     state = {
         loading: false,
-        meta: this.props.api.request('GET', `/events/${this.props.navigation.state.params.id}/meta`),
-        event: this.props.navigation.state.params,
         comment: ''
     }
 
     static iconMaps = [
         { package: 'materialicons', name: 'access-time' },
         { package: 'entypo', name: 'location' },
+        { package: 'fontawesome5', name: 'store' },
+        { package: 'materialicons', name: 'people' }
     ]
 
     createComment = async () => {
@@ -40,17 +41,13 @@ export class EventDetailScreen extends React.PureComponent {
                 'POST', 
                 `/events/${this.props.navigation.state.params.id}/comments`,
                 { comment: this.state.comment }
-            )
+            );
             this.setState({
                 loading: false,
-                event: async function() {
-                    const response = await this.props.api.request('GET', `/events/${this.props.navigation.state.params.id}`);
-                    return response.result;
-                },
                 comment: null,
-            });
+            }, () => this.dataController.reload('event'));
         } catch (error) {
-            this.setState({ loading: false }, () => this.props.showError(error.message));
+            this.setState({ loading: false }, () => this.props.showDialog(error.message));
         }
     }
 
@@ -72,71 +69,53 @@ export class EventDetailScreen extends React.PureComponent {
         }
     ]
 
-    componentWillMount() {
-        this.backHandler = BackHandler.addEventListener('hardwareBackPress', this.handleBack);
-    }
-
-    componentWillUnmount() {
-        this.backHandler.remove();
-    }
-
-    handleBack = () => this.props.navigation.navigate('event_list')
-
     handleEventAction = async (action) => {
         await this.props.api.request('PATCH', {
             event: this.props.navigation.state.params.id,
             action
         });
-        this.setState({
-            meta: this.props.api.request('GET', `/events/${this.props.navigation.state.params.id}/meta`),
-        });
+        this.dataController.reload('meta');
     }
 
-    renderComments = ({ item, index }) => {
-        const isEditable = index === 0;
+    renderUserComments = () => {
         return (
             <Card style={{ ...this.props.device.marginXY(this.props.device.getX(5), this.props.device.getY(1.25)) }}>
                 <Card.Title
-                    title="Ng Sze Chen"
-                    subtitle="Wed 02:59"
-                    left={
-                        (props) => <Avatar.Image size={50} source={{ uri: '' }} />
-                    }
+                    title="NG SZE CHEN"
+                    left={ (props) => <Avatar.Image size={50} source={{ uri: this.props.api.cdn(`user-1`) }} /> }
                 />
                 <Card.Content>
-                    {
-                        isEditable ? 
-                            <Form containerStyle={{ alignItems: 'center' }} formSetting={this.formSetting()} /> :
-                            <Paragraph>{item}</Paragraph>
-                    }
+                    <Form containerStyle={{ alignItems: 'center' }} formSetting={this.formSetting()} />
                 </Card.Content>
                 <Card.Actions style={{ justifyContent: 'flex-end' }}>
-                {
-                    isEditable && (
-                        <Button onPress={this.createComment} mode="contained" width={this.props.device.getX(20)}>
-                            <Text style={{ color: 'white'}}>SEND</Text>
-                        </Button>
-                    )
-                }
+                    <Button onPress={this.createComment} mode="contained" width={this.props.device.getX(20)}>
+                        <Text style={{ color: 'white'}}>SEND</Text>
+                    </Button>
                 </Card.Actions>
             </Card>
         );
     }
 
-    renderBack = () => {
+    renderComments = ({ item }) => {
         return (
-            <TouchableOpacity 
-                style={{ position: 'absolute', margin: 16, top: 0, left: 0 }}
-                onPress={this.handleBack}
-            >
-                <MaterialIcon name="arrow-back" color="black" size={19} />
-            </TouchableOpacity>
+            <Card style={{ ...this.props.device.marginXY(this.props.device.getX(5), this.props.device.getY(1.25)) }}>
+                <Card.Title
+                    title={item.by}
+                    subtitle={moment(item.when).format('ddd, HH:mm')}
+                    left={
+                        (props) => <Avatar.Image size={50} source={{ uri: this.props.api.cdn(`user-1`) }} />
+                    }
+                />
+                <Card.Content>
+                    <Paragraph>{item.comment}</Paragraph>
+                </Card.Content>
+            </Card>
         );
     }
 
     renderButton = (meta) => {
         const buttons = [];
-        const styles = {
+        const props = {
             style: {
                 height: this.props.device.getY(7.5),
                 justifyContent: 'center'
@@ -148,7 +127,7 @@ export class EventDetailScreen extends React.PureComponent {
         };
         if (meta.isNormal) {
             buttons.push(
-                <Button {...styles} onPress={() => this.handleEventAction('REQUEST')}>
+                <Button key="normal-btn" {...props} onPress={() => this.handleEventAction('REQUEST')}>
                     <Text style={{ color: "#ffffff" }}>Join Event</Text>
                 </Button>
             );
@@ -156,7 +135,7 @@ export class EventDetailScreen extends React.PureComponent {
 
         if (meta.isRequest) {
             buttons.push(
-                <Button {...styles}>
+                <Button key="request-btn" {...props}>
                     <Text style={{ color: "#ffffff" }}>Requesting ...</Text>
                 </Button>
             );
@@ -164,7 +143,7 @@ export class EventDetailScreen extends React.PureComponent {
 
         if (meta.isMember) {
             buttons.push(
-                <Button {...styles} onPress={() => this.handleEventAction('QUIT')}>
+                <Button key="member-btn" {...props} onPress={() => this.handleEventAction('QUIT')}>
                     <Text style={{ color: "#ffffff" }}>Quit Event</Text>
                 </Button>
             );
@@ -172,7 +151,7 @@ export class EventDetailScreen extends React.PureComponent {
 
         if (meta.isOwner) {
             buttons.push(
-                <Button {...styles} onPress={() => this.handleEventAction('START_EVENT')}>
+                <Button key="owner-btn" {...props} onPress={() => this.handleEventAction('START_EVENT')}>
                     <Text style={{ color: "#ffffff" }}>Start Event</Text>
                 </Button>
             );
@@ -187,67 +166,79 @@ export class EventDetailScreen extends React.PureComponent {
 
     render() {
         return (
-            <AsyncContainer promise={Promise.all([ this.state.event, this.state.meta ])}>
-                {( [ result, meta ] ) => (
-                    <View>
-                        <PureList
-                            type="vertical"
-                            numColumns={1}
-                            containerStyle={{ marginBottom: this.props.device.getY(7.5) }}
-                            header={
-                                <View style={{ flex: 1 }}>
-                                    <Image
-                                        style={{ height: this.props.device.getY(25) }}
-                                        source={{ uri: this.props.api.cdn(`event-${result.id}`) }}
-                                    />
-                                    <Text style={{ marginLeft: 10, marginTop: 10, fontSize: 19, fontWeight: 'bold' }}>{result.name}</Text>
-                                    <PureList
-                                        type="horizontal"
-                                        containerStyle={{ marginLeft: this.props.device.getX(3) }}
-                                        data={[
-                                            moment(result.start_time).format('DD/MM/YYYY, HH:mm'),
-                                            result.location,
-                                        ]}
-                                        render={
-                                            ({ item, index }) => {
-                                                const iconSetting = EventDetailScreen.iconMaps[index];
-                                                return (
-                                                    <Card
-                                                        style={{
-                                                            margin: this.props.device.getX(2),
-                                                            width: this.props.device.getX(35)
-                                                        }}
-                                                    >
-                                                        <Card.Content style={{ alignItems: 'center' }}>
-                                                            <Icon size={33} {...iconSetting} />
-                                                            <Paragraph style={{ fontSize: 10 }}>{item}</Paragraph>
-                                                        </Card.Content>
-                                                    </Card>
-                                                );
-                                            }
-                                        }
-                                    />
-                                    <Text style={{ marginLeft: 10, marginTop: 10, fontSize: 19, fontWeight: 'bold' }}>Comments</Text>
-                                    { this.renderBack() }
-                                </View>
-
-                            }
-                            data={[
-                                null,
-                                ...this.state.event.comments,
-                            ]}
-                            render={this.renderComments}
-                        />
-                        { this.renderButton(meta) }
-                    </View>
-                )}
-            </AsyncContainer>
+            <View style={{ flex: 1 }}>
+                <Appbar home={true} />
+                <AsyncContainer
+                    controller={(ctl) => this.dataController = ctl}
+                    promise={{
+                        event: this.props.api.request('GET', `/events/${this.props.navigation.state.params.id}`),
+                        meta: this.props.api.request('GET', `/events/${this.props.navigation.state.params.id}/meta`),
+                        shop: this.props.api.request('GET', `/shops/${this.props.navigation.state.params.shopId}`)
+                    }}
+                >
+                    {
+                        ({ event, meta, shop }) => (
+                            <View style={{ flex: 1 }}>
+                                <PureList
+                                    type="vertical"
+                                    numColumns={1}
+                                    containerStyle={{ marginBottom: this.props.device.getY(7.5) }}
+                                    header={
+                                        <View style={{ flex: 1 }}>
+                                            <Image
+                                                style={{ height: this.props.device.getY(25) }}
+                                                source={this.props.api.cdn(`event-${event.id}`)}
+                                            />
+                                            <Text style={{ marginLeft: 10, marginTop: 10, fontSize: 19, fontWeight: 'bold' }}>{event.name}</Text>
+                                            <PureList
+                                                type="horizontal"
+                                                containerStyle={{ marginLeft: this.props.device.getX(3) }}
+                                                data={[
+                                                    moment(event.start_time).format('DD/MM/YYYY, HH:mm'),
+                                                    event.location,
+                                                    shop.name,
+                                                    `${meta.numberOfUser} Peoples`
+                                                ]}
+                                                render={
+                                                    ({ item, index }) => {
+                                                        const iconSetting = EventDetailScreen.iconMaps[index];
+                                                        return (
+                                                            <Card
+                                                                style={{
+                                                                    margin: this.props.device.getX(2),
+                                                                    width: this.props.device.getX(35)
+                                                                }}
+                                                            >
+                                                                <Card.Content style={{ alignItems: 'center' }}>
+                                                                    <Icon size={33} {...iconSetting} />
+                                                                    <Paragraph style={{ fontSize: 10 }}>{item}</Paragraph>
+                                                                </Card.Content>
+                                                            </Card>
+                                                        );
+                                                    }
+                                                }
+                                            />
+                                            <Text style={{ marginLeft: 10, marginTop: 10, fontSize: 19, fontWeight: 'bold' }}>Comments</Text>
+                                            { this.renderUserComments() }
+                                        </View>
+                
+                                    }
+                                    data={event.comments}
+                                    render={this.renderComments}
+                                />
+                                { this.renderButton(meta) }
+                            </View>
+                        )
+                    }
+                </AsyncContainer>
+            </View>
         );
     }
 };
 
 export default compose(
+    withBack('event_list'),
     withDevice,
     withAPI,
-    withError,
+    withDialog,
 )(EventDetailScreen);

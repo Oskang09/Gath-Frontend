@@ -6,6 +6,7 @@ import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import withDevice from '#extension/device';
 import { withNavigation } from 'react-navigation';
 import { compose } from '#utility';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 export class TopBar extends React.PureComponent {
     state = {
@@ -15,7 +16,7 @@ export class TopBar extends React.PureComponent {
     }
     searchRef = null
 
-    renderProfileAction() {
+    renderProfileAction = () => {
         return (
             <>
                 <Appbar.Action
@@ -52,7 +53,7 @@ export class TopBar extends React.PureComponent {
         );
     }
 
-    renderSearchAction() {
+    renderSearchAction = () => {
         const { searchBar, searchWidth } = this.state;
         if (searchBar) {
             return (
@@ -103,7 +104,7 @@ export class TopBar extends React.PureComponent {
         );
     }
     
-    renderSearch() {
+    renderSearch = () => {
         const { searchQuery, searchWidth } = this.state;
         return (
             <>
@@ -120,11 +121,17 @@ export class TopBar extends React.PureComponent {
         );
     }
 
+    handleHome = () => this.props.navigation.navigate('home')
+
     render() {
-        const { search, profileBar } = this.props;
+        const { search, profileBar, home, title } = this.props;
         return (
             <Appbar theme={{ colors: { primary: '#FFFFFF' }}}>
-                <Appbar.Content title={this.props.title || <Text style={{ color: '#87EFD7'}}>Gath</Text>} />
+                <Appbar.Content
+                    title={title || 'Gath'}
+                    titleStyle={{ color: '#87EFD7' }}
+                    onPress={home && this.handleHome}
+                />
                 { profileBar && this.renderProfileAction() }
                 { search && this.renderSearch() }
             </Appbar>

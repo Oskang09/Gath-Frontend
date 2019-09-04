@@ -14,9 +14,6 @@ import QueryableList from '#components/QueryableList';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 
 export class EventScreen extends React.PureComponent {
-    state = {
-        data: this.props.api.request('GET', '/events'),
-    }
 
     handleClickEventCard = (data) => {
         this.props.navigation.navigate({
@@ -65,9 +62,18 @@ export class EventScreen extends React.PureComponent {
                 <QueryableList
                     type="vertical"
                     numColumns={1}
+                    resetWhenRefresh="filter"
                     containerStyle={{ flex: 1, marginTop: 5 }}
-                    initQuery={{ page: 1 }}
-                    uri={(query) => `/events?page=${query.page}`}
+                    initQuery={{ page: 1, type: '' }}
+                    uri={(query) => `/events?page=${query.page}&type=${query.type}`}
+                    filter={[
+                        {
+                            key: 'event-type',
+                            name: 'type',
+                            title: 'Type',
+                            items: ['COOK', 'PLAY'],
+                        }
+                    ]}
                     header={
                         <View style={{ flex: 1 }}>
                             <Text style={{ marginLeft: 10, fontSize: 16, fontWeight: 'bold' }}>My Events</Text>
