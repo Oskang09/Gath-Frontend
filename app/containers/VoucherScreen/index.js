@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Image, Text } from 'react-native';
+import { View, Image, Text, BackHandler } from 'react-native';
 import {
     Card,
     Avatar,
@@ -27,19 +27,21 @@ export class VoucherScreen extends React.PureComponent {
     useVoucher = async () => {
         const voucher = this.state.currentVoucher;
         await this.props.api.request('POST', '/users/voucher', { voucher: voucher.id });
+        this.dismissDialog();
+    }
 
+    dismissDialog = () => {
+        this._dialogBack.remove();
         this.setState({ currentVoucher: null });
+        return true;
     }
 
     renderPortalVoucher = () => {
+        this._dialogBack = BackHandler.addEventListener('hardwareBackPress', this.dismissDialog);
         const item = this.state.currentVoucher;
         return (
             <Portal>
-                <Dialog
-                    visible={item}
-                    onDismiss={() => this.setState({ currentVoucher: null })}
-                    theme={{ roundness: 15 }}
-                >
+                <Dialog visible={item} dismissable={false} theme={{ roundness: 15 }}>
                     <Card style={{ elevation: 4 }}>
                         <Card.Cover source={{ uri: this.props.api.cdn(`voucher-${item.id}`) }} />
                         <Card.Content>
@@ -99,7 +101,7 @@ export class VoucherScreen extends React.PureComponent {
 };
 
 export default compose(
-    withBack('profile'),
     withAPI,
     withDevice,
+    withBack('profile'),
 )(VoucherScreen);

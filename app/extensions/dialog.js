@@ -1,4 +1,5 @@
 import React from 'react';
+import { BackHandler } from 'react-native';
 import {
     Dialog,
     Button,
@@ -16,11 +17,30 @@ function buildComponent(
             dialog: null,
         }
 
-        dismiss = () => this.setState({ dialog: null })
+        _mounted = false
+
+        componentWillMount() {
+            this._mounted = true;
+        }
+        
+        componentWillUnmount() {
+            this._mounted = false;
+        }
+
+        dismiss = () => {
+            if (this._mounted) {
+                this._backHandler.remove();
+                this.setState({ dialog: null });
+                return true;
+            }
+        }
 
         render() {
             const newProps = Object.assign({
-                [decorator]: (dialog) => this.setState({ dialog })
+                [decorator]: (dialog) => {
+                    this._backHandler = BackHandler.addEventListener('hardwareBackPress', this.dismiss);
+                    this.setState({ dialog });
+                }
             }, this.props);
             
             return (
@@ -31,11 +51,7 @@ function buildComponent(
                     {
                         this.state.dialog && (
                             <Portal>
-                                <Dialog
-                                    visible={true}
-                                    onDismiss={this.dismiss}
-                                    theme={{ roundness: 5 }}
-                                >
+                                <Dialog visible={true} dismissable={false} theme={{ roundness: 5 }}>
                                     <Dialog.Content>
                                         <Paragraph>
                                         {

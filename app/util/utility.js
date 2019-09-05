@@ -68,3 +68,13 @@ export const objectLoop = (object, cb, ignore) => {
         cb(key, object[key]);
     }
 };
+
+export const concatRender = function (renders) {
+    return function (...args) {
+        const state = [];
+        for (const render of renders) {
+            state.push(render(...args));
+        }
+        return state;
+    };
+}

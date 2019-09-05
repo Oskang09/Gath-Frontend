@@ -18,8 +18,7 @@ export class PostDetailScreen extends React.PureComponent {
     state = {
         loading: false,
         post: this.props.navigation.state.params,
-        voucher: this.props.navigation.state.params.voucherId && 
-            this.props.api.request('GET', `/vouchers/${this.props.navigation.state.params.voucherId}`)
+        voucher: this.props.navigation.state.params.voucherId,
     }
 
     receiveVoucher = async (voucher) => {
@@ -45,23 +44,30 @@ export class PostDetailScreen extends React.PureComponent {
                     <View style={{ margin: 10 }}>
                         <Title>{post.title}</Title>
                         <Paragraph>{post.content}</Paragraph>
-
-                        <AsyncContainer promise={voucher}>
-                            {
-                                (result) => (
-                                    <Card onPress={() => this.receiveVoucher(result)} style={{ elevation: 4, width: this.props.device.getX(80), marginTop: 20, alignSelf: 'center' }} theme={{ roundness: 15 }}>
-                                        <Card.Cover style={{ height: this.props.device.getY(20) }} source={{ uri: this.props.api.cdn(`voucher-${result.id}`) }} />
-                                        <Card.Title
-                                            left={(props) => <Avatar.Image source={{ uri: this.props.api.cdn(`shop-${result.shopId}`) }} size={40} />}
-                                            title={result.title}
-                                            subtitle={result.description}
-                                            titleStyle={{ fontSize: 15 }}
-                                            subtitleStyle={{ fontSize: 11 }}
-                                        />
-                                    </Card>
-                                )
-                            }
-                        </AsyncContainer>
+                        {
+                            this.state.voucher && (
+                                <AsyncContainer
+                                    promise={{
+                                        voucher: this.props.api.build('GET', `/vouchers/${this.state.voucher}`)
+                                    }}
+                                >
+                                    {
+                                        ({ voucher }) => (
+                                            <Card onPress={() => this.receiveVoucher(voucher)} style={{ elevation: 4, width: this.props.device.getX(80), marginTop: 20, alignSelf: 'center' }} theme={{ roundness: 15 }}>
+                                                <Card.Cover style={{ height: this.props.device.getY(20) }} source={{ uri: this.props.api.cdn(`voucher-${voucher.id}`) }} />
+                                                <Card.Title
+                                                    left={(props) => <Avatar.Image source={{ uri: this.props.api.cdn(`shop-${voucher.shopId}`) }} size={40} />}
+                                                    title={voucher.title}
+                                                    subtitle={voucher.description}
+                                                    titleStyle={{ fontSize: 15 }}
+                                                    subtitleStyle={{ fontSize: 11 }}
+                                                />
+                                            </Card>
+                                        )
+                                    }
+                                </AsyncContainer>
+                            )
+                        }
                     </View>
                 </ScrollView>
             </View>
@@ -70,8 +76,8 @@ export class PostDetailScreen extends React.PureComponent {
 };
 
 export default compose(
-    withBack('post_list'),
     withDevice,
     withAPI,
     withDialog,
+    withBack('post_list'),
 )(PostDetailScreen);

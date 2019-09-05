@@ -18,11 +18,11 @@ function Image({
                         height: 300,
                         mediaType: 'photo'
                     });
+                    await ImagePicker.clean();
                     dcc('data:' + image.mime + ';base64,' + image.data);
                 } catch (error) {
                     dcc(null);
                 }
-                await ImagePicker.clean();
             }
         }>
             {

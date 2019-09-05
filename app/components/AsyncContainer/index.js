@@ -5,30 +5,15 @@ export class AsyncContainer extends React.Component {
 
     state = {
         inital: true,
-        data: null,
+        data: {},
         error: null,
     }
 
-    async componentWillMount() {
+    componentWillMount() {
         this._mounted = true;
-
+        this.reload(...Object.keys(this.props.promise));
         if (this.props.controller) {
             this.props.controller(this);
-        }
-
-        const promise = this.props.promise;
-        const data = {};
-
-        try {
-            for (const key of Object.keys(promise)) {
-                if (!this._mounted) {
-                    return;
-                }
-                data[key] = await promise[key];
-            }
-            this.setState({ inital: false, data });
-        } catch (error) {
-            this.setState({ inital: false, error });
         }
     }
 
@@ -44,9 +29,9 @@ export class AsyncContainer extends React.Component {
         const promise = this.props.promise;
         const data = this.state.data;
         for (const api of apis) {
-            data[api] = await promise[api];
+            data[api] = await promise[api]();
         }
-        this.setState({ data });
+        this.setState({ inital: false, data });
     }
 
     render() {

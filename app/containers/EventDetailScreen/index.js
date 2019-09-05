@@ -21,6 +21,7 @@ export class EventDetailScreen extends React.PureComponent {
 
     state = {
         loading: false,
+        event: this.props.navigation.state.params,
         comment: ''
     }
 
@@ -39,7 +40,7 @@ export class EventDetailScreen extends React.PureComponent {
         try {
             await this.props.api.request(
                 'POST', 
-                `/events/${this.props.navigation.state.params.id}/comments`,
+                `/events/${this.state.event.id}/comments`,
                 { comment: this.state.comment }
             );
             this.setState({
@@ -70,11 +71,10 @@ export class EventDetailScreen extends React.PureComponent {
     ]
 
     handleEventAction = async (action) => {
-        await this.props.api.request('PATCH', {
-            event: this.props.navigation.state.params.id,
-            action
-        });
-        this.dataController.reload('meta');
+        await this.props.api.request('POST', `/events/${this.state.event.id}`, { action });
+        if (action === 'START_EVENT' || action === 'END_EVENT') {
+            await this.dataController.reload('event');
+        }
     }
 
     renderUserComments = () => {
@@ -100,10 +100,10 @@ export class EventDetailScreen extends React.PureComponent {
         return (
             <Card style={{ ...this.props.device.marginXY(this.props.device.getX(5), this.props.device.getY(1.25)) }}>
                 <Card.Title
-                    title={item.by}
+                    title={item.name}
                     subtitle={moment(item.when).format('ddd, HH:mm')}
                     left={
-                        (props) => <Avatar.Image size={50} source={{ uri: this.props.api.cdn(`user-1`) }} />
+                        (props) => <Avatar.Image size={50} source={{ uri: this.props.api.cdn(`user-${item.by}`) }} />
                     }
                 />
                 <Card.Content>
@@ -113,48 +113,67 @@ export class EventDetailScreen extends React.PureComponent {
         );
     }
 
-    renderButton = (meta) => {
+    renderButton = (event, meta) => {
         const buttons = [];
-        const props = {
+        const props = (color = this.props.device.primaryColor) => ({
             style: {
                 height: this.props.device.getY(7.5),
-                justifyContent: 'center'
+                justifyContent: 'center',
             },
+            compact: true,
             mode: 'contained',
             theme: {
+                colors: {
+                    primary: color  
+                },
                 roundness: 0
             }
-        };
-        if (meta.isNormal) {
-            buttons.push(
-                <Button key="normal-btn" {...props} onPress={() => this.handleEventAction('REQUEST')}>
-                    <Text style={{ color: "#ffffff" }}>Join Event</Text>
-                </Button>
-            );
+        });
+
+        if (event.status === 'PENDING') {
+            if (meta.isNormal) {
+                buttons.push(
+                    <Button key="normal-btn" {...props()} onPress={() => this.handleEventAction('REQUEST')}>
+                        <Text style={{ color: "#ffffff" }}>Join Event</Text>
+                    </Button>
+                );
+            }
+    
+            if (meta.isRequest) {
+                buttons.push(
+                    <Button key="request-btn" {...props()}>
+                        <Text style={{ color: "#ffffff" }}>Requesting ...</Text>
+                    </Button>
+                );
+            }
+    
+            if (meta.isMember) {
+                buttons.push(
+                    <Button key="member-btn" {...props()} onPress={() => this.handleEventAction('QUIT')}>
+                        <Text style={{ color: "#ffffff" }}>Quit Event</Text>
+                    </Button>
+                );
+            }
+        }
+        
+        if (event.status === 'PENDING') {
+            if (meta.isOwner) {
+                buttons.push(
+                    <Button key="owner-btn" {...props()} onPress={() => this.handleEventAction('START_EVENT')}>
+                        <Text style={{ color: "#ffffff" }}>Start Event</Text>
+                    </Button>
+                );
+            }
         }
 
-        if (meta.isRequest) {
-            buttons.push(
-                <Button key="request-btn" {...props}>
-                    <Text style={{ color: "#ffffff" }}>Requesting ...</Text>
-                </Button>
-            );
-        }
-
-        if (meta.isMember) {
-            buttons.push(
-                <Button key="member-btn" {...props} onPress={() => this.handleEventAction('QUIT')}>
-                    <Text style={{ color: "#ffffff" }}>Quit Event</Text>
-                </Button>
-            );
-        }
-
-        if (meta.isOwner) {
-            buttons.push(
-                <Button key="owner-btn" {...props} onPress={() => this.handleEventAction('START_EVENT')}>
-                    <Text style={{ color: "#ffffff" }}>Start Event</Text>
-                </Button>
-            );
+        if (event.status === 'START') {
+            if (meta.isOwner) {
+                buttons.push(
+                    <Button key="owner-btn" {...props('#ff0000')} onPress={() => this.handleEventAction('END_EVENT')}>
+                        <Text style={{ color: "#ffffff" }}>End Event</Text>
+                    </Button>
+                );
+            }
         }
 
         return (
@@ -171,9 +190,9 @@ export class EventDetailScreen extends React.PureComponent {
                 <AsyncContainer
                     controller={(ctl) => this.dataController = ctl}
                     promise={{
-                        event: this.props.api.request('GET', `/events/${this.props.navigation.state.params.id}`),
-                        meta: this.props.api.request('GET', `/events/${this.props.navigation.state.params.id}/meta`),
-                        shop: this.props.api.request('GET', `/shops/${this.props.navigation.state.params.shopId}`)
+                        event: this.props.api.build('GET', `/events/${this.state.event.id}`),
+                        meta: this.props.api.build('GET', `/events/${this.state.event.id}/meta`),
+                        shop: this.props.api.build('GET', `/shops/${this.state.event.shopId}`)
                     }}
                 >
                     {
@@ -226,7 +245,7 @@ export class EventDetailScreen extends React.PureComponent {
                                     data={event.comments}
                                     render={this.renderComments}
                                 />
-                                { this.renderButton(meta) }
+                                { this.renderButton(event, meta) }
                             </View>
                         )
                     }
@@ -237,8 +256,8 @@ export class EventDetailScreen extends React.PureComponent {
 };
 
 export default compose(
-    withBack('event_list'),
     withDevice,
     withAPI,
     withDialog,
+    withBack('event_list'),
 )(EventDetailScreen);

@@ -16,13 +16,13 @@ export class QueryableList extends React.PureComponent {
     _isMounted = false
 
     refreshData = async (refreshType = 'default') => {
-        this.setState({ refreshing: true });
-        
-        const { _meta, ok, result, error } = await this.props.api.request('GET', this.props.uri(this.state.query));
         if (!this._isMounted) {
-            return null;
+            return;
         }
 
+        this.setState({ refreshing: true });
+
+        const { _meta, ok, result, error } = await this.props.api.request('GET', this.props.uri(this.state.query));
         if (result && ok) {
             if (refreshType.includes(this.state.resetWhenRefresh)) {
                 this.state.data = result;
@@ -69,14 +69,10 @@ export class QueryableList extends React.PureComponent {
         }, () => this.refreshData(type));
     }
 
-    componentWillUnmount() {
-        this._isMounted = false;
-    }
-
     componentWillMount() {
         this._isMounted = true;
-        if (this.props.ref) {
-            this.props.ref(this);
+        if (this.props.controller) {
+            this.props.controller(this);
         }
 
         if (this.props.type === 'vertical') {
@@ -100,6 +96,10 @@ export class QueryableList extends React.PureComponent {
                 },
             }, this.refreshData);
         }
+    }
+
+    componentWillUnmount() {
+        this._isMounted = false;
     }
 
     render() {
