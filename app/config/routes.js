@@ -12,10 +12,12 @@ import ProfileScreen from '#containers/HomeScreen/profile-screen';
 import PostScreen from '#containers/HomeScreen/posts-screen';
 
 import PostDetail from '#containers/PostDetailScreen';
-import CreateEvent from '#containers/CreateEventScreen';
+import EventInfo from '#containers/EventInfoScreen';
 import EventDetail from '#containers/EventDetailScreen';
 
+import EventUser from '#containers/EventUserScreen';
 import Notification from '#containers/NotificationScreen';
+import EventHistory from '#containers/EventHistoryScreen';
 import Voucher from '#containers/VoucherScreen';
 
 import Icon from '#components/Icon';
@@ -30,10 +32,12 @@ export default {
 
     event_detail: EventDetail,
     post_detail: PostDetail,
-    create_event: CreateEvent,
+    event_info: EventInfo,
+    event_user: EventUser,
     
     notifications: Notification,
     vouchers: Voucher,
+    history: EventHistory,
 
     home: {
         _type: 'material-bottom',

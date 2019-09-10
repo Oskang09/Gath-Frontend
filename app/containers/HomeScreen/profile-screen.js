@@ -1,14 +1,15 @@
 import React from 'react';
 
 import { View, Text, ScrollView } from 'react-native';
-import { Card, Avatar } from 'react-native-paper';
+import { Card, Avatar, Button } from 'react-native-paper';
 import Caccordion from '#components/Caccordion';
 import QueryableList from '#components/QueryableList';
 import Appbar from '#components/Appbar';
 import AsyncContainer from '#components/AsyncContainer';
 import PersonalityCard from '#components/PersonalityCard';
-
 import Image from '#components/Image';
+
+import withFirebase from '#extension/firebase'
 import withDevice from '#extension/device';
 import withAPI from '#extension/apisauce';
 import { compose, concatRender } from '#utility';
@@ -186,6 +187,16 @@ export class ProfileScreen extends React.PureComponent {
                                 ])
                             }
                         </AsyncContainer>
+                        <Button
+                            onPress={
+                                async () => {
+                                    await this.props.firebase.logout();
+                                    this.props.navigation.navigate('splash');
+                                }
+                            }
+                        >
+                            Logout
+                        </Button>
                     </View>
                 </ScrollView>
             </View>
@@ -193,4 +204,4 @@ export class ProfileScreen extends React.PureComponent {
     }
 }
 
-export default compose(withDevice, withAPI)(ProfileScreen);
+export default compose(withDevice, withAPI, withFirebase)(ProfileScreen);

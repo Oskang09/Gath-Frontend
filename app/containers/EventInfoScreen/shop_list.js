@@ -6,18 +6,14 @@ import Appbar from '#components/Appbar';
 import QueryableList from '#components/QueryableList';
 import ShopCard from '#components/ShopCard';
 
-import withAPI from '#extension/apisauce';
-import withDevice from '#extension/device';
-
-import { compose } from '#utility';
-
 export class ShopList extends React.Component {
     
     handleClick = (item) => {
-        this.props.nextStep({ shop: item });
+        this.props.nextStep(item);
     }
 
     render() {
+        const selectedShop = this.props.getState();
         return (
             <View style={{ flex: 1 }}>
                 <Appbar />
@@ -39,6 +35,23 @@ export class ShopList extends React.Component {
                             ]
                         }
                     ]}
+                    header={
+                        <View>
+                            {
+                                Object.keys(selectedShop).length > 0 && (
+                                    <>
+                                        <Text style={{ marginLeft: 10, fontSize: 16, fontWeight: 'bold' }}>Selected Shop</Text>
+                                        <ShopCard
+                                            type="vertical"
+                                            onPress={() => this.handleClick(selectedShop)}
+                                            data={selectedShop}
+                                        />
+                                    </>
+                                )
+                            }
+                            <Text style={{ marginLeft: 10, fontSize: 16, fontWeight: 'bold' }}>Shop List</Text>
+                        </View>
+                    }
                     footer={
                         <View style={{ flex: 1, alignItems: 'center', margin: 10 }}>
                             <Image style={{ width: 64, height: 64 }} source={require('#assets/fail.png')} />
@@ -60,7 +73,4 @@ export class ShopList extends React.Component {
     }
 };
 
-export default compose(
-    withAPI,
-    withDevice,
-)(ShopList);
+export default ShopList;

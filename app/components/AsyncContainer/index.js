@@ -28,19 +28,30 @@ export class AsyncContainer extends React.Component {
 
         const promise = this.props.promise;
         const data = this.state.data;
-        for (const api of apis) {
-            data[api] = await promise[api]();
+
+        try {
+            for (const api of apis) {
+                data[api] = await promise[api]();
+            }
+        } catch (error) {
+            return this.setState({ inital: false, error, data: null })
         }
-        this.setState({ inital: false, data });
+        this.setState({ inital: false, data, error: null });
     }
 
     render() {
         const { inital, error, data } = this.state;
         if (inital) {
+            if (this.props.loading) {
+                return this.props.loading();
+            }
             return <Text>Loading</Text>;
         }
 
         if (error) {
+            if (this.props.error) {
+                return this.props.error(error);
+            }
             return <Text>Error {error.toString()}</Text>;
         }
         return this.props.children(data);

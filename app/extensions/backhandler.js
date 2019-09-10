@@ -4,7 +4,7 @@ import { injector } from '#utility';
 
 function buildComponent(
     WrappedComponent,
-    backTo = null,
+    backTo = null
 ) {
     return class extends React.Component {
         componentWillMount() {

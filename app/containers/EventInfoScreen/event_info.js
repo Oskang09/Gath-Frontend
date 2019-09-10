@@ -1,22 +1,19 @@
 import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
-import { Card, Button } from 'react-native-paper';
+import { View, Text } from 'react-native';
+import { Card, Button, Portal, Dialog, Paragraph } from 'react-native-paper';
 
 import Form from '#components/Form';
 import Appbar from '#components/Appbar';
 
-import withAPI from '#extension/apisauce';
-import withDevice from '#extension/device';
+import { filterObject } from '#utility';
 
-import { compose, filterObject } from '#utility';
-
-export class CreateEventScreen extends React.Component {
+export class EventInfoScreen extends React.Component {
     state = {
         name: this.props.getState().name,
         start: this.props.getState().start || Date.now(),
         type: this.props.getState().type,
-        tags: this.props.getState().tags,
         banner: this.props.getState().banner,
+        quit: false,
     }
 
     imageSetting = () => [
@@ -26,7 +23,7 @@ export class CreateEventScreen extends React.Component {
             dcc: (banner) => this.setState({ banner }),
             key: 'event-image',
             setting: {
-                value: this.state.banner,
+                value: this.state.banner || this.props.api.cdn(`event-${this.props.getState().id}`),
                 displayComponent: (value) => <Card.Cover source={value} />
             }
         },
@@ -74,7 +71,7 @@ export class CreateEventScreen extends React.Component {
             setting: {
                 label: 'Event Type',
                 value: this.state.type,
-                items: [ 'type1', 'type2' ]
+                items: ['type1', 'type2']
             }
         },
     ];
@@ -82,10 +79,18 @@ export class CreateEventScreen extends React.Component {
     componentWillMount() {
         this.props.backHandler(
             () => {
-                // TODO: dialog ask for quit and navigate to event_listing
+                this.setState({ quit: true });
                 return true;
             }
         );
+    }
+
+    handleQuit = () => {
+        if (this.props.defaultState.length === 0) {
+            this.props.navigation.navigate('event_list');
+        } else {
+            this.props.navigation.navigate({ routeName: 'event_detail', params: this.props.navigation.state.params });
+        }
     }
 
     nextStep = () => {
@@ -105,7 +110,7 @@ export class CreateEventScreen extends React.Component {
                             <Form
                                 containerStyle={{ alignItems: 'center' }}
                                 rowStyle={{ flexDirection: 'row', margin: 5 }}
-                                formSetting={this.formSetting()} 
+                                formSetting={this.formSetting()}
                             />
                         </Card.Content>
                         <Card.Actions style={{ justifyContent: 'center' }}>
@@ -115,12 +120,22 @@ export class CreateEventScreen extends React.Component {
                         </Card.Actions>
                     </Card>
                 </View>
+                <Portal>
+                    <Dialog visible={this.state.quit} dismissable={false}>
+                        <Dialog.Content>
+                            <Paragraph>
+                                Did you want to discard all changes?
+                            </Paragraph>
+                        </Dialog.Content>
+                        <Dialog.Actions>
+                            <Button onPress={this.handleQuit}>YES</Button>
+                            <Button onPress={() => this.setState({ quit: false })}>NO</Button>
+                        </Dialog.Actions>
+                    </Dialog>
+                </Portal>
             </View>
         );
     }
 };
 
-export default compose(
-    withAPI,
-    withDevice,
-)(CreateEventScreen);
+export default EventInfoScreen

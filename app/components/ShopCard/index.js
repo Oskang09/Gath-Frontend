@@ -1,6 +1,7 @@
 import React from 'react';
 import { Card, TouchableRipple, Paragraph, List } from 'react-native-paper';
 import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Icon from '#components/Icon';
 import { compose } from '#utility';
 import withDevice from '#extension/device';
 import withAPI from '#extension/apisauce';

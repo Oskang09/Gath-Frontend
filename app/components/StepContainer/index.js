@@ -5,7 +5,7 @@ export class StepContainer extends React.Component {
     state = {
         step: 0,
         maxSteps: this.props.containers.length,
-        containerState: [],
+        containerState: this.props.defaultState || [],
         backHandler: [],
     }
 
@@ -51,6 +51,7 @@ export class StepContainer extends React.Component {
         const Component = this.props.containers[this.state.step];
         return (
             <Component
+                {...this.props}
                 getState={(index = this.state.step) => this.state.containerState[index] || {}}
                 nextStep={this.nextStep}
                 prevStep={this.prevStep}

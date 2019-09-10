@@ -15,6 +15,13 @@ export class QueryableList extends React.PureComponent {
     }
     _isMounted = false
 
+    setState = (...args) => {
+        if (!this._isMounted) {
+            return;
+        }
+        return super.setState(...args);
+    }
+
     refreshData = async (refreshType = 'default') => {
         if (!this._isMounted) {
             return;

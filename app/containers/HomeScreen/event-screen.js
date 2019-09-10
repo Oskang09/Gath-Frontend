@@ -31,7 +31,7 @@ export class EventScreen extends React.PureComponent {
                 }
                 small={true}
                 onPress={
-                    () => this.props.navigation.navigate('create_event')
+                    () => this.props.navigation.navigate('event_info')
                 }
             />
         );

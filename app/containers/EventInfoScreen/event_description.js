@@ -1,17 +1,14 @@
 import React, { createRef } from 'react';
 import { View, Text } from 'react-native';
-import { Button, Card } from 'react-native-paper';
+import { Card } from 'react-native-paper';
+
+import Button from '#components/Button';
 import Appbar from '#components/Appbar';
 import Form from '#components/Form';
 
-import withFirebase from '#extension/firebase';
-import withDevice from '#extension/device';
-import withAPI from '#extension/apisauce';
-import { compose, filterObject } from '#utility';
-
 export class EventDescription extends React.PureComponent {
     state = {
-        desc: this.props.getState().desc,
+        desc: this.props.getState(),
         loading: false,
     }
     confirmRef = createRef()
@@ -34,9 +31,7 @@ export class EventDescription extends React.PureComponent {
     ];
 
     nextStep = async () => {
-        this.props.nextStep(
-            filterObject(this.state, 'desc')
-        );
+        this.props.nextStep(this.state.desc);
     }
 
     render() {
@@ -65,8 +60,4 @@ export class EventDescription extends React.PureComponent {
     }
 };
 
-export default compose(
-    withFirebase,
-    withDevice,
-    withAPI,
-)(EventDescription);
+export default EventDescription;

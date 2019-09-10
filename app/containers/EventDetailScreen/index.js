@@ -1,9 +1,10 @@
 import React from 'react';
 
 import { View, Text } from 'react-native';
-import { Card, Paragraph, Avatar, Button } from 'react-native-paper';
+import { Card, Paragraph, Avatar } from 'react-native-paper';
 import moment from 'moment';
 
+import Button from '#components/Button';
 import Appbar from '#components/Appbar';
 import Image from '#components/Image';
 import AsyncContainer from '#components/AsyncContainer';
@@ -29,7 +30,8 @@ export class EventDetailScreen extends React.PureComponent {
         { package: 'materialicons', name: 'access-time' },
         { package: 'entypo', name: 'location' },
         { package: 'fontawesome5', name: 'store' },
-        { package: 'materialicons', name: 'people' }
+        { package: 'materialicons', name: 'people' },
+        { package: 'materialicons', name: 'description' }
     ]
 
     createComment = async () => {
@@ -72,6 +74,9 @@ export class EventDetailScreen extends React.PureComponent {
 
     handleEventAction = async (action) => {
         await this.props.api.request('POST', `/events/${this.state.event.id}`, { action });
+        if (action === 'REQUEST' || action === 'QUIT' || action === 'CHECK_IN') {
+            await this.dataController.reload('meta');
+        }
         if (action === 'START_EVENT' || action === 'END_EVENT') {
             await this.dataController.reload('event');
         }
@@ -82,15 +87,18 @@ export class EventDetailScreen extends React.PureComponent {
             <Card style={{ ...this.props.device.marginXY(this.props.device.getX(5), this.props.device.getY(1.25)) }}>
                 <Card.Title
                     title="NG SZE CHEN"
-                    left={ (props) => <Avatar.Image size={50} source={{ uri: this.props.api.cdn(`user-1`) }} /> }
+                    left={(props) => <Avatar.Image size={50} source={{ uri: this.props.api.cdn(`user-1`) }} />}
                 />
                 <Card.Content>
                     <Form containerStyle={{ alignItems: 'center' }} formSetting={this.formSetting()} />
                 </Card.Content>
                 <Card.Actions style={{ justifyContent: 'flex-end' }}>
-                    <Button onPress={this.createComment} mode="contained" width={this.props.device.getX(20)}>
-                        <Text style={{ color: 'white'}}>SEND</Text>
-                    </Button>
+                    <Button
+                        onPress={this.createComment}
+                        roundness={5}
+                        textStyle={{ color: 'white' }}
+                        text="SEND"
+                    />
                 </Card.Actions>
             </Card>
         );
@@ -113,45 +121,85 @@ export class EventDetailScreen extends React.PureComponent {
         );
     }
 
+    renderAction = (event, meta, shop) => {
+        const buttons = [];
+        if (event.status === 'PENDING') {
+            buttons.push(
+                <View key="edit-event" style={{ margin: 10 }}>
+                    <Button
+                        onPress={() => this.props.navigation.navigate({
+                            routeName: 'event_info',
+                            params: Object.assign({}, event, { shop })
+                        })}
+                        width={this.props.device.getX(75)}
+                        textStyle={{ color: 'white' }}
+                        text="Edit Event"
+                    />
+                </View>
+            );
+            buttons.push(
+                <View key="del-event" style={{ margin: 10 }}>
+                    <Button
+                        onPress={() => {}}
+                        color="#ff0000"
+                        width={this.props.device.getX(75)}
+                        textStyle={{ color: 'white' }}
+                        text="Delete Event"
+                    />
+                </View>
+            );
+        }
+
+        buttons.push(
+            <View key="view-people" style={{ margin: 10 }}>
+                <Button
+                    width={this.props.device.getX(75)}
+                    text="View Peoples"
+                    onPress={() => this.props.navigation.navigate({ routeName: 'event_user', params: { event, meta } })}
+                />
+            </View>
+        );
+
+        return (
+            <View style={{ alignItems: 'center', margin: 10 }}>
+                { buttons }
+            </View>
+        );
+    }
+
     renderButton = (event, meta) => {
         const buttons = [];
-        const props = (color = this.props.device.primaryColor) => ({
-            style: {
-                height: this.props.device.getY(7.5),
-                justifyContent: 'center',
-            },
-            compact: true,
-            mode: 'contained',
-            theme: {
-                colors: {
-                    primary: color  
-                },
-                roundness: 0
-            }
-        });
-
         if (event.status === 'PENDING') {
             if (meta.isNormal) {
                 buttons.push(
-                    <Button key="normal-btn" {...props()} onPress={() => this.handleEventAction('REQUEST')}>
-                        <Text style={{ color: "#ffffff" }}>Join Event</Text>
-                    </Button>
+                    <Button
+                        key="normal-btn"
+                        width={this.props.device.getX(100)}
+                        onPress={() => this.handleEventAction('REQUEST')}
+                        text="Join Event"
+                    />
                 );
             }
     
             if (meta.isRequest) {
                 buttons.push(
-                    <Button key="request-btn" {...props()}>
-                        <Text style={{ color: "#ffffff" }}>Requesting ...</Text>
-                    </Button>
+                    <Button
+                        key="request-btn"
+                        width={this.props.device.getX(100)}
+                        text="Requesting ..."
+                    />
                 );
             }
     
             if (meta.isMember) {
                 buttons.push(
-                    <Button key="member-btn" {...props()} onPress={() => this.handleEventAction('QUIT')}>
-                        <Text style={{ color: "#ffffff" }}>Quit Event</Text>
-                    </Button>
+                    <Button
+                        key="member-btn"
+                        width={this.props.device.getX(100)}
+                        onPress={() => this.handleEventAction('QUIT')}
+                        color="#ff0000"
+                        text="Quit Event"
+                    />
                 );
             }
         }
@@ -159,28 +207,47 @@ export class EventDetailScreen extends React.PureComponent {
         if (event.status === 'PENDING') {
             if (meta.isOwner) {
                 buttons.push(
-                    <Button key="owner-btn" {...props()} onPress={() => this.handleEventAction('START_EVENT')}>
-                        <Text style={{ color: "#ffffff" }}>Start Event</Text>
-                    </Button>
+                    <Button
+                        key="owner-btn"
+                        width={this.props.device.getX(100)}
+                        onPress={() => this.handleEventAction('START_EVENT')}
+                        text="Start Event"
+                    />
                 );
             }
         }
 
         if (event.status === 'START') {
+            if (meta.isMember) {
+                buttons.push(
+                    <Button
+                        key="checkin-btn"
+                        width={this.props.device.getX(100)}
+                        onPress={() => this.handleEventAction('CHECK_IN')}
+                        text="Check In"
+                    />
+                );
+            }
             if (meta.isOwner) {
                 buttons.push(
-                    <Button key="owner-btn" {...props('#ff0000')} onPress={() => this.handleEventAction('END_EVENT')}>
-                        <Text style={{ color: "#ffffff" }}>End Event</Text>
-                    </Button>
+                    <Button
+                        key="end-btn"
+                        width={this.props.device.getX(100)}
+                        color="#ff0000"
+                        onPress={() => this.handleEventAction('END_EVENT')}
+                        text="End Event"
+                    />
                 );
             }
         }
 
-        return (
-            <View style={{ position: 'absolute', bottom: 0, width: this.props.device.getX(100) }}>
-                { buttons }
-            </View>
-        )
+        if (buttons.length > 0) {
+            return (
+                <View style={{ position: 'absolute', bottom: 0, width: this.props.device.getX(100) }}>
+                    { buttons }
+                </View>
+            );
+        }
     }
 
     render() {
@@ -196,58 +263,62 @@ export class EventDetailScreen extends React.PureComponent {
                     }}
                 >
                     {
-                        ({ event, meta, shop }) => (
-                            <View style={{ flex: 1 }}>
-                                <PureList
-                                    type="vertical"
-                                    numColumns={1}
-                                    containerStyle={{ marginBottom: this.props.device.getY(7.5) }}
-                                    header={
-                                        <View style={{ flex: 1 }}>
-                                            <Image
-                                                style={{ height: this.props.device.getY(25) }}
-                                                source={this.props.api.cdn(`event-${event.id}`)}
-                                            />
-                                            <Text style={{ marginLeft: 10, marginTop: 10, fontSize: 19, fontWeight: 'bold' }}>{event.name}</Text>
-                                            <PureList
-                                                type="horizontal"
-                                                containerStyle={{ marginLeft: this.props.device.getX(3) }}
-                                                data={[
-                                                    moment(event.start_time).format('DD/MM/YYYY, HH:mm'),
-                                                    event.location,
-                                                    shop.name,
-                                                    `${meta.numberOfUser} Peoples`
-                                                ]}
-                                                render={
-                                                    ({ item, index }) => {
-                                                        const iconSetting = EventDetailScreen.iconMaps[index];
-                                                        return (
-                                                            <Card
-                                                                style={{
-                                                                    margin: this.props.device.getX(2),
-                                                                    width: this.props.device.getX(35)
-                                                                }}
-                                                            >
-                                                                <Card.Content style={{ alignItems: 'center' }}>
-                                                                    <Icon size={33} {...iconSetting} />
-                                                                    <Paragraph style={{ fontSize: 10 }}>{item}</Paragraph>
-                                                                </Card.Content>
-                                                            </Card>
-                                                        );
+                        ({ event, meta, shop }) => {
+                            const absoluteButton = this.renderButton(event, meta);
+                            return (
+                                <View style={{ flex: 1 }}>
+                                    <PureList
+                                        type="vertical"
+                                        numColumns={1}
+                                        containerStyle={{ marginBottom: absoluteButton && this.props.device.getY(7.5) }}
+                                        header={
+                                            <View style={{ flex: 1 }}>
+                                                <Image
+                                                    style={{ height: this.props.device.getY(25) }}
+                                                    source={this.props.api.cdn(`event-${event.id}`)}
+                                                />
+                                                <Text style={{ marginLeft: 10, marginTop: 10, fontSize: 19, fontWeight: 'bold' }}>{event.name}</Text>
+                                                <PureList
+                                                    type="horizontal"
+                                                    containerStyle={{ marginLeft: this.props.device.getX(3) }}
+                                                    data={[
+                                                        moment(event.start_time).format('DD/MM/YYYY, HH:mm'),
+                                                        event.location,
+                                                        shop.name,
+                                                        `${meta.numberOfUser} Peoples`,
+                                                        event.desc
+                                                    ]}
+                                                    render={
+                                                        ({ item, index }) => {
+                                                            const iconSetting = EventDetailScreen.iconMaps[index];
+                                                            return (
+                                                                <Card
+                                                                    style={{
+                                                                        margin: this.props.device.getX(2),
+                                                                        width: this.props.device.getX(35)
+                                                                    }}
+                                                                >
+                                                                    <Card.Content style={{ alignItems: 'center' }}>
+                                                                        <Icon size={33} {...iconSetting} />
+                                                                        <Paragraph style={{ fontSize: 10 }}>{item}</Paragraph>
+                                                                    </Card.Content>
+                                                                </Card>
+                                                            );
+                                                        }
                                                     }
-                                                }
-                                            />
-                                            <Text style={{ marginLeft: 10, marginTop: 10, fontSize: 19, fontWeight: 'bold' }}>Comments</Text>
-                                            { this.renderUserComments() }
-                                        </View>
-                
-                                    }
-                                    data={event.comments}
-                                    render={this.renderComments}
-                                />
-                                { this.renderButton(event, meta) }
-                            </View>
-                        )
+                                                />
+                                                <Text style={{ marginLeft: 10, marginTop: 10, fontSize: 19, fontWeight: 'bold' }}>Comments</Text>
+                                                { this.renderUserComments() }
+                                            </View>
+                                        }
+                                        footer={this.renderAction(event, meta, shop)}
+                                        data={event.comments.slice(0, 5)}
+                                        render={this.renderComments}
+                                    />
+                                    { absoluteButton }
+                                </View>
+                            );
+                        }
                     }
                 </AsyncContainer>
             </View>

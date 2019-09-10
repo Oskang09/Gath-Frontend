@@ -1,13 +1,12 @@
 import React, { createRef } from 'react';
 import { View } from 'react-native';
-import { Text, ActivityIndicator, Button, Dialog, Paragraph } from 'react-native-paper';
+import { Text, ActivityIndicator, Button } from 'react-native-paper';
 import Appbar from '#components/Appbar';
 import Confirm from 'react-native-confirmation-code-field';
 
 import withFirebase from '#extension/firebase';
 import withDevice from '#extension/device';
 import withAPI from '#extension/apisauce';
-import withDialog from '#extension/dialog';
 
 import { compose } from '#utility';
 import Form from '#components/Form';

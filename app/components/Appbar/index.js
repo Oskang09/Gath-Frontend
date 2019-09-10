@@ -1,12 +1,13 @@
 import React from 'react';
-import { Animated, Text } from 'react-native';
+import { Animated } from 'react-native';
 import { Appbar, Searchbar } from 'react-native-paper';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 
+import AsyncContainer from '#components/AsyncContainer';
+import withAPI from '#extension/apisauce';
 import withDevice from '#extension/device';
 import { withNavigation } from 'react-navigation';
 import { compose } from '#utility';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 
 export class TopBar extends React.PureComponent {
     state = {
@@ -25,7 +26,7 @@ export class TopBar extends React.PureComponent {
                     color="black"
                     onPress={
                         () => {
-                            this.props.navigation.navigate('events');
+                            this.props.navigation.navigate('history');
                         }
                     }
                 />
@@ -121,17 +122,32 @@ export class TopBar extends React.PureComponent {
         );
     }
 
+    renderAppbarContent = (subtitle) => (
+        <Appbar.Content
+            title={this.props.title || 'Gath'}
+            titleStyle={{ color: '#87EFD7' }}
+            subtitle={subtitle && subtitle}
+            onPress={this.props.home && this.handleHome}
+        />
+    )
+
     handleHome = () => this.props.navigation.navigate('home')
 
     render() {
-        const { search, profileBar, home, title } = this.props;
+        const { search, profileBar } = this.props;
         return (
             <Appbar theme={{ colors: { primary: '#FFFFFF' }}}>
-                <Appbar.Content
-                    title={title || 'Gath'}
-                    titleStyle={{ color: '#87EFD7' }}
-                    onPress={home && this.handleHome}
-                />
+                <AsyncContainer
+                    loading={this.renderAppbarContent}
+                    error={() => this.renderAppbarContent()}
+                    promise={{
+                        event: this.props.api.build('GET', '/events/running')
+                    }}
+                >
+                    { 
+                        ({ event }) => this.renderAppbarContent(`Event ${event.name} is running ...`)
+                    }
+                </AsyncContainer>
                 { profileBar && this.renderProfileAction() }
                 { search && this.renderSearch() }
             </Appbar>
@@ -141,5 +157,6 @@ export class TopBar extends React.PureComponent {
 
 export default compose(
     withDevice,
-    withNavigation
+    withNavigation,
+    withAPI
 )(TopBar);
