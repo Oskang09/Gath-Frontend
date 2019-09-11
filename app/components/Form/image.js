@@ -27,9 +27,9 @@ function Image({
         }>
             {
                 displayComponent ? 
-                    displayComponent(value ? { uri: value } : require('#assets/icon.jpg')) :
+                    displayComponent(value && { uri: value }) :
                     <Avatar.Image
-                        source={value ? { uri: value } : require('#assets/icon.jpg')}
+                        source={value && { uri: value }}
                         size={128}
                     /> 
             }

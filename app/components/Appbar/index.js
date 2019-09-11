@@ -145,7 +145,7 @@ export class TopBar extends React.PureComponent {
                     }}
                 >
                     { 
-                        ({ event }) => this.renderAppbarContent(`Event ${event.name} is running ...`)
+                        ({ event }) =>  this.renderAppbarContent(`Event ${event.name} is running ...`)
                     }
                 </AsyncContainer>
                 { profileBar && this.renderProfileAction() }

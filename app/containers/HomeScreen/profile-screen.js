@@ -1,9 +1,10 @@
 import React from 'react';
 
 import { View, Text, ScrollView } from 'react-native';
-import { Card, Avatar, Button } from 'react-native-paper';
-import Caccordion from '#components/Caccordion';
-import QueryableList from '#components/QueryableList';
+import { Avatar } from 'react-native-paper';
+import PureList from '#components/PureList';
+import Button from '#components/Button';
+import Caccordion from '#components/Caccordion'
 import Appbar from '#components/Appbar';
 import AsyncContainer from '#components/AsyncContainer';
 import PersonalityCard from '#components/PersonalityCard';
@@ -14,7 +15,6 @@ import withDevice from '#extension/device';
 import withAPI from '#extension/apisauce';
 import { compose, concatRender } from '#utility';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
-import PureList from '../../components/PureList';
 
 export class ProfileScreen extends React.PureComponent {
 
@@ -130,45 +130,31 @@ export class ProfileScreen extends React.PureComponent {
         );
     }
 
-    renderEventHistory = ({ profile }) => {
+    renderButton = ({ profile }) => {
         return (
-            <Card
-                key="history"
-                style={{
-                    marginTop: 10,
-                    marginLeft: this.props.device.getX(10),
-                    marginRight: this.props.device.getX(10)
-                }}
-            >
-                <Card.Title title="Event History" titleStyle={{ fontSize: 15 }} />
-                <Card.Content>
-                    <QueryableList
-                        type="vertical"
-                        numColumns={2}
-                        containerStyle={{ flex: 1 }}
-                        initQuery={{ page: 1 }}
-                        updateQuery={(query) => ({ page: query.page + 1 })}
-                        uri={(query) => `https://randomuser.me/api?results=50&page=${query.page}`}
-                        extract={(response) => response.results}
-                        render={
-                            ({ item }) => (
-                                <Card style={{ flex: 1, margin: 5 }}>
-                                    <Card.Cover 
-                                        style={{ height: this.props.device.getY('15') }}
-                                        source={{ uri: 'https://images.pexels.com/photos/67636/rose-blue-flower-rose-blooms-67636.jpeg?auto=format%2Ccompress&cs=tinysrgb&dpr=1&w=500' }} 
-                                    />
-                                    <Card.Title
-                                        title="Title"
-                                        subtitle={<Text>subtitle</Text>}
-                                        right={(props) => <Text>A</Text>}
-                                    />
-                                </Card>
-                            )
+            <>
+                <Button
+                    key="logout"
+                    onPress={
+                        async () => {
+                            await this.props.firebase.logout();
+                            this.props.navigation.navigate('splash');
                         }
-                    />
-                </Card.Content>
-            </Card>
-        )
+                    }
+                    text="Logout"
+                />
+                <Button
+                    key="update-profile"
+                    onPress={
+                        () => this.props.navigation.navigate({
+                            routeName: 'update_profile',
+                            params: profile
+                        })
+                    }
+                    text="Edit"
+                />
+            </>
+        );
     }
 
     render() {
@@ -183,20 +169,10 @@ export class ProfileScreen extends React.PureComponent {
                                     this.renderProfile,
                                     this.renderPersonality,
                                     this.renderComments,
-                                    this.renderEventHistory
+                                    this.renderButton
                                 ])
                             }
                         </AsyncContainer>
-                        <Button
-                            onPress={
-                                async () => {
-                                    await this.props.firebase.logout();
-                                    this.props.navigation.navigate('splash');
-                                }
-                            }
-                        >
-                            Logout
-                        </Button>
                     </View>
                 </ScrollView>
             </View>

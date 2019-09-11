@@ -12,7 +12,7 @@ import Form from '#components/Form';
 
 export class Introduction extends React.PureComponent {
     state = {
-        desc: null,
+        desc: this.props.getState(),
         loading: false,
     }
     confirmRef = createRef()
@@ -34,23 +34,8 @@ export class Introduction extends React.PureComponent {
         },
     ];
 
-    updateDescription = async () => {
-        if (this.state.loading) {
-            return;
-        }
-        this.setState({ loading: true });
-        try {
-            const { api, navigation } = this.props;
-            await api.request(
-                'POST', 
-                `/users/profile`,
-                { desc: this.state.desc, status: 'REGISTERED' }
-            );
-            await api.loadConfig();
-            navigation.navigate('home');
-        } catch (error) {
-            this.setState({ loading: false }, () => this.props.showDialog(error.message));
-        }
+    nextStep = async () => {
+        this.props.nextStep(this.state.desc);
     }
 
     render() {
@@ -68,7 +53,7 @@ export class Introduction extends React.PureComponent {
                             />
                         </Card.Content>
                         <Card.Actions style={{ justifyContent: 'center' }}>
-                            <Button mode="contained" width={this.props.device.getX(25)} onPress={this.updateDescription}>
+                            <Button mode="contained" width={this.props.device.getX(25)} onPress={this.nextStep}>
                                 <Text style={{ color: 'white' }}>NEXT</Text>
                             </Button>
                         </Card.Actions>
@@ -79,9 +64,4 @@ export class Introduction extends React.PureComponent {
     }
 };
 
-export default compose(
-    withFirebase,
-    withDevice,
-    withAPI,
-    withDialog,
-)(Introduction);
+export default Introduction;

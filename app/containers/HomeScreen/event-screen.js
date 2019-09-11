@@ -3,6 +3,8 @@ import React from 'react';
 import { View, Text } from 'react-native';
 import { FAB } from 'react-native-paper';
 import Appbar from '#components/Appbar';
+import PureList from '#components/PureList';
+import AsyncContainer from '#components/AsyncContainer';
 import EventCard from '#components/EventCard';
 
 import { compose } from '#utility';
@@ -39,19 +41,26 @@ export class EventScreen extends React.PureComponent {
 
     renderOwnEvent = () => {
         return (
-            <QueryableList
-                type="horizontal"
-                key="event"
-                initQuery={{ page: 1 }}
-                containerStyle={{ flex: 1 }}
-                resetWhenRefresh={true}
-                uri={(query) => `/events/me`}
-                render={
-                    ({ item }) => (
-                        <EventCard type="horizontal" data={item} onPress={this.handleClickEventCard} />
+            <AsyncContainer
+                promise={{
+                    events: this.props.api.build('GET', '/events/me?limit=10')
+                }}
+            >
+                {
+                    ({ events }) => (
+                        <PureList
+                            type="horizontal"
+                            data={events.result}
+                            containerStyle={{ flex: 1 }}
+                            render={
+                                ({ item }) => (
+                                    <EventCard type="horizontal" data={item} onPress={this.handleClickEventCard} />
+                                )
+                            }
+                        />
                     )
                 }
-            />
+            </AsyncContainer>
         );
     }
 

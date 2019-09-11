@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Image, Text, BackHandler } from 'react-native';
+import { View, Image, Text, BackHandler, ImageBackground } from 'react-native';
 import {
     Card,
     Avatar,
@@ -12,9 +12,11 @@ import {
 } from 'react-native-paper';
 import moment from 'moment';
 
+import CustomButton from '#components/Button';
 import QueryableList from '#components/QueryableList';
 import Appbar from '#components/Appbar';
 import { compose } from '#utility';
+import withAlert from '#extension/alert';
 import withDevice from '#extension/device';
 import withAPI from '#extension/apisauce';
 import withBack from '#extension/backhandler';
@@ -24,11 +26,25 @@ export class VoucherScreen extends React.PureComponent {
         currentVoucher: null
     }
 
-    useVoucher = async () => {
-        const voucher = this.state.currentVoucher;
-        await this.props.api.request('POST', '/users/voucher', { voucher: voucher.id });
-        this.dismissDialog();
-    }
+    useVoucher = () => this.props.showAlert({
+        title: 'Activate Voucher',
+        content: 'Activate voucher cannot be undone, after used will not able to recover back.',
+        submit: async () => {
+            this.props.api.request('DELETE', '/users/voucher', { voucher: this.state.currentVoucher.id });
+            this.dismissDialog();
+        },
+        customSubmit: (onPress) => {
+            return (
+                <CustomButton
+                    width={this.props.device.getX(25)}
+                    mode="contained"
+                    roundness={5}
+                    onPress={onPress}
+                    text="Activate"
+                />
+            );
+        }
+    });
 
     dismissDialog = () => {
         this._dialogBack.remove();
@@ -52,7 +68,9 @@ export class VoucherScreen extends React.PureComponent {
                             </View>
                         </Card.Content>
                         <Card.Actions style={{ justifyContent: 'flex-end' }}>
-                            <Button onPress={this.useVoucher} style={{ flex: 1 }} mode="contained">ACTIVATE</Button>
+                            <Button onPress={this.useVoucher} style={{ flex: 1 }} mode="contained">
+                                <Text style={{ color: '#ffffff' }}>ACTIVATE</Text>
+                            </Button>
                         </Card.Actions>
                     </Card>
                 </Dialog>
@@ -64,13 +82,14 @@ export class VoucherScreen extends React.PureComponent {
         const width = this.props.device.getX(80);
         const height = this.props.device.getY(20);
         return (
-            <View style={{ flex: 1, alignItems: 'center' }}>
+            <View style={{ flex: 1 }}>
                 <Appbar home={true} profileBar={true} />
                 { this.state.currentVoucher && this.renderPortalVoucher() }
+                <Text style={{ marginLeft: 10, marginTop: 10, fontSize: 19, fontWeight: 'bold' }}>Vouchers</Text>
                 <QueryableList
                     type="vertical"
                     numColumns={1}
-                    containerStyle={{ flex: 1 }}
+                    containerStyle={{ flex: 1, alignSelf: 'center' }}
                     initQuery={{ page: 1 }}
                     updateQuery={(query) => ({ page: query.page + 1 })}
                     uri={(query) => `/users/voucher?limit=5&page=${query.page}`}
@@ -91,6 +110,16 @@ export class VoucherScreen extends React.PureComponent {
                                     titleStyle={{ fontSize: 15 }}
                                     subtitleStyle={{ fontSize: 11 }}
                                 />
+                                {/* <Image
+                                    style={{
+                                        width: '100%',
+                                        height: '100%',
+                                        resizeMode: 'contain',
+                                        position: 'absolute',
+                                        top: 0,
+                                    }}
+                                    source={require('#assets/expired.jpg')}
+                                /> */}
                             </Card>
                         )
                     }
@@ -103,5 +132,6 @@ export class VoucherScreen extends React.PureComponent {
 export default compose(
     withAPI,
     withDevice,
+    withAlert,
     withBack('profile'),
 )(VoucherScreen);

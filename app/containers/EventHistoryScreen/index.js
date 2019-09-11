@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { View, Text } from 'react-native';
+import { View, Text, Image } from 'react-native';
 
 import Appbar from '#components/Appbar';
 import EventCard from '#components/EventCard';
@@ -29,9 +29,16 @@ export class EventHistory extends React.PureComponent {
                             <Text style={{ marginLeft: 10, fontSize: 16, fontWeight: 'bold' }}>Event Histories</Text>
                         </View>
                     }
+                    footer={
+                        <View style={{ flex: 1, alignItems: 'center', margin: 10 }}>
+                            <Image style={{ width: 64, height: 64 }} source={require('#assets/fail.png')} />
+                            <Text>There is no more ...</Text>
+                        </View>
+                    }
                     render={
                         ({ item }) => (
-                            <EventCard type="vertical" data={item} onPress={this.handleClickEventCard} />
+                            // TODO: History Display EventDetail ( Empty Ver )
+                            <EventCard type="vertical" data={item} onPress={() => {}} />
                         )
                     }
                 />

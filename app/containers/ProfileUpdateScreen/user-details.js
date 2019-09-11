@@ -1,77 +1,111 @@
 import React from 'react';
-import { View, Text } from 'react-native';
-import { Card, Button, Portal, Dialog, Paragraph } from 'react-native-paper';
 
-import Form from '#components/Form';
+import { View } from 'react-native';
+import { Text, Card, Button, Portal, Dialog, Paragraph } from 'react-native-paper';
 import Appbar from '#components/Appbar';
+import Form from '#components/Form';
 
 import { filterObject } from '#utility';
 
-export class EventInfoScreen extends React.Component {
+export class UserDetail extends React.PureComponent {
+
     state = {
         name: this.props.getState().name,
-        start: this.props.getState().start || Date.now(),
-        type: this.props.getState().type,
-        banner: this.props.getState().banner,
-        quit: false,
-    }
+        age: this.props.getState().age.toString(),
+        constellation: this.props.getState().constellation,
+        gender: this.props.getState().gender,
+        avatar: null,
+        utag: this.props.getState().utag,
 
-    imageSetting = () => [
-        {
-            type: 'image',
-            row: 0,
-            dcc: (banner) => this.setState({ banner }),
-            key: 'event-image',
-            setting: {
-                value: this.state.banner || this.props.api.cdn(`event-${this.props.getState().id}`),
-                displayComponent: (value) => <Card.Cover source={value} />
-            }
-        },
-    ]
+        quit: false,
+        loading: false,
+    }
 
     formSetting = () => [
         {
-            type: 'input',
+            type: 'image',
             row: 0,
-            dcc: (name) => this.setState({ name }),
-            key: 'event-name',
-            props: {
-                mode: 'outlined',
-                width: this.props.device.getX(85),
-            },
+            dcc: (avatar) => this.setState({ avatar }),
+            key: 'user-avatar',
             setting: {
-                label: 'Event Name',
-                value: this.state.name,
+                value: this.state.avatar || this.props.api.cdn(`user-${this.props.getState().id}`),
             }
         },
         {
-            type: 'datetime',
+            type: 'input',
             row: 1,
-            dcc: (start_time) => this.setState({ start_time }),
-            key: 'start',
+            dcc: (name) => this.setState({ name }),
+            key: 'user-name',
             props: {
-                width: this.props.device.getX(45),
+                mode: 'outlined',
+                width: this.props.device.getX(78),
             },
             setting: {
-                label: 'Event Start',
-                value: this.state.start_time,
+                label: 'Name',
+                value: this.state.name
+            }
+        },
+        {
+            type: 'input',
+            row: 2,
+            dcc: (age) => this.setState({ age }),
+            key: 'user-age',
+            props: {
+                mode: 'outlined',
+                keyboardType: 'numeric',
+                width: this.props.device.getX(30),
+            },
+            setting: {
+                label: 'Age',
+                value: this.state.age
             }
         },
         {
             type: 'picker',
-            row: 1,
-            dcc: (type) => this.setState({ type }),
-            key: 'type',
+            row: 2,
+            dcc: (constellation) => this.setState({ constellation }),
+            key: 'user-cons',
             props: {
                 style: {
-                    marginLeft: this.props.device.getX(2),
-                    width: this.props.device.getX(38),
+                    width: this.props.device.getX(45),
+                    marginLeft: this.props.device.getX(3),
                 }
             },
             setting: {
-                label: 'Event Type',
-                value: this.state.type,
-                items: ['type1', 'type2']
+                label: 'Constellation',
+                value: this.state.constellation,
+                items: this.props.api.getConfig().constellation,
+            }
+        },
+        {
+            type: 'picker',
+            row: 3,
+            dcc: (gender) => this.setState({ gender }),
+            key: 'user-gender',
+            props: {
+                style: {
+                    width: this.props.device.getX(30),
+                    marginRight: this.props.device.getX(3),
+                }
+            },
+            setting: {
+                label: 'Gender',
+                value: this.state.gender,
+                items: ['Male', 'Female', 'Other'],
+            }
+        },
+        {
+            type: 'input',
+            row: 3,
+            dcc: (utag) => this.setState({ utag }),
+            key: 'user-tag',
+            props: {
+                mode: 'outlined',
+                width: this.props.device.getX(45),
+            },
+            setting: {
+                label: 'Alias',
+                value: this.state.utag,
             }
         },
     ];
@@ -86,15 +120,11 @@ export class EventInfoScreen extends React.Component {
     }
 
     handleQuit = () => {
-        if (this.props.defaultState.length === 0) {
-            this.props.navigation.navigate('event_list');
-        } else {
-            this.props.navigation.navigate({ routeName: 'event_detail', params: this.props.navigation.state.params });
-        }
+        this.props.navigation.navigate('profile');
     }
 
     nextStep = () => this.props.nextStep(
-        filterObject(this.state, 'name', 'start', 'type', 'banner')
+        filterObject(this.state, 'name', 'age', 'constellation', 'gender', 'avatar', 'utag')
     )
 
     render() {
@@ -103,12 +133,11 @@ export class EventInfoScreen extends React.Component {
                 <Appbar />
                 <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }} behavior="position">
                     <Card width={this.props.device.getX(90)}>
-                        <Form formSetting={this.imageSetting()} />
                         <Card.Content>
                             <Form
                                 containerStyle={{ alignItems: 'center' }}
                                 rowStyle={{ flexDirection: 'row', margin: 5 }}
-                                formSetting={this.formSetting()}
+                                formSetting={this.formSetting()} 
                             />
                         </Card.Content>
                         <Card.Actions style={{ justifyContent: 'center' }}>
@@ -136,4 +165,4 @@ export class EventInfoScreen extends React.Component {
     }
 };
 
-export default EventInfoScreen
+export default UserDetail;

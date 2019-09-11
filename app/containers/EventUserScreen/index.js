@@ -7,7 +7,6 @@ import Button from '#components/Button';
 import AsyncContainer from '#components/AsyncContainer';
 import Appbar from '#components/Appbar';
 
-import withBack from '#extension/backhandler';
 import withDevice from '#extension/device';
 import withAPI from '#extension/apisauce';
 import { compose } from '#utility';

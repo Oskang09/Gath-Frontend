@@ -62,7 +62,7 @@ function buildComponent(
                                         </Paragraph>
                                     </Dialog.Content>
                                     <Dialog.Actions>
-                                        <Button onPress={this.dismiss} >OK</Button>
+                                        <Button onPress={this.dismiss}>OK</Button>
                                     </Dialog.Actions>
                                 </Dialog>
                             </Portal>

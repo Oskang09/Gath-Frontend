@@ -14,6 +14,8 @@ import PostScreen from '#containers/HomeScreen/posts-screen';
 import PostDetail from '#containers/PostDetailScreen';
 import EventInfo from '#containers/EventInfoScreen';
 import EventDetail from '#containers/EventDetailScreen';
+import EventComment from '#containers/EventCommentScreen';
+import ProfileUpdate from '#containers/ProfileUpdateScreen';
 
 import EventUser from '#containers/EventUserScreen';
 import Notification from '#containers/NotificationScreen';
@@ -30,10 +32,12 @@ export default {
     },
     splash: SplashScreen,
 
+    update_profile: ProfileUpdate,
     event_detail: EventDetail,
     post_detail: PostDetail,
     event_info: EventInfo,
     event_user: EventUser,
+    event_comment: EventComment,
     
     notifications: Notification,
     vouchers: Voucher,
