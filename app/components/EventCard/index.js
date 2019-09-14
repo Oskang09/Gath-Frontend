@@ -21,7 +21,7 @@ export class EventCard extends React.PureComponent {
                 return {
                     flex: 1,
                     margin: 10,
-                    width: this.props.device.getX('45')
+                    width: this.props.device.getX(45)
                 };
         }
     }

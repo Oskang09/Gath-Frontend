@@ -29,10 +29,15 @@ export class ProfileScreen extends React.PureComponent {
         return (
             <Caccordion
                 key="profile"
-                containerStyle={{ 
+                containerStyle={{
                     marginTop: 10,
                     marginLeft: this.props.device.getX(20),
                     marginRight: this.props.device.getX(20)
+                }}
+                collapsedStyle={{
+                    marginTop: 10,
+                    marginLeft: this.props.device.getX(10),
+                    marginRight: this.props.device.getX(10)
                 }}
                 collapsed={
                     <View>
@@ -132,9 +137,10 @@ export class ProfileScreen extends React.PureComponent {
 
     renderButton = ({ profile }) => {
         return (
-            <>
+            <View style={{ flex: 1, flexDirection: 'column', alignItems: 'center' }}>
                 <Button
                     key="logout"
+                    roundness={5}
                     onPress={
                         async () => {
                             await this.props.firebase.logout();
@@ -145,6 +151,7 @@ export class ProfileScreen extends React.PureComponent {
                 />
                 <Button
                     key="update-profile"
+                    roundness={5}
                     onPress={
                         () => this.props.navigation.navigate({
                             routeName: 'update_profile',
@@ -153,7 +160,7 @@ export class ProfileScreen extends React.PureComponent {
                     }
                     text="Edit"
                 />
-            </>
+            </View>
         );
     }
 

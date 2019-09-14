@@ -25,10 +25,10 @@ export class Caccordion extends React.PureComponent {
 
     render() {
         const { open } = this.state;
-        const { children, containerStyle, collapsed, showButton } = this.props;
+        const { children, containerStyle, collapsed, collapsedStyle, showButton } = this.props;
         if (showButton) {
             return (
-                <Card style={containerStyle}>
+                <Card style={open ? collapsedStyle : containerStyle}>
                     { this.renderTitle() }
                     <Card.Content>
                         { children }
@@ -44,7 +44,7 @@ export class Caccordion extends React.PureComponent {
         }
         return (
             <TouchableOpacity activeOpacity={1} onPress={this.toggleAccordion}>
-                <Card style={containerStyle}>
+                <Card style={open ? collapsedStyle : containerStyle}>
                     { this.renderTitle() }
                     <Card.Content>
                         { children }

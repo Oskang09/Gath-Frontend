@@ -13,6 +13,16 @@ import withAPI from '#extension/apisauce';
 
 export class EventHistory extends React.PureComponent {
 
+    handleClickEventCard = (data) => {
+        this.props.navigation.navigate({
+            routeName: 'event_detail',
+            params: {
+                event: data,
+                from : 'history'
+            }
+        });
+    }
+
     render() {
         return (
             <View style={{ flex: 1 }}>
@@ -37,8 +47,7 @@ export class EventHistory extends React.PureComponent {
                     }
                     render={
                         ({ item }) => (
-                            // TODO: History Display EventDetail ( Empty Ver )
-                            <EventCard type="vertical" data={item} onPress={() => {}} />
+                            <EventCard type="vertical" data={item} onPress={this.handleClickEventCard} />
                         )
                     }
                 />

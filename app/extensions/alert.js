@@ -14,6 +14,7 @@ function buildComponent(
 ) {
     return class extends React.Component {
         state = {
+            loading: false,
             title: null,
             content: null,
             submit: null,
@@ -34,15 +35,20 @@ function buildComponent(
         dismiss = () => {
             if (this._mounted) {
                 this._backHandler.remove();
-                this.setState({ title: null, content: null, submit: null, customCancel: null, customSubmit: null });
+                this.setState({ loading: false, title: null, content: null, submit: null, customCancel: null, customSubmit: null });
                 return true;
             }
         }
 
         submit = async () => {
-            if (this._mounted) {
-                await this.state.submit();
-                this.dismiss();
+            if (this._mounted && !this.state.loading) {
+                this.setState(
+                    { loading: true }, 
+                    () => {
+                        await this.state.submit();
+                        this.dismiss();
+                    }
+                );
             }
         }
 

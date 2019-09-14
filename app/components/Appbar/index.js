@@ -114,7 +114,12 @@ export class TopBar extends React.PureComponent {
                     ref={ref => this.searchRef = ref}
                     style={{ width: searchWidth }}
                     placeholder="Search something ..."
-                    onChangeText={searchQuery => this.setState({ searchQuery })}
+                    onChangeText={
+                        (searchQuery) => this.setState(
+                            { searchQuery }, 
+                            () => this.props.onSearchChange && this.props.onSearchChange(searchQuery)
+                        )
+                    }
                     value={searchQuery}
                 />
                 { this.renderSearchAction() }
@@ -130,6 +135,8 @@ export class TopBar extends React.PureComponent {
             onPress={this.props.home && this.handleHome}
         />
     )
+
+    getSearchContent = () => this.state.searchQuery
 
     handleHome = () => this.props.navigation.navigate('home')
 

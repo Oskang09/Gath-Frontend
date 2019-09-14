@@ -1,6 +1,6 @@
 import React, { createRef } from 'react';
-import { View, Text, Button } from 'react-native';
-import { Card } from 'react-native-paper';
+import { View, Text } from 'react-native';
+import { Card, Button } from 'react-native-paper';
 
 import Appbar from '#components/Appbar';
 import Form from '#components/Form';

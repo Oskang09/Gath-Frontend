@@ -8,6 +8,8 @@ import ShopCard from '#components/ShopCard';
 
 export class ShopList extends React.Component {
     
+    listController = null
+
     handleClick = (item) => {
         this.props.nextStep(item);
     }
@@ -16,23 +18,30 @@ export class ShopList extends React.Component {
         const selectedShop = this.props.getState();
         return (
             <View style={{ flex: 1 }}>
-                <Appbar />
+                <Appbar
+                    onSearchChange={
+                        (name) => this.listController.updateQuery({ name }, "filter")
+                    }
+                    search={true}
+                />
                 <QueryableList
                     type="vertical"
                     key="all-shop"
+                    controller={ctl => this.listController = ctl}
                     numColumns={2}
-                    initQuery={{ page: 1, limit: 4 }}
+                    resetWhenRefresh="filter"
+                    initQuery={{ page: 1, limit: 4, name: null, type: '' }}
                     updateQuery={(query) => ({ page: query.page + 1 })}
                     containerStyle={{ flex: 1, margin: 5 }}
-                    uri={(query) => `/shops?page=${query.page}&limit=${query.limit}&type=${query.type}`}
+                    uri={
+                        (query) => `/shops?page=${query.page}&limit=${queyr.limit}&type=${query.type}${query.name && `&name=${query.name}`}`
+                    }
                     filter={[
                         {
                             key: 'shop-type',
                             name: 'type',
                             title: 'Type',
-                            items: [
-                                'Food', 'Drink'
-                            ]
+                            items: this.props.api.getConfig().shopType
                         }
                     ]}
                     header={

@@ -7,7 +7,7 @@ const request = async (method, path, body) => {
     const response = await requester[method.toLowerCase()](path, body);
     if (response.data) {
         if (!response.data.ok) {
-            throw Error(response.data.message || response.data.error);
+            throw Error(response.data.message);
         }
         if (response.data._meta) {
             return response.data;

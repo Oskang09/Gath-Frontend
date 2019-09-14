@@ -5,6 +5,7 @@ import EventDescription from './event_description';
 import ShopList from './shop_list';
 import StepContainer from '#components/StepContainer';
 
+import withAlert from '#extension/alert';
 import withFirebase from '#extension/firebase';
 import withDevice from '#extension/device';
 import withAPI from '#extension/apisauce';
@@ -31,15 +32,23 @@ export class EventForm extends React.Component {
                 defaultState={state}
                 containers={[ EventInfo, EventDescription, ShopList ]}
                 onComplete={
-                    async (state) => {
-                        if (this.props.navigation.state.params) {
-                            await this.props.api.request('PUT', `/events/${this.props.navigation.state.params.id}`, state);
-                        } else {
-                            await this.props.api.request('POST', '/events', state);
+                    async (state) => this.props.showAlert({
+                        title: 'Create Event',
+                        content: '',
+                        submit: () => {
+                            let response;
+                            if (this.props.navigation.state.params) {
+                                response = await this.props.api.request('PUT', `/events/${this.props.navigation.state.params.id}`, state);
+                            } else {
+                                resposne = await this.props.api.request('POST', '/events', state);
+                            }
+    
+                            this.props.navigation.navigate({
+                                routeName: 'event_detail',
+                                params: response
+                            });
                         }
-
-                        this.props.navigation.navigate('home');
-                    }
+                    })
                 }
             />
         )
@@ -49,5 +58,6 @@ export class EventForm extends React.Component {
 export default compose(
     withAPI,
     withDevice,
-    withFirebase
+    withFirebase,
+    withAlert
 )(EventForm);

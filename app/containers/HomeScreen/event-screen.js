@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { View, Text } from 'react-native';
+import { View, Text, Image } from 'react-native';
 import { FAB } from 'react-native-paper';
 import Appbar from '#components/Appbar';
 import PureList from '#components/PureList';
@@ -17,10 +17,15 @@ import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 
 export class EventScreen extends React.PureComponent {
 
+    listController = null
+
     handleClickEventCard = (data) => {
         this.props.navigation.navigate({
             routeName: 'event_detail',
-            params: data
+            params: {
+                event: data,
+                from: 'event_list',
+            }
         });
     }
     
@@ -67,20 +72,29 @@ export class EventScreen extends React.PureComponent {
     render() {
         return (
             <View style={{ flex: 1 }}>
-                <Appbar search={true} />
+                <Appbar
+                    onSearchChange={
+                        (name) => this.listController.updateQuery({ name }, 'filter')
+                    }
+                    search={true}
+                />
                 <QueryableList
                     type="vertical"
+                    controller={ctl => this.listController = ctl}
                     numColumns={1}
                     resetWhenRefresh="filter"
                     containerStyle={{ flex: 1, marginTop: 5 }}
-                    initQuery={{ page: 1, type: '' }}
-                    uri={(query) => `/events?page=${query.page}&type=${query.type}`}
+                    initQuery={{ page: 1, type: '', name: null }}
+                    updateQuery={(query) => ({ page: query.page + 1 })}
+                    uri={
+                        (query) => `/events?page=${query.page}&type=${query.type}${query.name && `&name=${query.name}`}`
+                    }
                     filter={[
                         {
                             key: 'event-type',
                             name: 'type',
                             title: 'Type',
-                            items: ['COOK', 'PLAY'],
+                            items: this.props.api.getConfig().eventType,
                         }
                     ]}
                     header={
@@ -88,6 +102,12 @@ export class EventScreen extends React.PureComponent {
                             <Text style={{ marginLeft: 10, fontSize: 16, fontWeight: 'bold' }}>My Events</Text>
                             { this.renderOwnEvent() }
                             <Text style={{ marginLeft: 10, fontSize: 16, fontWeight: 'bold' }}>Other Events</Text>
+                        </View>
+                    }
+                    footer={
+                        <View style={{ flex: 1, alignItems: 'center', margin: 10 }}>
+                            <Image style={{ width: 64, height: 64 }} source={require('#assets/fail.png')} />
+                            <Text>There is no more ...</Text>
                         </View>
                     }
                     render={

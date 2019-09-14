@@ -29,7 +29,10 @@ export class EventUser extends React.Component {
 
     handleBack = () => this.props.navigation.navigate({
         routeName: 'event_detail',
-        params: this.state.event
+        params: {
+            event: this.state.event,
+            from: this.props.navigation.state.params.from
+        }
     })
 
     handleEventAction = async (action, user) => {

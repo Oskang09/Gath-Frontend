@@ -1,6 +1,8 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 import { Chip } from 'react-native-paper';
+
+import Icon from '#components/Icon';
 import PureList from '#components/PureList';
 
 import { compose } from '#utility';
@@ -47,27 +49,36 @@ export class FilterBar extends React.Component {
                     containerStyle={{ flex: 1 }}
                     data={items}
                     render={
-                        ({ item }) => (
-                            <Chip
-                                mode="outlined"
-                                style={{
-                                    margin: 2,
-                                    backgroundColor: data.includes(item) ?
-                                        device.primaryColor :
-                                        'white'
-                                }}
-                                theme={{
-                                    colors: {
-                                        text: data.includes(item) ?
-                                            'white' :
-                                            'black'
-                                    }
-                                }}
-                                onPress={() => this.toggle(item)}
-                            >
-                                { item }
-                            </Chip>
-                        )
+                        ({ item }) => {
+                            const { display, value, icon } = item;
+                            const iconComponent = icon ? (
+                                typeof icon === 'string' ?
+                                    icon : 
+                                    (props) => <Icon {...props} {...icon} /> 
+                            ) : null;
+                            return (
+                                <Chip
+                                    icon={iconComponent}
+                                    mode="outlined"
+                                    style={{
+                                        margin: 2,
+                                        backgroundColor: data.includes(value) ?
+                                            device.primaryColor :
+                                            'white'
+                                    }}
+                                    theme={{
+                                        colors: {
+                                            text: data.includes(value) ?
+                                                'white' :
+                                                'black'
+                                        }
+                                    }}
+                                    onPress={() => this.toggle(value)}
+                                >
+                                    { display }
+                                </Chip>
+                            );
+                        }
                     }
                 />
             </View>

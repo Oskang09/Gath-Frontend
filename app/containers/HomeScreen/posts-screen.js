@@ -23,7 +23,7 @@ export class PostScreen extends React.PureComponent {
     render() {
         return (
             <View style={{ flex: 1 }}>
-                <Appbar />
+                <Appbar search={true} />
                 <QueryableList
                     type="vertical"
                     numColumns={1}
@@ -34,10 +34,10 @@ export class PostScreen extends React.PureComponent {
                     uri={(query) => `/posts?page=${query.page}&type=${query.type}&limit=5`}
                     filter={[
                         {
-                            key: 'shop-type',
+                            key: 'post-type',
                             name: 'type',
                             title: 'Type',
-                            items: ['FOOD', 'WATER'],
+                            items: this.props.api.getConfig().postType,
                         }
                     ]}
                     footer={

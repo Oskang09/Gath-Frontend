@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { View, Text } from 'react-native';
+import { View, Text, BackHandler } from 'react-native';
 import { Card, Paragraph, Avatar } from 'react-native-paper';
 import moment from 'moment';
 
@@ -17,13 +17,13 @@ import withAlert from '#extension/alert';
 import withDevice from '#extension/device';
 import withDialog from '#extension/dialog';
 import withAPI from '#extension/apisauce';
-import withBack from '#extension/backhandler';
 
 export class EventDetailScreen extends React.PureComponent {
 
     state = {
         loading: false,
-        event: this.props.navigation.state.params,
+        event: this.props.navigation.state.params.event,
+        from: this.props.navigation.state.params.from,
         comment: ''
     }
 
@@ -33,6 +33,20 @@ export class EventDetailScreen extends React.PureComponent {
         { package: 'fontawesome5', name: 'store' },
         { package: 'materialicons', name: 'people' },
     ]
+
+    componentWillMount() {
+        this._backHandler = BackHandler.addEventListener(
+            'hardwareBackPress',
+            () => {
+                this.props.navigation.navigate(this.state.from);
+                return true;
+            }
+        );
+    }
+
+    componentWillUnmount() {
+        this._backHandler.remove();
+    }
 
     createComment = async () => {
         if (this.state.loading) {
@@ -101,6 +115,33 @@ export class EventDetailScreen extends React.PureComponent {
 
     renderAction = (event, meta, shop) => {
         const buttons = [];
+
+        if (meta.isNormal || meta.isRequest) {
+            return null;
+        }
+        
+        buttons.push(
+            <View key="view-comments" style={{ margin: 10 }}>
+                <Button
+                    width={this.props.device.getX(50)}
+                    roundness={5}
+                    text="View Comments"
+                    onPress={() => this.props.navigation.navigate({ routeName: 'event_comment', params: { event, meta, from: this.state.from } })}
+                />
+            </View>
+        );
+
+        buttons.push(
+            <View key="view-people" style={{ margin: 10 }}>
+                <Button
+                    width={this.props.device.getX(50)}
+                    roundness={5}
+                    text="View Peoples"
+                    onPress={() => this.props.navigation.navigate({ routeName: 'event_user', params: { event, meta, from: this.state.from } })}
+                />
+            </View>
+        );
+
         if (meta.isOwner) {
             if (event.status === 'PENDING') {
                 buttons.push(
@@ -111,7 +152,7 @@ export class EventDetailScreen extends React.PureComponent {
                                 params: Object.assign({}, event, { shop })
                             })}
                             roundness={5}
-                            width={this.props.device.getX(75)}
+                            width={this.props.device.getX(50)}
                             textStyle={{ color: 'white' }}
                             text="Edit Event"
                         />
@@ -132,7 +173,7 @@ export class EventDetailScreen extends React.PureComponent {
                             }
                             roundness={5}
                             color="#ff0000"
-                            width={this.props.device.getX(75)}
+                            width={this.props.device.getX(50)}
                             textStyle={{ color: 'white' }}
                             text="Delete Event"
                         />
@@ -141,33 +182,39 @@ export class EventDetailScreen extends React.PureComponent {
             }
         }
 
-        buttons.push(
-            <View key="view-comments" style={{ margin: 10 }}>
-                <Button
-                    width={this.props.device.getX(75)}
-                    roundness={5}
-                    text="View Comments"
-                    onPress={() => this.props.navigation.navigate({ routeName: 'event_comment', params: { event, meta } })}
-                />
-            </View>
-        );
-
-        buttons.push(
-            <View key="view-people" style={{ margin: 10 }}>
-                <Button
-                    width={this.props.device.getX(75)}
-                    roundness={5}
-                    text="View Peoples"
-                    onPress={() => this.props.navigation.navigate({ routeName: 'event_user', params: { event, meta } })}
-                />
-            </View>
-        );
-
         return (
             <View style={{ alignItems: 'center', margin: 10 }}>
                 {buttons}
             </View>
         );
+    }
+    
+    renderCommentForm = (event, profile, meta) => {
+        if (meta.isNormal || meta.isRequest || event.status === 'END') {
+            return null;
+        }
+        return (
+            <View>
+                <Text style={{ marginLeft: 10, marginTop: 10, fontSize: 19, fontWeight: 'bold' }}>Comments</Text>
+                <Card style={{ ...this.props.device.marginXY(this.props.device.getX(5), this.props.device.getY(1.25)) }}>
+                    <Card.Title
+                        title={profile.name}
+                        left={(props) => <Avatar.Image size={50} source={{ uri: this.props.api.cdn(`user-${profile.id}`) }} />}
+                    />
+                    <Card.Content>
+                        <Form containerStyle={{ alignItems: 'center' }} formSetting={this.formSetting()} />
+                    </Card.Content>
+                    <Card.Actions style={{ justifyContent: 'flex-end' }}>
+                        <Button
+                            onPress={this.createComment}
+                            roundness={5}
+                            textStyle={{ color: 'white' }}
+                            text="SEND"
+                        />
+                    </Card.Actions>
+                </Card>
+            </View>
+        ); 
     }
 
     renderButton = (event, meta) => {
@@ -261,7 +308,7 @@ export class EventDetailScreen extends React.PureComponent {
                     controller={(ctl) => this.dataController = ctl}
                     promise={{
                         event: this.props.api.build('GET', `/events/${this.state.event.id}`),
-                        comment: this.props.api.build('GET', `/events/${this.state.event.id}/comments?limit=5`),
+                        comment: this.props.api.build('GET', `/events/${this.state.event.id}/comments?limit=4`),
                         meta: this.props.api.build('GET', `/events/${this.state.event.id}/meta`),
                         shop: this.props.api.build('GET', `/shops/${this.state.event.shopId}`),
                         profile: this.props.api.build('GET', '/users/profile'),
@@ -311,28 +358,18 @@ export class EventDetailScreen extends React.PureComponent {
                                                         }
                                                     }
                                                 />
-                                                <Text style={{ marginLeft: 10, marginTop: 10, fontSize: 19, fontWeight: 'bold' }}>Comments</Text>
-                                                <Card style={{ ...this.props.device.marginXY(this.props.device.getX(5), this.props.device.getY(1.25)) }}>
-                                                    <Card.Title
-                                                        title={profile.name}
-                                                        left={(props) => <Avatar.Image size={50} source={{ uri: this.props.api.cdn(`user-${profile.id}`) }} />}
-                                                    />
-                                                    <Card.Content>
-                                                        <Form containerStyle={{ alignItems: 'center' }} formSetting={this.formSetting()} />
-                                                    </Card.Content>
-                                                    <Card.Actions style={{ justifyContent: 'flex-end' }}>
-                                                        <Button
-                                                            onPress={this.createComment}
-                                                            roundness={5}
-                                                            textStyle={{ color: 'white' }}
-                                                            text="SEND"
-                                                        />
-                                                    </Card.Actions>
-                                                </Card>
+                                                { this.renderCommentForm(event, profile, meta) }
                                             </View>
                                         }
                                         footer={this.renderAction(event, meta, shop)}
-                                        data={comment.result}
+                                        data={[
+                                            {
+                                                user: { name: 'Event Description' },
+                                                userId: event.organizerId,
+                                                comment: event.desc,
+                                            },
+                                            ...comment.result
+                                        ]}
                                         render={this.renderComments}
                                     />
                                     {absoluteButton}
@@ -351,5 +388,4 @@ export default compose(
     withAPI,
     withDialog,
     withAlert,
-    withBack('event_list'),
 )(EventDetailScreen);

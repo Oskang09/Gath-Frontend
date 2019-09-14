@@ -64,7 +64,7 @@ export class EventCommentScreen extends React.PureComponent {
             'INTERVAL',
             'event-comment',
             () => {
-                this.dataController.reload('event')
+                this.dataController.reload('comment')
             },
             10
         );
@@ -77,7 +77,10 @@ export class EventCommentScreen extends React.PureComponent {
 
     handleBack = () => this.props.navigation.navigate({
         routeName: 'event_detail',
-        params: this.state.event
+        params: {
+            event: this.state.event,
+            from: this.props.navigation.state.params.from
+        }
     })
 
     renderComments = ({ item }) => {
@@ -109,35 +112,44 @@ export class EventCommentScreen extends React.PureComponent {
                     }}
                 >
                     {
-                        ({ event, profile }) => {
+                        ({ comment, profile }) => {
                             return (
                                 <View style={{ flex: 1 }}>
                                     <PureList
                                         type="vertical"
                                         numColumns={1}
                                         header={
-                                            <View style={{ flex: 1 }}>
-                                                <Text style={{ marginLeft: 10, marginTop: 10, fontSize: 19, fontWeight: 'bold' }}>Comments</Text>
-                                                <Card style={{ ...this.props.device.marginXY(this.props.device.getX(5), this.props.device.getY(1.25)) }}>
-                                                    <Card.Title
-                                                        title={profile.name}
-                                                        left={(props) => <Avatar.Image size={50} source={{ uri: this.props.api.cdn(`user-${profile.id}`) }} />}
-                                                    />
-                                                    <Card.Content>
-                                                        <Form containerStyle={{ alignItems: 'center' }} formSetting={this.formSetting()} />
-                                                    </Card.Content>
-                                                    <Card.Actions style={{ justifyContent: 'flex-end' }}>
-                                                        <Button
-                                                            onPress={this.createComment}
-                                                            roundness={5}
-                                                            textStyle={{ color: 'white' }}
-                                                            text="SEND"
+                                            this.state.event.status !== 'END' && (
+                                                <View style={{ flex: 1 }}>
+                                                    <Text style={{ marginLeft: 10, marginTop: 10, fontSize: 19, fontWeight: 'bold' }}>Comments</Text>
+                                                    <Card style={{ ...this.props.device.marginXY(this.props.device.getX(5), this.props.device.getY(1.25)) }}>
+                                                        <Card.Title
+                                                            title={profile.name}
+                                                            left={(props) => <Avatar.Image size={50} source={{ uri: this.props.api.cdn(`user-${profile.id}`) }} />}
                                                         />
-                                                    </Card.Actions>
-                                                </Card>
-                                            </View>
+                                                        <Card.Content>
+                                                            <Form containerStyle={{ alignItems: 'center' }} formSetting={this.formSetting()} />
+                                                        </Card.Content>
+                                                        <Card.Actions style={{ justifyContent: 'flex-end' }}>
+                                                            <Button
+                                                                onPress={this.createComment}
+                                                                roundness={5}
+                                                                textStyle={{ color: 'white' }}
+                                                                text="SEND"
+                                                            />
+                                                        </Card.Actions>
+                                                    </Card>
+                                                </View>
+                                            )
                                         }
-                                        data={comment.result}
+                                        data={[
+                                            {
+                                                user: { name: 'Event Description' },
+                                                userId: this.state.event.organizerId,
+                                                comment: this.state.event.desc,
+                                            },
+                                            ...comment.result
+                                        ]}
                                         render={this.renderComments}
                                     />
                                 </View>
