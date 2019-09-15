@@ -10,6 +10,7 @@ import withFirebase from '#extension/firebase';
 import withDevice from '#extension/device';
 import withAPI from '#extension/apisauce';
 import withDialog from '#extension/dialog';
+import withNavigator from '#extension/navigator';
 import { compose } from '#utility';
 
 export class ProfileUpdate extends React.Component {
@@ -51,7 +52,7 @@ export class ProfileUpdate extends React.Component {
                                     desc: state[2],
                                 }
                             );
-                            this.props.navigation.navigate('profile');
+                            this.props.navigator.switchTo('profile');
                         } catch (error) {
                             this.props.showDialog(error.message);
                         }
@@ -66,5 +67,6 @@ export default compose(
     withAPI,
     withDevice,
     withFirebase,
-    withDialog
+    withDialog,
+    withNavigator
 )(ProfileUpdate);

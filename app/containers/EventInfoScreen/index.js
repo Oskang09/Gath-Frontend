@@ -4,11 +4,13 @@ import EventInfo from './event_info';
 import EventDescription from './event_description';
 import ShopList from './shop_list';
 import StepContainer from '#components/StepContainer';
+import Button from '#components/Button';
 
 import withAlert from '#extension/alert';
 import withFirebase from '#extension/firebase';
 import withDevice from '#extension/device';
 import withAPI from '#extension/apisauce';
+import withNavigator from '#extension/navigator';
 import { compose } from '#utility';
 
 export class EventForm extends React.Component {
@@ -35,18 +37,26 @@ export class EventForm extends React.Component {
                     async (state) => this.props.showAlert({
                         title: 'Create Event',
                         content: '',
-                        submit: () => {
-                            let response;
+                        customSubmit: (submit) => (
+                            <Button
+                                mode="contained"
+                                text="Create"
+                                textStyle={{ color: '#ffffff' }}
+                                roundness={5}
+                                onPress={submit}
+                            />
+                        ),
+                        submit: async () => {
                             if (this.props.navigation.state.params) {
-                                response = await this.props.api.request('PUT', `/events/${this.props.navigation.state.params.id}`, state);
+                                await this.props.api.request('PUT', `/events/${this.props.navigation.state.params.id}`, state);
+                                this.props.navigator.back();
                             } else {
-                                resposne = await this.props.api.request('POST', '/events', state);
+                                const resposne = await this.props.api.request('POST', '/events', state);
+                                this.props.navigator.replace({
+                                    routeName: 'event_detail',
+                                    params: resposne
+                                });
                             }
-    
-                            this.props.navigation.navigate({
-                                routeName: 'event_detail',
-                                params: response
-                            });
                         }
                     })
                 }
@@ -59,5 +69,6 @@ export default compose(
     withAPI,
     withDevice,
     withFirebase,
-    withAlert
+    withAlert,
+    withNavigator
 )(EventForm);

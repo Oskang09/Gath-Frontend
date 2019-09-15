@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { View, ScrollView } from 'react-native';
+import { View, ScrollView, BackHandler } from 'react-native';
 import { Avatar, Card, Paragraph, Title } from 'react-native-paper';
 
 import Image from '#components/Image';
@@ -10,8 +10,8 @@ import AsyncContainer from '#components/AsyncContainer';
 import { compose } from '#utility';
 import withDevice from '#extension/device';
 import withDialog from '#extension/dialog';
+import withNavigator from '#extension/navigator';
 import withAPI from '#extension/apisauce';
-import withBack from '#extension/backhandler';
 
 export class PostDetailScreen extends React.PureComponent {
 
@@ -19,6 +19,20 @@ export class PostDetailScreen extends React.PureComponent {
         loading: false,
         post: this.props.navigation.state.params,
         voucher: this.props.navigation.state.params.voucherId,
+    }
+
+    componentWillMount() {
+        this._backHandler = BackHandler.addEventListener(
+            'hardwareBackPress',
+            () => {
+                this.props.navigator.switchTo('post_list');
+                return true;
+            }
+        );
+    }
+
+    componentWillUnmount() {
+        this._backHandler.remove();
     }
 
     receiveVoucher = async (voucher) => {
@@ -79,5 +93,5 @@ export default compose(
     withDevice,
     withAPI,
     withDialog,
-    withBack('post_list'),
+    withNavigator
 )(PostDetailScreen);

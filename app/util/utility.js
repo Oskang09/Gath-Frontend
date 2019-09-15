@@ -10,6 +10,7 @@ export const injector = (build) => {
 };
 
 export const compose = (...enhancers) => {
+    enhancers.push()
     return (WrappedComponent) => {
         let Component = WrappedComponent;
         for (const enhancer of enhancers) {

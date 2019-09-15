@@ -9,6 +9,7 @@ import Appbar from '#components/Appbar';
 
 import withDevice from '#extension/device';
 import withAPI from '#extension/apisauce';
+import withNavigator from '#extension/navigator';
 import { compose } from '#utility';
 
 export class EventUser extends React.Component {
@@ -20,26 +21,25 @@ export class EventUser extends React.Component {
     dataController = null
 
     componentWillMount() {
-        this._backHandler = BackHandler.addEventListener('hardwareBackPress', this.handleBack);
+        this._backHandler = BackHandler.addEventListener(
+            'hardwareBackPress',
+            () => {
+                this.props.navigator.back();
+                return true;
+            }
+        );
     }
     
     componentWillUnmount() {
         this._backHandler.remove();
     }
 
-    handleBack = () => this.props.navigation.navigate({
-        routeName: 'event_detail',
-        params: {
-            event: this.state.event,
-            from: this.props.navigation.state.params.from
-        }
-    })
+    handleBack = () => this.props.navigator.back()
 
     handleEventAction = async (action, user) => {
         await this.props.api.request(
             'POST', 
-            `/events/${this.state.event.id}`, 
-            {
+            `/events/${this.state.event.id}`, {
                 action,
                 user
             }
@@ -104,11 +104,15 @@ export class EventUser extends React.Component {
                                         <List.Item
                                             key={`users-${user.id}`}
                                             title={user.name}
-                                            left={
-                                                (props) => <Avatar.Image size={50} source={{ uri: this.props.api.cdn(`user-${user.id}`) }} />
-                                            }
-                                            right={
-                                                (props) => this.buildButton(user)
+                                            left={(props) => <Avatar.Image size={50} source={{ uri: this.props.api.cdn(`user-${user.id}`) }} />}
+                                            right={(props) => this.buildButton(user)}
+                                            onPress={
+                                                () => this.props.navigator.push({
+                                                    routeName: 'user_profile',
+                                                    params: {
+                                                        id: user.id,
+                                                    }
+                                                })
                                             }
                                         />
                                     );
@@ -150,5 +154,6 @@ export class EventUser extends React.Component {
 
 export default compose(
     withAPI,
-    withDevice
+    withDevice,
+    withNavigator
 )(EventUser);

@@ -6,6 +6,7 @@ import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import AsyncContainer from '#components/AsyncContainer';
 import withAPI from '#extension/apisauce';
 import withDevice from '#extension/device';
+import withNavigator from '#extension/navigator';
 import { withNavigation } from 'react-navigation';
 import { compose } from '#utility';
 
@@ -26,7 +27,7 @@ export class TopBar extends React.PureComponent {
                     color="black"
                     onPress={
                         () => {
-                            this.props.navigation.navigate('history');
+                            this.props.navigator.switchTo('history');
                         }
                     }
                 />
@@ -36,7 +37,7 @@ export class TopBar extends React.PureComponent {
                     color="black"
                     onPress={
                         () => {
-                            this.props.navigation.navigate('vouchers');
+                            this.props.navigator.switchTo('vouchers');
                         }
                     }
                 />
@@ -46,7 +47,7 @@ export class TopBar extends React.PureComponent {
                     color="black"
                     onPress={
                         () => {
-                            this.props.navigation.navigate('notifications');
+                            this.props.navigator.switchTo('notifications');
                         }
                     }
                 />
@@ -138,7 +139,7 @@ export class TopBar extends React.PureComponent {
 
     getSearchContent = () => this.state.searchQuery
 
-    handleHome = () => this.props.navigation.navigate('home')
+    handleHome = () => this.props.navigator.switchTo('home')
 
     render() {
         const { search, profileBar } = this.props;
@@ -163,7 +164,8 @@ export class TopBar extends React.PureComponent {
 };
 
 export default compose(
+    withNavigator,
     withDevice,
     withNavigation,
-    withAPI
+    withAPI,
 )(TopBar);

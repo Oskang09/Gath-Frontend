@@ -1,12 +1,27 @@
 import React from 'react';
-import { View, Image } from 'react-native';
+import { View, Image, BackHandler } from 'react-native';
 import { List } from 'react-native-paper';
 
 import { compose } from '#utility';
 import Appbar from '#components/Appbar';
-import withBack from '#extension/backhandler';
+import withNavigator from '#extension/navigator';
 
 export class NotificationScreen extends React.PureComponent {
+
+    componentWillMount() {
+        this._backHandler = BackHandler.addEventListener(
+            'hardwareBackPress',
+            () => {
+                this.props.navigator.switchTo('profile');
+                return true;
+            }
+        );
+    }
+
+    componentWillUnmount() {
+        this._backHandler.remove();
+    }
+
     render() {
         return (
             <View style={{ flex: 1 }}>
@@ -60,6 +75,4 @@ export class NotificationScreen extends React.PureComponent {
     }
 };
 
-export default compose(
-    withBack("profile"),
-)(NotificationScreen);
+export default compose(withNavigator)(NotificationScreen);

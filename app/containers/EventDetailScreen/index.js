@@ -16,14 +16,14 @@ import { compose } from '#utility';
 import withAlert from '#extension/alert';
 import withDevice from '#extension/device';
 import withDialog from '#extension/dialog';
+import withNavigator from '#extension/navigator';
 import withAPI from '#extension/apisauce';
 
 export class EventDetailScreen extends React.PureComponent {
 
     state = {
         loading: false,
-        event: this.props.navigation.state.params.event,
-        from: this.props.navigation.state.params.from,
+        event: this.props.navigation.state.params,
         comment: ''
     }
 
@@ -38,7 +38,7 @@ export class EventDetailScreen extends React.PureComponent {
         this._backHandler = BackHandler.addEventListener(
             'hardwareBackPress',
             () => {
-                this.props.navigation.navigate(this.state.from);
+                this.props.navigator.back();
                 return true;
             }
         );
@@ -126,7 +126,7 @@ export class EventDetailScreen extends React.PureComponent {
                     width={this.props.device.getX(50)}
                     roundness={5}
                     text="View Comments"
-                    onPress={() => this.props.navigation.navigate({ routeName: 'event_comment', params: { event, meta, from: this.state.from } })}
+                    onPress={() => this.props.navigator.push({ routeName: 'event_comment', params: { event, meta } })}
                 />
             </View>
         );
@@ -137,7 +137,7 @@ export class EventDetailScreen extends React.PureComponent {
                     width={this.props.device.getX(50)}
                     roundness={5}
                     text="View Peoples"
-                    onPress={() => this.props.navigation.navigate({ routeName: 'event_user', params: { event, meta, from: this.state.from } })}
+                    onPress={() => this.props.navigator.push({ routeName: 'event_user', params: { event, meta } })}
                 />
             </View>
         );
@@ -147,7 +147,7 @@ export class EventDetailScreen extends React.PureComponent {
                 buttons.push(
                     <View key="edit-event" style={{ margin: 10 }}>
                         <Button
-                            onPress={() => this.props.navigation.navigate({
+                            onPress={() => this.props.navigator.push({
                                 routeName: 'event_info',
                                 params: Object.assign({}, event, { shop })
                             })}
@@ -167,7 +167,7 @@ export class EventDetailScreen extends React.PureComponent {
                                     content: 'Deleting the event task cannot be undone, and all data within the event will lost.',
                                     submit: async () => {
                                         await this.props.api.request('DELETE', `/events/${event.id}`);
-                                        return this.props.navigation.navigate('event_list');
+                                        return this.props.navigator.switchTo('event_list');
                                     }
                                 })
                             }
@@ -367,6 +367,7 @@ export class EventDetailScreen extends React.PureComponent {
                                                 user: { name: 'Event Description' },
                                                 userId: event.organizerId,
                                                 comment: event.desc,
+                                                createdAt: event.createdAt
                                             },
                                             ...comment.result
                                         ]}
@@ -388,4 +389,5 @@ export default compose(
     withAPI,
     withDialog,
     withAlert,
+    withNavigator
 )(EventDetailScreen);

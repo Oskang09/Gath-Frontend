@@ -32,6 +32,7 @@ export default {
     },
     splash: SplashScreen,
 
+    user_profile: ProfileScreen,
     update_profile: ProfileUpdate,
     event_detail: EventDetail,
     post_detail: PostDetail,

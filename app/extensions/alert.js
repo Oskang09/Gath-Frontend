@@ -1,5 +1,5 @@
 import React from 'react';
-import { BackHandler, PixelRatio, Dimensions } from 'react-native';
+import { BackHandler } from 'react-native';
 import {
     Dialog,
     Paragraph,
@@ -44,7 +44,7 @@ function buildComponent(
             if (this._mounted && !this.state.loading) {
                 this.setState(
                     { loading: true }, 
-                    () => {
+                    async () => {
                         await this.state.submit();
                         this.dismiss();
                     }

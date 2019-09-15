@@ -120,7 +120,7 @@ export class UserDetail extends React.PureComponent {
     }
 
     handleQuit = () => {
-        this.props.navigation.navigate('profile');
+        this.props.navigator.switchTo('profile');
     }
 
     nextStep = () => this.props.nextStep(

@@ -1,26 +1,37 @@
 import React from 'react';
 
-import { View, Text, Image } from 'react-native';
+import { View, Text, Image, BackHandler } from 'react-native';
 
 import Appbar from '#components/Appbar';
 import EventCard from '#components/EventCard';
 import QueryableList from '#components/QueryableList';
 
 import { compose } from '#utility';
-import withBack from '#extension/backhandler';
 import withDevice from '#extension/device';
 import withAPI from '#extension/apisauce';
+import withNavigator from '#extension/navigator';
 
 export class EventHistory extends React.PureComponent {
 
-    handleClickEventCard = (data) => {
-        this.props.navigation.navigate({
+    handleClickEventCard = (event) => {
+        this.props.navigator.push({
             routeName: 'event_detail',
-            params: {
-                event: data,
-                from : 'history'
-            }
+            params: event
         });
+    }
+
+    componentWillMount() {
+        this._backHandler = BackHandler.addEventListener(
+            'hardwareBackPress',
+            () => {
+                this.props.navigator.switchTo('profile');
+                return true;
+            }
+        );
+    }
+
+    componentWillUnmount() {
+        this._backHandler.remove();
     }
 
     render() {
@@ -59,5 +70,5 @@ export class EventHistory extends React.PureComponent {
 export default compose(
     withDevice,
     withAPI,
-    withBack('profile'),
+    withNavigator
 )(EventHistory);

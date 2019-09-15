@@ -11,6 +11,7 @@ import { compose } from '#utility';
 import withFirebase from '#extension/firebase';
 import withAPI from '#extension/apisauce';
 import withDevice from '#extension/device';
+import withNavigator from '#extension/navigator';
 import QueryableList from '#components/QueryableList';
 
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
@@ -19,13 +20,10 @@ export class EventScreen extends React.PureComponent {
 
     listController = null
 
-    handleClickEventCard = (data) => {
-        this.props.navigation.navigate({
+    handleClickEventCard = (event) => {
+        this.props.navigator.push({
             routeName: 'event_detail',
-            params: {
-                event: data,
-                from: 'event_list',
-            }
+            params: event
         });
     }
     
@@ -38,7 +36,7 @@ export class EventScreen extends React.PureComponent {
                 }
                 small={true}
                 onPress={
-                    () => this.props.navigation.navigate('event_info')
+                    () => this.props.navigator.push('event_info')
                 }
             />
         );
@@ -59,7 +57,7 @@ export class EventScreen extends React.PureComponent {
                             containerStyle={{ flex: 1 }}
                             render={
                                 ({ item }) => (
-                                    <EventCard type="horizontal" data={item} onPress={this.handleClickEventCard} />
+                                    <EventCard type="horizontal" data={item.event} onPress={this.handleClickEventCard} />
                                 )
                             }
                         />
@@ -84,10 +82,10 @@ export class EventScreen extends React.PureComponent {
                     numColumns={1}
                     resetWhenRefresh="filter"
                     containerStyle={{ flex: 1, marginTop: 5 }}
-                    initQuery={{ page: 1, type: '', name: null }}
+                    initQuery={{ page: 1, type: '', name: '' }}
                     updateQuery={(query) => ({ page: query.page + 1 })}
                     uri={
-                        (query) => `/events?page=${query.page}&type=${query.type}${query.name && `&name=${query.name}`}`
+                        (query) => `/events?page=${query.page}&type=${query.type}&name=${query.name}`
                     }
                     filter={[
                         {
@@ -122,4 +120,4 @@ export class EventScreen extends React.PureComponent {
     }
 };
 
-export default compose(withFirebase, withAPI, withDevice)(EventScreen);
+export default compose(withFirebase, withAPI, withDevice, withNavigator)(EventScreen);

@@ -7,6 +7,7 @@ import Confirm from 'react-native-confirmation-code-field';
 import withFirebase from '#extension/firebase';
 import withDevice from '#extension/device';
 import withAPI from '#extension/apisauce';
+import withNavigator from '#extension/navigator';
 
 import { compose } from '#utility';
 import Form from '#components/Form';
@@ -59,9 +60,9 @@ export class PhoneNumber extends React.PureComponent {
             
             const result = await this.props.api.request('POST', `/users/login`, { phone: this.state.phone, uid: firebaseUser.uid });
             if (result.status === 'NEW') {
-                this.props.navigation.navigate('detail');
+                this.props.navigator.switchTo('detail');
             } else if (result.status === 'REGISTERED') {
-                this.props.navigation.navigate('home');
+                this.props.navigator.switchTo('home');
             }
         } catch (error) {
             this.confirmRef.current.clear();
@@ -130,4 +131,5 @@ export default compose(
     withFirebase,
     withDevice,
     withAPI,
+    withNavigator
 )(PhoneNumber);

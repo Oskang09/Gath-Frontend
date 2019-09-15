@@ -10,6 +10,7 @@ import AsyncContainer from '#components/AsyncContainer';
 import Appbar from '#components/Appbar';
 
 import { compose } from '#utility';
+import withNavigator from '#extension/navigator';
 import withTimer from '#extension/timer';
 import withAPI from '#extension/apisauce';
 import withDevice from '#extension/device';
@@ -59,7 +60,13 @@ export class EventCommentScreen extends React.PureComponent {
     ]
 
     componentWillMount() {
-        this._backHandler = BackHandler.addEventListener('hardwareBackPress', this.handleBack);
+        this._backHandler = BackHandler.addEventListener(
+            'hardwareBackPress',
+            () => {
+                this.props.navigator.back();
+                return true;
+            }
+        );
         this.props.addTimer(
             'INTERVAL',
             'event-comment',
@@ -74,14 +81,6 @@ export class EventCommentScreen extends React.PureComponent {
         this._backHandler.remove();
         this.props.removeTimer('event-comment');
     }
-
-    handleBack = () => this.props.navigation.navigate({
-        routeName: 'event_detail',
-        params: {
-            event: this.state.event,
-            from: this.props.navigation.state.params.from
-        }
-    })
 
     renderComments = ({ item }) => {
         return (
@@ -147,6 +146,7 @@ export class EventCommentScreen extends React.PureComponent {
                                                 user: { name: 'Event Description' },
                                                 userId: this.state.event.organizerId,
                                                 comment: this.state.event.desc,
+                                                createdAt: this.state.event.createdAt
                                             },
                                             ...comment.result
                                         ]}
@@ -165,5 +165,6 @@ export class EventCommentScreen extends React.PureComponent {
 export default compose(
     withAPI,
     withDevice,
-    withTimer
+    withTimer,
+    withNavigator
 )(EventCommentScreen);

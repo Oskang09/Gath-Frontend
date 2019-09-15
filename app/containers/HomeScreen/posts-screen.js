@@ -1,6 +1,6 @@
 import React from 'react';
 import moment from 'moment';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text } from 'react-native';
 import { Card, List, Paragraph } from 'react-native-paper';
 import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
@@ -9,12 +9,13 @@ import Appbar from '#components/Appbar';
 import Image from '#components/Image';
 import { compose } from '#utility';
 import withDevice from '#extension/device';
+import withNavigator from '#extension/navigator';
 import withAPI from '#extension/apisauce';
 
 export class PostScreen extends React.PureComponent {
 
     handlePostDetail = (data) => {
-        this.props.navigation.navigate({
+        this.props.navigator.push({
             routeName: 'post_detail',
             params: data
         });
@@ -82,4 +83,4 @@ export class PostScreen extends React.PureComponent {
     }
 };
 
-export default compose(withDevice, withAPI)(PostScreen);
+export default compose(withDevice, withAPI, withNavigator)(PostScreen);

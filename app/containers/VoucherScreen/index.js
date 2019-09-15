@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Image, Text, BackHandler, ImageBackground } from 'react-native';
+import { View, Image, Text, BackHandler } from 'react-native';
 import {
     Card,
     Avatar,
@@ -19,11 +19,25 @@ import { compose } from '#utility';
 import withAlert from '#extension/alert';
 import withDevice from '#extension/device';
 import withAPI from '#extension/apisauce';
-import withBack from '#extension/backhandler';
+import withNavigator from '#extension/navigator';
 
 export class VoucherScreen extends React.PureComponent {
     state = {
         currentVoucher: null
+    }
+
+    componentWillMount() {
+        this._backHandler = BackHandler.addEventListener(
+            'hardwareBackPress',
+            () => {
+                this.props.navigator.switchTo('profile');
+                return true;
+            }
+        );
+    }
+
+    componentWillUnmount() {
+        this._backHandler.remove();
     }
 
     useVoucher = () => this.props.showAlert({
@@ -59,10 +73,10 @@ export class VoucherScreen extends React.PureComponent {
             <Portal>
                 <Dialog visible={item} dismissable={false} theme={{ roundness: 15 }}>
                     <Card style={{ elevation: 4 }}>
-                        <Card.Cover source={{ uri: this.props.api.cdn(`voucher-${item.id}`) }} />
+                        <Card.Cover source={{ uri: this.props.api.cdn(`voucher-${item.voucher.id}`) }} />
                         <Card.Content>
-                            <Title style={{ fontSize: 15 }}>{item.title}</Title>
-                            <Paragraph style={{ fontSize: 11 }}>{item.description}</Paragraph>
+                            <Title style={{ fontSize: 15 }}>{item.voucher.title}</Title>
+                            <Paragraph style={{ fontSize: 11 }}>{item.voucher.description}</Paragraph>
                             <View style={{ alignItems: 'flex-end' }}>
                                 <Caption style={{ color: 'red' }}>Expired at {moment(item.expiredAt).format('YYYY / MM / DD')}</Caption>
                             </View>
@@ -76,6 +90,29 @@ export class VoucherScreen extends React.PureComponent {
                 </Dialog>
             </Portal>
         );
+    }
+
+    renderStatus = ({ usedAt, expiredAt }) => {
+        if (usedAt) {
+            return (
+                <Image
+                    style={{ width: 50, height: 50, margin: 10 }}
+                    resizeMode="contain"
+                    source={require('#assets/used.png')}
+                />
+            );
+        }
+
+        if (Date.now() > expiredAt) {
+            return (
+                <Image
+                style={{ width: 50, height: 50, margin: 10 }}
+                    resizeMode="contain"
+                    source={require('#assets/expired.png')}
+                />
+            );
+        }
+        return null;
     }
 
     render() {
@@ -100,28 +137,22 @@ export class VoucherScreen extends React.PureComponent {
                         </View>
                     }
                     render={
-                        ({ item }) => (
-                            <Card onPress={() => this.setState({ currentVoucher: item })} style={{ elevation: 4, width, marginTop: 20 }} theme={{ roundness: 15 }}>
-                                <Card.Cover style={{ height }} source={{ uri: this.props.api.cdn(`voucher-${item.id}`) }} />
-                                <Card.Title
-                                    left={(props) => <Avatar.Image source={{ uri: this.props.api.cdn(`shop-${item.shopId}`) }} size={40} />}
-                                    title={item.title}
-                                    subtitle={item.description}
-                                    titleStyle={{ fontSize: 15 }}
-                                    subtitleStyle={{ fontSize: 11 }}
-                                />
-                                {/* <Image
-                                    style={{
-                                        width: '100%',
-                                        height: '100%',
-                                        resizeMode: 'contain',
-                                        position: 'absolute',
-                                        top: 0,
-                                    }}
-                                    source={require('#assets/expired.jpg')}
-                                /> */}
-                            </Card>
-                        )
+                        ({ item }) => {
+                            const status = this.renderStatus(item);
+                            return (
+                                <Card onPress={() => !status && this.setState({ currentVoucher: item })} style={{ elevation: 4, width, marginTop: 20 }} theme={{ roundness: 15 }}>
+                                    <Card.Cover style={{ height }} source={{ uri: this.props.api.cdn(`voucher-${item.voucher.id}`) }} />
+                                    <Card.Title
+                                        left={(props) => <Avatar.Image source={{ uri: this.props.api.cdn(`shop-${item.voucher.shopId}`) }} size={40} />}
+                                        right={(props) => status}
+                                        title={item.voucher.title}
+                                        subtitle={item.voucher.description}
+                                        titleStyle={{ fontSize: 15 }}
+                                        subtitleStyle={{ fontSize: 11 }}
+                                    />
+                                </Card>
+                            );
+                        }
                     }
                 />
             </View>
@@ -133,5 +164,5 @@ export default compose(
     withAPI,
     withDevice,
     withAlert,
-    withBack('profile'),
+    withNavigator
 )(VoucherScreen);
