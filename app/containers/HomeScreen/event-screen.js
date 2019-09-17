@@ -2,6 +2,7 @@ import React from 'react';
 
 import { View, Text, Image } from 'react-native';
 import { FAB } from 'react-native-paper';
+
 import Appbar from '#components/Appbar';
 import PureList from '#components/PureList';
 import AsyncContainer from '#components/AsyncContainer';
@@ -26,6 +27,10 @@ export class EventScreen extends React.PureComponent {
             params: event
         });
     }
+
+    componentWillMount() {
+        this.props.firebase.initialNotify();
+    }
     
     renderFAB = () => {
         return (
@@ -44,11 +49,7 @@ export class EventScreen extends React.PureComponent {
 
     renderOwnEvent = () => {
         return (
-            <AsyncContainer
-                promise={{
-                    events: this.props.api.build('GET', '/events/me?limit=10')
-                }}
-            >
+            <AsyncContainer promise={{ events: this.props.api.build('GET', '/events/me?limit=10') }}>
                 {
                     ({ events }) => (
                         <PureList

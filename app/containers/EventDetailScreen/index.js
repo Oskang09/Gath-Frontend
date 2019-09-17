@@ -54,6 +54,10 @@ export class EventDetailScreen extends React.PureComponent {
         }
         this.setState({ loading: true });
         try {
+            if (this.state.comment === '') {
+                return this.setState({ loading: false }, () => this.props.showDialog(`Comment can't be empty`));
+            }
+            
             await this.props.api.request(
                 'POST',
                 `/events/${this.state.event.id}/comments`,

@@ -21,6 +21,7 @@ import EventUser from '#containers/EventUserScreen';
 import Notification from '#containers/NotificationScreen';
 import EventHistory from '#containers/EventHistoryScreen';
 import Voucher from '#containers/VoucherScreen';
+import ReviewScreen from '#containers/ReviewScreen';
 
 import Icon from '#components/Icon';
 
@@ -39,6 +40,7 @@ export default {
     event_info: EventInfo,
     event_user: EventUser,
     event_comment: EventComment,
+    review: ReviewScreen,
     
     notifications: Notification,
     vouchers: Voucher,

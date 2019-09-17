@@ -9,7 +9,6 @@ function buildComponent(
         render() {
             const newProps = Object.assign({
                 navigator: {
-                    getState: () => this.props.navigation.state.params,
                     switchTo: (to) => {
                         appStack = [];
                         this.props.navigation.navigate(to);

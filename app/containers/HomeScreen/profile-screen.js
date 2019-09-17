@@ -68,7 +68,7 @@ export class ProfileScreen extends React.PureComponent {
                     </View>
                 }
             >
-                <View style={{ alignItems: 'center' }}>
+                <View style={{ alignItems: 'center', marginTop: 10 }}>
                     <Avatar.Image
                         source={{ uri: this.props.api.cdn(`user-${id}`) }}
                         size={64}
@@ -96,7 +96,7 @@ export class ProfileScreen extends React.PureComponent {
                             (badge_name, index) => (
                                 <Image
                                     key={`badge-${badge_name}-${index}`}
-                                    source={this.props.api.staticResource(`/images/badges/${badge_name}.png`)}
+                                    source={this.props.api.staticResource(`/images/badges/${badge_name}.webp`)}
                                     resizeMethod="resize"
                                     style={{ width: devicePixel, height: devicePixel }}
                                 />

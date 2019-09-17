@@ -14,10 +14,12 @@ import withNavigator from '#extension/navigator';
 import withTimer from '#extension/timer';
 import withAPI from '#extension/apisauce';
 import withDevice from '#extension/device';
+import withDialog from '#extension/dialog';
 
 export class EventCommentScreen extends React.PureComponent {
     state = {
         event: this.props.navigation.state.params.event,
+        comment: '',
     }
     dataController = null
 
@@ -27,6 +29,10 @@ export class EventCommentScreen extends React.PureComponent {
         }
         this.setState({ loading: true });
         try {
+            if (this.state.comment === '') {
+                return this.setState({ loading: false }, () => this.props.showDialog(`Comment can't be empty`));
+            }
+
             await this.props.api.request(
                 'POST',
                 `/events/${this.state.event.id}/comments`,
@@ -67,19 +73,10 @@ export class EventCommentScreen extends React.PureComponent {
                 return true;
             }
         );
-        this.props.addTimer(
-            'INTERVAL',
-            'event-comment',
-            () => {
-                this.dataController.reload('comment')
-            },
-            10
-        );
     }
     
     componentWillUnmount() {
         this._backHandler.remove();
-        this.props.removeTimer('event-comment');
     }
 
     renderComments = ({ item }) => {
@@ -166,5 +163,6 @@ export default compose(
     withAPI,
     withDevice,
     withTimer,
-    withNavigator
+    withNavigator,
+    withDialog
 )(EventCommentScreen);

@@ -46,8 +46,7 @@ export class Introduction extends React.PureComponent {
                 `/users/profile`,
                 { desc: this.state.desc, status: 'REGISTERED' }
             );
-            await api.loadConfig();
-            navigation.navigate('home');
+            navigation.navigate('splash');
         } catch (error) {
             this.setState({ loading: false }, () => this.props.showDialog(error.message));
         }

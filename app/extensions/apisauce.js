@@ -45,7 +45,7 @@ function buildComponent(
                     },
                     getConfig: () => config,
                     setToken: (token) => {
-                        requester.setHeader('gath-token', token)
+                        requester.setHeader('gath-token', token);
                     },
                     cdn: (path) => `https://firebasestorage.googleapis.com/v0/b/gathfyp2019.appspot.com/o/${path}?alt=media`,
                     staticResource: (path) => `${requester.getBaseURL()}${path}`,

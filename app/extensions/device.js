@@ -17,6 +17,13 @@ function buildComponent(
                 [decorator]: {
                     getX: getXdp,
                     getY: getYdp,
+                    imagePixel: (percent) => {
+                        const totalPixel = getXdp(percent) + getYdp(percent);
+                        return {
+                            width: totalPixel / 2,
+                            height: totalPixel / 2
+                        };
+                    },
                     marginXY: (x, y) => ({
                         marginLeft: x,
                         marginRight: x,
