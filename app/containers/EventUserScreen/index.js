@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, BackHandler } from 'react-native';
+import { View, BackHandler, ScrollView, RefreshControl } from 'react-native';
 import { Title, Avatar, List } from 'react-native-paper';
 
 import Icon from '#components/Icon';
@@ -16,6 +16,7 @@ export class EventUser extends React.Component {
     state = {
         event: this.props.navigation.state.params.event,
         meta: this.props.navigation.state.params.meta,
+        refresh: false,
     }
 
     dataController = null
@@ -29,7 +30,7 @@ export class EventUser extends React.Component {
             }
         );
     }
-    
+
     componentWillUnmount() {
         this._backHandler.remove();
     }
@@ -38,14 +39,14 @@ export class EventUser extends React.Component {
 
     handleEventAction = async (action, user) => {
         await this.props.api.request(
-            'POST', 
+            'POST',
             `/events/${this.state.event.id}`, {
-                action,
-                user
-            }
+            action,
+            user
+        }
         );
 
-        this.dataController.reload('users');
+        return this.dataController.reload('users');
     }
 
     buildButton = ({ eventStatus, id }) => {
@@ -84,69 +85,87 @@ export class EventUser extends React.Component {
         return (
             <View style={{ flex: 1 }}>
                 <Appbar />
-                <AsyncContainer
-                    controller={ctl => this.dataController = ctl}
-                    promise={{ users: this.props.api.build('GET', `/events/${this.state.event.id}/users` ) }}
-                >
-                    {
-                        ({ users }) => {
-                            const sections = {
-                                OWNER: [],
-                                REQUESTING: [],
-                                MEMBER: [],
-                                PARTICIPATED: [],
-                            };
-                            const keys = Object.keys(sections);
-
-                            users.forEach(
-                                (user) => {
-                                    sections[user.eventStatus].push(
-                                        <List.Item
-                                            key={`users-${user.id}`}
-                                            title={user.name}
-                                            left={(props) => <Avatar.Image size={50} source={{ uri: this.props.api.cdn(`user-${user.id}`) }} />}
-                                            right={(props) => this.buildButton(user)}
-                                            onPress={
-                                                () => this.props.navigator.push({
-                                                    routeName: 'user_profile',
-                                                    params: {
-                                                        id: user.id,
-                                                    }
-                                                })
-                                            }
-                                        />
-                                    );
+                <ScrollView
+                    horizontal={false}
+                    showsVerticalScrollIndicator={false}
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={this.state.refresh}
+                            enabled={true}
+                            onRefresh={
+                                async () => {
+                                    this.setState({ refresh: true });
+                                    await this.dataController.reload('users');
+                                    this.setState({ refresh: false });
                                 }
-                            );
-
-                            return (
-                                <View style={{ flex: 1 }}>
-                                    <View style={{ alignItems: 'center', flexDirection: 'row', margin: 10 }}>
-                                        <View style={{ flex: 1, alignItems: 'flex-start'}}>
-                                            <Title style={{ fontSize: 15 }}>{this.state.event.name}</Title>
-                                        </View>
-                                        <View style={{ flex: 1, alignItems: 'flex-end' }}>
-                                            <Title style={{ fontSize: 13 }}>{users.length} Peoples</Title>
-                                        </View>
-                                    </View>
-                                    {
-                                        Object.values(sections).map(
-                                            (section, index) => {
-                                                if (section.length > 0) {
-                                                    return (
-                                                        <List.Section key={keys[index]} title={keys[index]}>
-                                                            {section}
-                                                        </List.Section>
-                                                    );
-                                                }
-                                            }
-                                        )
-                                    }
-                                </View>
-                            );
-                        }
+                            }
+                        />
                     }
-                </AsyncContainer>
+                >
+                    <AsyncContainer
+                        controller={ctl => this.dataController = ctl}
+                        promise={{ users: this.props.api.build('GET', `/events/${this.state.event.id}/users`) }}
+                    >
+                        {
+                            ({ users }) => {
+                                const sections = {
+                                    OWNER: [],
+                                    REQUESTING: [],
+                                    MEMBER: [],
+                                    PARTICIPATED: [],
+                                };
+                                const keys = Object.keys(sections);
+
+                                users.forEach(
+                                    (user) => {
+                                        sections[user.eventStatus].push(
+                                            <List.Item
+                                                key={`users-${user.id}`}
+                                                title={user.name}
+                                                left={(props) => <Avatar.Image size={50} source={{ uri: this.props.api.cdn(`user-${user.id}`) }} />}
+                                                right={(props) => this.buildButton(user)}
+                                                onPress={
+                                                    () => this.props.navigator.push({
+                                                        routeName: 'user_profile',
+                                                        params: {
+                                                            id: user.id,
+                                                        }
+                                                    })
+                                                }
+                                            />
+                                        );
+                                    }
+                                );
+
+                                return (
+                                    <View style={{ flex: 1 }}>
+                                        <View style={{ alignItems: 'center', flexDirection: 'row', margin: 10 }}>
+                                            <View style={{ flex: 1, alignItems: 'flex-start' }}>
+                                                <Title style={{ fontSize: 15 }}>{this.state.event.name}</Title>
+                                            </View>
+                                            <View style={{ flex: 1, alignItems: 'flex-end' }}>
+                                                <Title style={{ fontSize: 13 }}>{users.length} Peoples</Title>
+                                            </View>
+                                        </View>
+                                        {
+                                            Object.values(sections).map(
+                                                (section, index) => {
+                                                    if (section.length > 0) {
+                                                        return (
+                                                            <List.Section key={keys[index]} title={keys[index]}>
+                                                                {section}
+                                                            </List.Section>
+                                                        );
+                                                    }
+                                                }
+                                            )
+                                        }
+                                    </View>
+                                );
+                            }
+                        }
+                    </AsyncContainer>
+                </ScrollView>
             </View>
         );
     }

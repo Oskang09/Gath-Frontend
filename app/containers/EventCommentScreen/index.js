@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, BackHandler, Text } from 'react-native';
+import { View, BackHandler, Text, RefreshControl } from 'react-native';
 import { Avatar, Card, Paragraph } from 'react-native-paper';
 import moment from 'moment';
 
@@ -74,7 +74,7 @@ export class EventCommentScreen extends React.PureComponent {
             }
         );
     }
-    
+
     componentWillUnmount() {
         this._backHandler.remove();
     }
@@ -99,12 +99,12 @@ export class EventCommentScreen extends React.PureComponent {
     render() {
         return (
             <View style={{ flex: 1 }}>
-                <Appbar home={true} />
+                <Appbar />
                 <AsyncContainer
                     controller={(ctl) => this.dataController = ctl}
                     promise={{
                         comment: this.props.api.build('GET', `/events/${this.state.event.id}/comments`),
-                        profile: this.props.api.build('GET', `/users/profile`),
+                        profile: this.props.api.build('GET', `/users/profile/me`),
                     }}
                 >
                     {
@@ -113,6 +113,19 @@ export class EventCommentScreen extends React.PureComponent {
                                 <View style={{ flex: 1 }}>
                                     <PureList
                                         type="vertical"
+                                        refreshControl={
+                                            <RefreshControl
+                                                refreshing={this.state.refresh}
+                                                enabled={true}
+                                                onRefresh={
+                                                    async () => {
+                                                        this.setState({ refresh: true });
+                                                        await this.dataController.reload();
+                                                        this.setState({ refresh: false });
+                                                    }
+                                                }
+                                            />
+                                        }
                                         numColumns={1}
                                         header={
                                             this.state.event.status !== 'END' && (
@@ -129,6 +142,7 @@ export class EventCommentScreen extends React.PureComponent {
                                                         <Card.Actions style={{ justifyContent: 'flex-end' }}>
                                                             <Button
                                                                 onPress={this.createComment}
+                                                                loading={this.state.loading}
                                                                 roundness={5}
                                                                 textStyle={{ color: 'white' }}
                                                                 text="SEND"

@@ -24,7 +24,6 @@ export class ShopCard extends React.PureComponent {
     }
 
     render() {
-        // TODO: LONG PRESS SHOW SHOP INFO DIALOG
         const { type, onPress, data } = this.props;
         return (
             <TouchableRipple style={this.getStyles(type)} onPress={onPress}>
@@ -35,9 +34,9 @@ export class ShopCard extends React.PureComponent {
                     />
                     <Card.Title
                         title={data.name}
-                        titleStyle={{ fontSize: 15 }}
+                        titleStyle={{ fontSize: 16 }}
                         subtitle={data.locate}
-                        subtitleStyle={{ fontSize: 11 }}
+                        subtitleStyle={{ fontSize: 12 }}
                     />
                     <Card.Content style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
                         <MaterialIcon size={16} name="fire" color="orange" />
@@ -45,7 +44,7 @@ export class ShopCard extends React.PureComponent {
                         <MaterialIcon size={16} name="fire" color="orange" />
                         <MaterialIcon size={16} name="fire" color="orange" />
                         <MaterialIcon size={16} name="fire" />
-                        <Paragraph style={{ fontSize: 11, marginLeft: 2 }}>(26)</Paragraph>
+                        <Paragraph style={{ fontSize: 12, marginLeft: 2 }}>(26)</Paragraph>
                     </Card.Content>
                 </Card>
             </TouchableRipple>

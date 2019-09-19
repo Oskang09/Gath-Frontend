@@ -35,6 +35,9 @@ export class Introduction extends React.PureComponent {
     ];
 
     nextStep = async () => {
+        if (!this.state.desc || this,this.state.desc === "") {
+            return this.props.showDialog("Description can't be empty.");
+        }
         this.props.nextStep(this.state.desc);
     }
 

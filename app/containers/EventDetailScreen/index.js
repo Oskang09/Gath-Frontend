@@ -1,7 +1,7 @@
 import React from 'react';
 
-import { View, Text, BackHandler } from 'react-native';
-import { Card, Paragraph, Avatar } from 'react-native-paper';
+import { View, Text, BackHandler, RefreshControl } from 'react-native';
+import { Card, Paragraph, Avatar, ActivityIndicator } from 'react-native-paper';
 import moment from 'moment';
 
 import Button from '#components/Button';
@@ -23,6 +23,7 @@ export class EventDetailScreen extends React.PureComponent {
 
     state = {
         loading: false,
+        refresh: false,
         event: this.props.navigation.state.params,
         comment: ''
     }
@@ -57,7 +58,7 @@ export class EventDetailScreen extends React.PureComponent {
             if (this.state.comment === '') {
                 return this.setState({ loading: false }, () => this.props.showDialog(`Comment can't be empty`));
             }
-            
+
             await this.props.api.request(
                 'POST',
                 `/events/${this.state.event.id}/comments`,
@@ -123,11 +124,11 @@ export class EventDetailScreen extends React.PureComponent {
         if (meta.isNormal || meta.isRequest) {
             return null;
         }
-        
+
         buttons.push(
             <View key="view-comments" style={{ margin: 10 }}>
                 <Button
-                    width={this.props.device.getX(50)}
+                    width={this.props.device.getX(40)}
                     roundness={5}
                     text="View Comments"
                     onPress={() => this.props.navigator.push({ routeName: 'event_comment', params: { event, meta } })}
@@ -138,7 +139,7 @@ export class EventDetailScreen extends React.PureComponent {
         buttons.push(
             <View key="view-people" style={{ margin: 10 }}>
                 <Button
-                    width={this.props.device.getX(50)}
+                    width={this.props.device.getX(40)}
                     roundness={5}
                     text="View Peoples"
                     onPress={() => this.props.navigator.push({ routeName: 'event_user', params: { event, meta } })}
@@ -156,7 +157,7 @@ export class EventDetailScreen extends React.PureComponent {
                                 params: Object.assign({}, event, { shop })
                             })}
                             roundness={5}
-                            width={this.props.device.getX(50)}
+                            width={this.props.device.getX(40)}
                             textStyle={{ color: 'white' }}
                             text="Edit Event"
                         />
@@ -176,8 +177,8 @@ export class EventDetailScreen extends React.PureComponent {
                                 })
                             }
                             roundness={5}
-                            color="#ff0000"
-                            width={this.props.device.getX(50)}
+                            color="#CCCCCC"
+                            width={this.props.device.getX(40)}
                             textStyle={{ color: 'white' }}
                             text="Delete Event"
                         />
@@ -192,7 +193,7 @@ export class EventDetailScreen extends React.PureComponent {
             </View>
         );
     }
-    
+
     renderCommentForm = (event, profile, meta) => {
         if (meta.isNormal || meta.isRequest || event.status === 'END') {
             return null;
@@ -211,6 +212,7 @@ export class EventDetailScreen extends React.PureComponent {
                     <Card.Actions style={{ justifyContent: 'flex-end' }}>
                         <Button
                             onPress={this.createComment}
+                            loading={this.state.loading}
                             roundness={5}
                             textStyle={{ color: 'white' }}
                             text="SEND"
@@ -218,7 +220,7 @@ export class EventDetailScreen extends React.PureComponent {
                     </Card.Actions>
                 </Card>
             </View>
-        ); 
+        );
     }
 
     renderButton = (event, meta) => {
@@ -228,8 +230,14 @@ export class EventDetailScreen extends React.PureComponent {
                 buttons.push(
                     <Button
                         key="normal-btn"
-                        width={this.props.device.getX(100)}
-                        onPress={() => this.handleEventAction('REQUEST')}
+                        width={this.props.device.getX(45)}
+                        onPress={
+                            () => this.props.showAlert({
+                                title: 'Request Join',
+                                content: '',
+                                submit: () => this.handleEventAction('REQUEST')
+                            })
+                        }
                         text="Join Event"
                     />
                 );
@@ -239,7 +247,7 @@ export class EventDetailScreen extends React.PureComponent {
                 buttons.push(
                     <Button
                         key="request-btn"
-                        width={this.props.device.getX(100)}
+                        width={this.props.device.getX(45)}
                         text="Requesting ..."
                     />
                 );
@@ -249,8 +257,22 @@ export class EventDetailScreen extends React.PureComponent {
                 buttons.push(
                     <Button
                         key="member-btn"
-                        width={this.props.device.getX(100)}
-                        onPress={() => this.handleEventAction('QUIT')}
+                        width={this.props.device.getX(45)}
+                        onPress={
+                            () => this.props.showAlert({
+                                title: 'Quit Event',
+                                content: '',
+                                submit: async () => {
+                                    try {
+                                        await this.handleEventAction('QUIT')
+                                    } catch (error) {
+                                        if (error.message === 'EVENT_STARTED') {
+                                            this.dataController.reload();
+                                        }
+                                    }
+                                }
+                            })
+                        }
                         color="#ff0000"
                         text="Quit Event"
                     />
@@ -263,8 +285,14 @@ export class EventDetailScreen extends React.PureComponent {
                 buttons.push(
                     <Button
                         key="owner-btn"
-                        width={this.props.device.getX(100)}
-                        onPress={() => this.handleEventAction('START_EVENT')}
+                        width={this.props.device.getX(45)}
+                        onPress={
+                            () => this.props.showAlert({
+                                title: 'Start Event',
+                                content: '',
+                                submit: () => this.handleEventAction('START_EVENT')
+                            })
+                        }
                         text="Start Event"
                     />
                 );
@@ -276,8 +304,14 @@ export class EventDetailScreen extends React.PureComponent {
                 buttons.push(
                     <Button
                         key="checkin-btn"
-                        width={this.props.device.getX(100)}
-                        onPress={() => this.handleEventAction('CHECK_IN')}
+                        width={this.props.device.getX(45)}
+                        onPress={
+                            () => this.props.showAlert({
+                                title: 'Check In',
+                                content: '',
+                                submit: () => this.handleEventAction('CHECK_IN')
+                            })
+                        }
                         text="Check In"
                     />
                 );
@@ -286,9 +320,15 @@ export class EventDetailScreen extends React.PureComponent {
                 buttons.push(
                     <Button
                         key="end-btn"
-                        width={this.props.device.getX(100)}
+                        width={this.props.device.getX(45)}
                         color="#ff0000"
-                        onPress={() => this.handleEventAction('END_EVENT')}
+                        onPress={
+                            () => this.props.showAlert({
+                                title: 'End Event',
+                                content: '',
+                                submit: () => this.handleEventAction('END_EVENT')
+                            })
+                        }
                         text="End Event"
                     />
                 );
@@ -297,7 +337,15 @@ export class EventDetailScreen extends React.PureComponent {
 
         if (buttons.length > 0) {
             return (
-                <View style={{ position: 'absolute', bottom: 0, width: this.props.device.getX(100) }}>
+                <View
+                    style={{
+                        flex: 1,
+                        alignItems: 'flex-end',
+                        position: 'absolute',
+                        bottom: 0,
+                        width: this.props.device.getX(100)
+                    }}
+                >
                     {buttons}
                 </View>
             );
@@ -307,7 +355,7 @@ export class EventDetailScreen extends React.PureComponent {
     render() {
         return (
             <View style={{ flex: 1 }}>
-                <Appbar home={true} />
+                <Appbar />
                 <AsyncContainer
                     controller={(ctl) => this.dataController = ctl}
                     promise={{
@@ -315,7 +363,7 @@ export class EventDetailScreen extends React.PureComponent {
                         comment: this.props.api.build('GET', `/events/${this.state.event.id}/comments?limit=4`),
                         meta: this.props.api.build('GET', `/events/${this.state.event.id}/meta`),
                         shop: this.props.api.build('GET', `/shops/${this.state.event.shopId}`),
-                        profile: this.props.api.build('GET', '/users/profile'),
+                        profile: this.props.api.build('GET', '/users/profile/me'),
                     }}
                 >
                     {
@@ -325,6 +373,19 @@ export class EventDetailScreen extends React.PureComponent {
                                 <View style={{ flex: 1 }}>
                                     <PureList
                                         type="vertical"
+                                        refreshControl={
+                                            <RefreshControl
+                                                refreshing={this.state.refresh}
+                                                enabled={true}
+                                                onRefresh={
+                                                    async () => {
+                                                        this.setState({ refresh: true });
+                                                        await this.dataController.reload();
+                                                        this.setState({ refresh: false });
+                                                    }
+                                                }
+                                            />
+                                        }
                                         numColumns={1}
                                         containerStyle={{ marginBottom: absoluteButton && this.props.device.getY(7.5) }}
                                         header={
@@ -362,7 +423,7 @@ export class EventDetailScreen extends React.PureComponent {
                                                         }
                                                     }
                                                 />
-                                                { this.renderCommentForm(event, profile, meta) }
+                                                {this.renderCommentForm(event, profile, meta)}
                                             </View>
                                         }
                                         footer={this.renderAction(event, meta, shop)}

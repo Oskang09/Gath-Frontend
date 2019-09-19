@@ -24,7 +24,9 @@ export class EventHistory extends React.PureComponent {
         this._backHandler = BackHandler.addEventListener(
             'hardwareBackPress',
             () => {
-                this.props.navigator.switchTo('profile');
+                this.props.navigation.state.params && this.props.navigation.state.params.id ?
+                    this.props.navigator.back() :
+                    this.props.navigator.switchTo('profile');
                 return true;
             }
         );
@@ -37,7 +39,7 @@ export class EventHistory extends React.PureComponent {
     render() {
         return (
             <View style={{ flex: 1 }}>
-                <Appbar home={true} profileBar={true} />
+                <Appbar />
                 <QueryableList
                     type="vertical"
                     numColumns={1}

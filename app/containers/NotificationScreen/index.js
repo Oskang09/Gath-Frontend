@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, BackHandler } from 'react-native';
+import { View, BackHandler, Image } from 'react-native';
 import { List } from 'react-native-paper';
 
 import { compose } from '#utility';
@@ -45,8 +45,8 @@ export class NotificationScreen extends React.PureComponent {
     render() {
         return (
             <View style={{ flex: 1 }}>
-                <Appbar profileBar={true} />
-                <AsyncContainer promise={{ notification: this.props.api.build('GET', '/users/notification?limit=10') }}>
+                <Appbar />
+                <AsyncContainer promise={{ notification: this.props.api.build('GET', '/users/notification/me?limit=100') }}>
                     {
                         ({ notification }) => (
                             <PureList
@@ -58,6 +58,14 @@ export class NotificationScreen extends React.PureComponent {
                                         <List.Item
                                             key={`notify-${index}`}
                                             description={item.about}
+                                            right={
+                                                (props) => (
+                                                    <Image
+                                                        style={{ width: 64, height: 64 }}
+                                                        source={{ uri: this.props.api.cdn(`event-${item.event}`) }}
+                                                    />
+                                                )
+                                            }
                                             onPress={this.buildHandler(item)}
                                         />
                                     )

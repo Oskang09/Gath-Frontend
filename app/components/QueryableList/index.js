@@ -46,9 +46,6 @@ export class QueryableList extends React.PureComponent {
                         ...this.state.configureProps,
                         onEndReached: isEnd ? undefined : this.updateQuery({ page: _meta.currentPage + 1 }, 'paginate'),
                         onEndReachedThreshold: isEnd ? undefined : 0.7,
-                        ListFooterComponent: isEnd ? 
-                            this.props.footer :
-                            this.state.refreshing && <ActivityIndicator />,
                     }
                 });
             } else {
@@ -99,7 +96,8 @@ export class QueryableList extends React.PureComponent {
                 configureProps: {
                     ...this.props.extraProps,
                     showsHorizontalScrollIndicator: false,
-                    horizontal: true
+                    horizontal: true,
+                    pagingEnabled: true,
                 },
             }, this.refreshData);
         }
@@ -110,6 +108,9 @@ export class QueryableList extends React.PureComponent {
     }
 
     render() {
+        const header = typeof this.props.header === 'function' ? this.props.header(this.state.query) : this.props.header;
+        const footer = typeof this.props.footer === 'function' ? this.props.footer(this.state.query) : this.props.footer;
+        const render = (item) => this.props.render(item, this.state.query);
         return (
             <>
                 {
@@ -127,8 +128,11 @@ export class QueryableList extends React.PureComponent {
                     )
                 }
                 <FlatList
+                    refreshControl={this.props.refreshControl}
                     style={this.props.containerStyle}
-                    ListHeaderComponent={this.props.header}
+                    ListHeaderComponent={header}
+                    ListFooterComponent={footer}
+                    renderItem={render}
                     data={this.state.data}
                     extraData={this.state.data}
                     initialNumToRender={this.state.data.length}
@@ -137,7 +141,6 @@ export class QueryableList extends React.PureComponent {
                     listKey={(item, index) => ` ql-${index}`}
                     keyExtractor={(item, index) => `ql-${index}`}
                     numColumns={this.props.numColumns}
-                    renderItem={this.props.render}
                     {...this.state.configureProps}
                 />
             </>

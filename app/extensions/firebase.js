@@ -32,13 +32,12 @@ function buildComponent(
                             if (message.notification.notificationId === notificationId) {
                                 return null;
                             }
-                            processNotificaiton(message);
                             await AsyncStorage.setItem('lastNotification', message.notification.notificationId);
+                            return message;
                         }
                         return null;
                     },
                     initialize: async (fn, tokenHandler) => {
-                        processNotificaiton = fn;
                         if (!await fcm.hasPermission()) {
                             await fcm.requestPermission();
                         }
@@ -65,7 +64,7 @@ function buildComponent(
                         notify.onNotificationOpened(
                             (notification) => {
                                 // ASYNC: will run through just remove notification
-                                processNotificaiton(notification);
+                                fn(notification);
                                 return notify.removeDeliveredNotification(notification.notification.notificationId)
                             }
                         );

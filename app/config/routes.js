@@ -49,7 +49,7 @@ export default {
     home: {
         _type: 'material-bottom',
         _setting: {
-            initialRouteName: 'event_list',
+            initialRouteName: 'post_list',
             backBehavior: 'none',
             lazy: true,
             labeled: false,

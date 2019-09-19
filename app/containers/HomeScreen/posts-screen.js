@@ -56,18 +56,18 @@ export class PostScreen extends React.PureComponent {
                                 <Image component={Card.Cover} source={this.props.api.cdn(`post-${item.id}`)} fallback={this.props.api.cdn(`shop-${item.shopId}`)} />
                                 <List.Item
                                     title={item.title}
-                                    titleStyle={{ fontSize: 15 }}
+                                    titleStyle={{ fontSize: 16 }}
                                     description={
                                         (props) => {
                                             return (
                                                 <View style={{ flexDirection: 'row', justifyContent: 'flex-start' }}>
                                                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                                         <MaterialIcon size={14} style={{ marginRight: 5 }} name="clock-outline" />
-                                                        <Paragraph style={{ fontSize: 11 }}>{moment(item.createdAt).format('DD/MM/YYYY')}</Paragraph>
+                                                        <Paragraph style={{ fontSize: 12 }}>{moment(item.createdAt).format('DD/MM/YYYY')}</Paragraph>
                                                     </View>
                                                     <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 7 }}>
                                                         <MaterialIcon size={14} style={{ marginRight: 5 }} name="store" />
-                                                        <Paragraph style={{ fontSize: 11 }}>{item.shop.name}</Paragraph>
+                                                        <Paragraph style={{ fontSize: 12 }}>{item.shop.name}</Paragraph>
                                                     </View>
                                                 </View>
                                             );

@@ -1,6 +1,6 @@
 import React, { createRef } from 'react';
 import { View, Text } from 'react-native';
-import { Button, Card } from 'react-native-paper';
+import { Button, Card, ActivityIndicator } from 'react-native-paper';
 import Appbar from '#components/Appbar';
 
 import withFirebase from '#extension/firebase';
@@ -40,6 +40,10 @@ export class Introduction extends React.PureComponent {
         }
         this.setState({ loading: true });
         try {
+            if (!this.state.desc || this.state.desc === '') {
+                throw Error("Description can't be empty.");
+            }
+
             const { api, navigation } = this.props;
             await api.request(
                 'POST', 
@@ -67,7 +71,7 @@ export class Introduction extends React.PureComponent {
                             />
                         </Card.Content>
                         <Card.Actions style={{ justifyContent: 'center' }}>
-                            <Button mode="contained" width={this.props.device.getX(25)} onPress={this.updateDescription}>
+                            <Button mode="contained" width={this.props.device.getX(25)} loading={this.state.loading} onPress={this.updateDescription}>
                                 <Text style={{ color: 'white' }}>NEXT</Text>
                             </Button>
                         </Card.Actions>

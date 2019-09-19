@@ -27,10 +27,6 @@ export class EventScreen extends React.PureComponent {
             params: event
         });
     }
-
-    componentWillMount() {
-        this.props.firebase.initialNotify();
-    }
     
     renderFAB = () => {
         return (
@@ -49,7 +45,7 @@ export class EventScreen extends React.PureComponent {
 
     renderOwnEvent = () => {
         return (
-            <AsyncContainer promise={{ events: this.props.api.build('GET', '/events/me?limit=10') }}>
+            <AsyncContainer promise={{ events: this.props.api.build('GET', '/users/event/me?limit=10') }}>
                 {
                     ({ events }) => (
                         <PureList
@@ -97,11 +93,17 @@ export class EventScreen extends React.PureComponent {
                         }
                     ]}
                     header={
-                        <View style={{ flex: 1 }}>
-                            <Text style={{ marginLeft: 10, fontSize: 16, fontWeight: 'bold' }}>My Events</Text>
-                            { this.renderOwnEvent() }
-                            <Text style={{ marginLeft: 10, fontSize: 16, fontWeight: 'bold' }}>Other Events</Text>
-                        </View>
+                        (query) => query.name === "" ? (
+                            <View style={{ flex: 1 }}>
+                                <Text style={{ marginLeft: 10, fontSize: 16, fontWeight: 'bold' }}>My Events</Text>
+                                { this.renderOwnEvent() }
+                                <Text style={{ marginLeft: 10, fontSize: 16, fontWeight: 'bold' }}>Other Events</Text>
+                            </View>
+                        ) : (
+                            <View style={{ flex: 1 }}>
+                                <Text style={{ marginLeft: 10, fontSize: 16, fontWeight: 'bold' }}>Search Result</Text>
+                            </View>
+                        )
                     }
                     footer={
                         <View style={{ flex: 1, alignItems: 'center', margin: 10 }}>

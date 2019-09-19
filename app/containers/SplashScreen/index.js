@@ -11,11 +11,11 @@ export class SplashScreen extends React.PureComponent {
     checkAuthAndSetting = async () => {
         const { api, firebase, navigator } = this.props;
         const firebaseUser = await firebase.getUser();
-        
         if (!firebaseUser) {
             return navigator.switchTo('register');
         }
-        api.setToken(await firebaseUser.getIdToken());
+        
+        api.setToken(await firebaseUser.getIdToken(true));
         await api.loadConfig();
         await firebase.initialize(
             async function (message) {
@@ -39,8 +39,26 @@ export class SplashScreen extends React.PureComponent {
             }
         );
 
+        const initial = await this.props.firebase.initialNotify();
+        if (initial) {
+            const { data } = initial.notification;
+            const response = await api.request('GET', `/events/${data.event}`);
+            if (data.action === 'VIEW_EVENT') {
+                return navigator.pushMultiple('home', {
+                    routeName: 'event_detail',
+                    params: response,
+                });
+            }
+            if (data.action === 'REVIEW') {
+                return navigator.pushMultiple('home', {
+                    routeName: 'review',
+                    params: response,
+                });
+            }
+        }
+
         try {
-            const user = await api.request('GET', '/users/profile');
+            const user = await api.request('GET', '/users/profile/me');
             if (user.status === 'NEW') {
                 return navigator.switchTo('detail');
             }

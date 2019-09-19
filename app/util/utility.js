@@ -74,7 +74,9 @@ export const concatRender = function (renders) {
     return function (...args) {
         const state = [];
         for (const render of renders) {
-            state.push(render(...args));
+            if (render) {
+                state.push(render(...args));
+            }
         }
         return state;
     };

@@ -52,7 +52,14 @@ export class StepContainer extends React.Component {
         return (
             <Component
                 {...this.props}
-                getState={(index = this.state.step) => this.state.containerState[index] || {}}
+                getState={
+                    (prop = undefined, index = this.state.step) => {
+                        if (prop) {
+                            return this.state.containerState[index] && this.state.containerState[index][prop];
+                        }
+                        return this.state.containerState[index];
+                    }
+                }
                 nextStep={this.nextStep}
                 prevStep={this.prevStep}
                 backHandler={

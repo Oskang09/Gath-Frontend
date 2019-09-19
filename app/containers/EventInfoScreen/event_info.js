@@ -9,10 +9,10 @@ import { filterObject } from '#utility';
 
 export class EventInfoScreen extends React.Component {
     state = {
-        name: this.props.getState().name,
-        start: this.props.getState().start || Date.now(),
-        type: this.props.getState().type,
-        banner: this.props.getState().banner,
+        name: this.props.getState('name'),
+        start: this.props.getState('start') || Date.now(),
+        type: this.props.getState('type'),
+        banner: this.props.getState('banner'),
         quit: false,
     }
 
@@ -23,7 +23,7 @@ export class EventInfoScreen extends React.Component {
             dcc: (banner) => this.setState({ banner }),
             key: 'event-image',
             setting: {
-                value: this.state.banner || this.props.api.cdn(`event-${this.props.getState().id}`),
+                value: this.state.banner || this.props.api.cdn(`event-${this.props.getState('id')}`),
                 displayComponent: (value) => <Card.Cover source={value} />
             }
         },
@@ -47,14 +47,14 @@ export class EventInfoScreen extends React.Component {
         {
             type: 'datetime',
             row: 1,
-            dcc: (start_time) => this.setState({ start_time }),
+            dcc: (start) => this.setState({ start }),
             key: 'start',
             props: {
                 width: this.props.device.getX(45),
             },
             setting: {
                 label: 'Event Start',
-                value: this.state.start_time,
+                value: this.state.start,
             }
         },
         {
@@ -71,7 +71,7 @@ export class EventInfoScreen extends React.Component {
             setting: {
                 label: 'Event Type',
                 value: this.state.type,
-                items: ['type1', 'type2']
+                items: this.props.api.getConfig().eventType
             }
         },
     ];
@@ -93,9 +93,17 @@ export class EventInfoScreen extends React.Component {
         }
     }
 
-    nextStep = () => this.props.nextStep(
-        filterObject(this.state, 'name', 'start', 'type', 'banner')
-    )
+    nextStep = () => {
+        if (!this.state.name || this.state.name === "") {
+            return this.props.showDialog(`Event name can't be empty.`);
+        }
+        if (this.state.start < Date.now()) {
+            return this.props.showDialog('Event start time must be future.');
+        }
+        return this.props.nextStep(
+            filterObject(this.state, 'name', 'start', 'type', 'banner')
+        );
+    }
 
     render() {
         return (
@@ -136,4 +144,4 @@ export class EventInfoScreen extends React.Component {
     }
 };
 
-export default EventInfoScreen
+export default EventInfoScreen;

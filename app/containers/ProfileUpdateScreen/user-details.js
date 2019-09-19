@@ -123,9 +123,23 @@ export class UserDetail extends React.PureComponent {
         this.props.navigator.switchTo('profile');
     }
 
-    nextStep = () => this.props.nextStep(
-        filterObject(this.state, 'name', 'age', 'constellation', 'gender', 'avatar', 'utag')
-    )
+    nextStep = () => {
+        if (!this.state.name || this.state.name === "") {
+            return this.props.showDialog("User name can't be empty.");
+        }
+
+        if (!this.state.age || isNaN(parseInt(this.state.age))) {
+            return this.props.showDialog("User age mus't be number.");
+        }
+
+        if (!this.state.utag || this.state.utag === "") {
+            return this.props.showDialog("User tag can't be empty.");
+        }
+
+        this.props.nextStep(
+            filterObject(this.state, 'name', 'age', 'constellation', 'gender', 'avatar', 'utag')
+        );
+    }
 
     render() {
         return (

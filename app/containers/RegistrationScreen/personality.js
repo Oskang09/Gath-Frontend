@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text } from 'react-native';
-import { Button } from 'react-native-paper';
+import { Button, ActivityIndicator } from 'react-native-paper';
 
 import Appbar from '#components/Appbar';
 import PureList from '#components/PureList';
@@ -45,7 +45,7 @@ export class Personality extends React.PureComponent {
             );
             navigation.navigate('introduction');
         } catch (error) {
-            this.setState({ loading: false }, () => this.props.showDialog(error.message));
+            this.setState({ loading: false }, () => this.props.showDialog(error));
         }
     }
 
@@ -60,7 +60,7 @@ export class Personality extends React.PureComponent {
                             <Text>I'm good at ...</Text>
                         </View>
                         <View style={{ flex: 1, alignItems: 'flex-end' }}>
-                            <Button mode="contained" width={this.props.device.getX(25)} onPress={this.updatePersonality}>
+                            <Button mode="contained" loading={this.state.loading} width={this.props.device.getX(25)} onPress={this.updatePersonality}>
                                 <Text style={{ color: 'white' }}>NEXT</Text>
                             </Button>
                         </View>

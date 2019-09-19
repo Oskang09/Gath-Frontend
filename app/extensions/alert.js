@@ -89,10 +89,11 @@ function buildComponent(
                                         }
                                         {
                                             this.state.customSubmit ?
-                                                this.state.customSubmit(this.submit) :
+                                                this.state.customSubmit(this.submit, this.state.loading) :
                                                 <Button
                                                     mode="contained"
                                                     color="#ff0000"
+                                                    loading={this.state.loading}
                                                     roundness={5}
                                                     onPress={this.submit}
                                                     text="Delete"

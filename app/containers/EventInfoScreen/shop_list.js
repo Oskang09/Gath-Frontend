@@ -1,18 +1,54 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 
+import Form from '#components/Form';
 import Image from '#components/Image';
 import Appbar from '#components/Appbar';
 import QueryableList from '#components/QueryableList';
 import ShopCard from '#components/ShopCard';
 
 export class ShopList extends React.Component {
+
+    state = {
+        shop: '',
+        address: '',
+    }
     
     listController = null
-
     handleClick = (item) => {
         this.props.nextStep(item);
     }
+
+    formSetting = () => [
+        {
+            type: 'input',
+            row: 0,
+            dcc: (shop) => this.setState({ shop }),
+            key: 'shop',
+            props: {
+                mode: 'outlined',
+                width: this.props.device.getX(40),
+            },
+            setting: {
+                label: 'Shop',
+                value: this.state.shop
+            }
+        },
+        {
+            type: 'input',
+            row: 1,
+            dcc: (address) => this.setState({ address }),
+            key: 'address',
+            props: {
+                mode: 'outlined',
+                width: this.props.device.getX(78),
+            },
+            setting: {
+                label: 'Address',
+                value: this.state.address
+            }
+        }
+    ]
 
     render() {
         const selectedShop = this.props.getState();
@@ -46,8 +82,13 @@ export class ShopList extends React.Component {
                     ]}
                     header={
                         <View>
+                            <Form
+                                containerStyle={{ alignItems: 'center' }}
+                                rowStyle={{ flexDirection: 'row', margin: 5 }}
+                                formSetting={this.formSetting()} 
+                            />
                             {
-                                Object.keys(selectedShop).length > 0 && (
+                                selectedShop && (
                                     <>
                                         <Text style={{ marginLeft: 10, fontSize: 16, fontWeight: 'bold' }}>Selected Shop</Text>
                                         <ShopCard

@@ -7,7 +7,7 @@ import Form from '#components/Form';
 
 export class EventDescription extends React.PureComponent {
     state = {
-        desc: this.props.getState(),
+        desc: this.props.getState() || "",
         loading: false,
     }
     confirmRef = createRef()
@@ -29,8 +29,11 @@ export class EventDescription extends React.PureComponent {
         },
     ];
 
-    nextStep = async () => {
-        this.props.nextStep(this.state.desc);
+    nextStep = () => {
+        if (!this.state.desc || this.state.desc === "") {
+            return this.props.showDialog(`Event description can't be empty.`)
+        }
+        return this.props.nextStep(this.state.desc);
     }
 
     render() {

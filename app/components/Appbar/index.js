@@ -15,6 +15,7 @@ export class TopBar extends React.PureComponent {
         searchQuery: '',
         searchBar: false,
         searchWidth: new Animated.Value(0),
+        profile: this.props.profileId || 'me'
     }
     searchRef = null
 
@@ -26,31 +27,42 @@ export class TopBar extends React.PureComponent {
                     size={25}
                     color="black"
                     onPress={
-                        () => {
-                            this.props.navigator.switchTo('history');
-                        }
+                        () => this.state.profile === 'me' ? 
+                            this.props.navigator.switchTo('history') :
+                            this.props.navigator.push({
+                                routeName: 'history',
+                                params: {
+                                    id: this.state.profile
+                                }
+                            })
                     }
                 />
-                <Appbar.Action
-                    icon="local-activity"
-                    size={25}
-                    color="black"
-                    onPress={
-                        () => {
-                            this.props.navigator.switchTo('vouchers');
-                        }
-                    }
-                />
-                <Appbar.Action
-                    icon="notifications"
-                    size={25}
-                    color="black"
-                    onPress={
-                        () => {
-                            this.props.navigator.switchTo('notifications');
-                        }
-                    }
-                />
+                {
+                    this.props.profileId === 'me' && (
+                        <>
+                            <Appbar.Action
+                                icon="local-activity"
+                                size={25}
+                                color="black"
+                                onPress={
+                                    () => {
+                                        this.props.navigator.switchTo('vouchers');
+                                    }
+                                }
+                            />
+                            <Appbar.Action
+                                icon="notifications"
+                                size={25}
+                                color="black"
+                                onPress={
+                                    () => {
+                                        this.props.navigator.switchTo('notifications');
+                                    }
+                                }
+                            />
+                        </>
+                    )
+                }
             </>
         );
     }
@@ -128,18 +140,21 @@ export class TopBar extends React.PureComponent {
         );
     }
 
-    renderAppbarContent = (subtitle) => (
+    renderAppbarContent = (subtitle, event = undefined) => (
         <Appbar.Content
             title={this.props.title || 'Gath'}
             titleStyle={{ color: '#87EFD7' }}
             subtitle={subtitle && subtitle}
-            onPress={this.props.home && this.handleHome}
+            onPress={
+                () => event && this.props.navigator.push({
+                    routeName: 'event_detail',
+                    params: event
+                })
+            }
         />
     )
 
     getSearchContent = () => this.state.searchQuery
-
-    handleHome = () => this.props.navigator.switchTo('home')
 
     render() {
         const { search, profileBar } = this.props;
@@ -153,7 +168,7 @@ export class TopBar extends React.PureComponent {
                     }}
                 >
                     { 
-                        ({ event }) =>  this.renderAppbarContent(`Event ${event.name} is running ...`)
+                        ({ event }) =>  this.renderAppbarContent(`Event is running ...`, event)
                     }
                 </AsyncContainer>
                 { profileBar && this.renderProfileAction() }

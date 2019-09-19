@@ -37,7 +37,12 @@ class MaterialPicker extends React.PureComponent {
                 >
                     {
                         items.map(
-                            (item) => <Picker.Item key={item} label={item} value={item} />
+                            (item) => {
+                                if (typeof item === 'object') {
+                                    return <Picker.Item key={item.display} label={item.display} value={item.value} />;
+                                }
+                                return <Picker.Item key={item} label={item} value={item} />;
+                            }
                         )
                     }
                 </Picker>

@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { View } from 'react-native';
-import { Text, Card, Button } from 'react-native-paper';
+import { Text, Card, Button, ActivityIndicator } from 'react-native-paper';
 import Appbar from '#components/Appbar';
 import Form from '#components/Form';
 
@@ -118,10 +118,19 @@ export class UserDetail extends React.PureComponent {
         }
         this.setState({ loading: true });
         try {
+            if (this.state.name === "") {
+                throw Error("User name can't be empty.");
+            }
+
+            if (this.state.utag === "") {
+                throw Error("User alias can't be empty.");
+            }
+
+
             const { api, navigation } = this.props;
             await api.request(
-                'POST', 
-                `/users/profile`, 
+                'POST',
+                `/users/profile`,
                 filterObject(this.state, 'name', 'age', 'constellation', 'gender', 'avatar', 'utag')
             );
             navigation.navigate('personality');
@@ -140,11 +149,11 @@ export class UserDetail extends React.PureComponent {
                             <Form
                                 containerStyle={{ alignItems: 'center' }}
                                 rowStyle={{ flexDirection: 'row', margin: 5 }}
-                                formSetting={this.formSetting()} 
+                                formSetting={this.formSetting()}
                             />
                         </Card.Content>
                         <Card.Actions style={{ justifyContent: 'center' }}>
-                            <Button mode="contained" width={this.props.device.getX(25)} onPress={this.updateProfile}>
+                            <Button mode="contained" loading={true} width={this.props.device.getX(25)} onPress={this.updateProfile}>
                                 <Text style={{ color: 'white' }}>NEXT</Text>
                             </Button>
                         </Card.Actions>

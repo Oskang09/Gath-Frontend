@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, BackHandler, TouchableWithoutFeedback, Image } from 'react-native';
+import { View, BackHandler, TouchableWithoutFeedback, Image, Text } from 'react-native';
 import { Avatar, Card, Portal, Dialog } from 'react-native-paper';
 
 import PureList from '#components/PureList';
@@ -12,15 +12,20 @@ import { compose } from '#utility';
 import withNavigator from '#extension/navigator';
 import withAPI from '#extension/apisauce';
 import withDevice from '#extension/device';
+import withDialog from '#extension/dialog';
 
 export class ReviewScreen extends React.PureComponent {
 
     state = {
+        loading: false,
         event: this.props.navigation.state.params,
-        open: null,
+        user: null,
+        comment: '',
         badge: 'empty-badge',
         selectBadge: false,
     }
+
+    dataController = null
 
     formSetting = () => [
         {
@@ -54,9 +59,27 @@ export class ReviewScreen extends React.PureComponent {
         this._backHandler.remove();
     }
 
+    handleSubmit = async () => {
+        if (this.state.loading) {
+            return;
+        }
+        this.setState({ loading: true })
+        try {
+            await this.props.api.request('POST', '/reviews', {
+                target: this.state.user,
+                event: this.state.event.id,
+                badge: this.state.badge,
+                comment: this.state.comment
+            });
+            return this.dataController.reload('users');
+        } catch (error) {
+            this.props.showDialog(error);
+        }
+    }
+
     renderBadgeDialog = () => (
         <Portal>
-            <Dialog visible={this.state.selectBadge} dismissable={false}>
+            <Dialog visible={this.state.selectBadge} onDismiss={() => this.setState({ selectBadge: false })}>
                 <Dialog.Title>Select badge</Dialog.Title>
                 <Dialog.ScrollArea>
                     <PureList
@@ -81,12 +104,12 @@ export class ReviewScreen extends React.PureComponent {
     )
 
     renderDisplay = (item, index) => {
-        const isForm = this.state.open === item.id;
+        const isForm = this.state.user === item.id;
         return (
             <Card
                 key={`review-${index}`}
                 style={{ ...this.props.device.marginXY(this.props.device.getX(5), this.props.device.getY(1.25)) }}
-                onPress={() => this.setState({ open: isForm ? null : item.id })}
+                onPress={() => this.setState({ user: isForm ? null : item.id })}
             >
                 <Card.Title
                     title={item.name}
@@ -95,7 +118,11 @@ export class ReviewScreen extends React.PureComponent {
                         (props) => <Avatar.Image size={50} source={{ uri: this.props.api.cdn(`user-${item.id}`) }} />
                     }
                     right={
-                        (props) => isForm && <Image style={{ width: 75, height: 75 }} source={{ uri: this.props.api.staticResource(`/images/badges/${this.state.badge}.webp`) }} />
+                        (props) => isForm && (
+                            <TouchableWithoutFeedback onPress={() => this.setState({ selectBadge: true })}>
+                                <Image style={{ width: 75, height: 75 }} source={{ uri: this.props.api.staticResource(`/images/badges/${this.state.badge}.webp`) }} />
+                            </TouchableWithoutFeedback>
+                        )
                     }
                 />
                 {
@@ -106,14 +133,8 @@ export class ReviewScreen extends React.PureComponent {
                             </Card.Content>
                             <Card.Actions style={{ justifyContent: 'flex-end' }}>
                                 <Button
-                                    onPress={() => this.setState({ selectBadge: true })}
-                                    roundness={5}
-                                    width={this.props.device.getX(20)}
-                                    textStyle={{ color: 'white' }}
-                                    text="SELECT BADGE"
-                                />
-                                <Button
-                                    onPress={() => { }}
+                                    loading={this.state.loading}
+                                    onPress={this.handleSubmit}
                                     roundness={5}
                                     textStyle={{ color: 'white' }}
                                     text="SEND"
@@ -131,12 +152,20 @@ export class ReviewScreen extends React.PureComponent {
             <View style={{ flex: 1 }}>
                 <Appbar />
                 { this.renderBadgeDialog() }
+                <Text style={{ marginTop: 10, marginLeft: 10, fontSize: 16, fontWeight: 'bold' }}>Event Review</Text>
                 <AsyncContainer
                     controller={(ctl) => this.dataController = ctl}
                     promise={{ users: this.props.api.build('GET', `/reviews/${this.state.event.id}`) }}
                 >
                     {
-                        ({ users }) => users.map(this.renderDisplay)
+                        ({ users }) => {
+                            if (users.length === 0) {
+                                return (
+                                    <Text>You completed your reviews.</Text>
+                                );
+                            }
+                            return users.map(this.renderDisplay);
+                        }
                     }
                 </AsyncContainer>
             </View>
@@ -147,5 +176,6 @@ export class ReviewScreen extends React.PureComponent {
 export default compose(
     withAPI,
     withDevice,
-    withNavigator
+    withNavigator,
+    withDialog
 )(ReviewScreen);

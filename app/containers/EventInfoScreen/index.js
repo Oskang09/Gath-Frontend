@@ -11,6 +11,7 @@ import withFirebase from '#extension/firebase';
 import withDevice from '#extension/device';
 import withAPI from '#extension/apisauce';
 import withNavigator from '#extension/navigator';
+import withDialog from '#extension/dialog';
 import { compose } from '#utility';
 
 export class EventForm extends React.Component {
@@ -37,13 +38,15 @@ export class EventForm extends React.Component {
                     async (state) => this.props.showAlert({
                         title: 'Create Event',
                         content: '',
-                        customSubmit: (submit) => (
+                        customSubmit: (submit, isLoading) => (
                             <Button
                                 mode="contained"
                                 text="Create"
+                                color="#CCCCCC"
                                 textStyle={{ color: '#ffffff' }}
                                 roundness={5}
                                 onPress={submit}
+                                loading={isLoading}
                             />
                         ),
                         submit: async () => {
@@ -70,5 +73,6 @@ export default compose(
     withDevice,
     withFirebase,
     withAlert,
+    withDialog,
     withNavigator
 )(EventForm);

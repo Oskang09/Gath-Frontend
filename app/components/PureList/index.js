@@ -17,6 +17,7 @@ export class PureList extends React.PureComponent {
     render() {
         return (
             <FlatList
+                refreshControl={this.props.refreshControl}
                 removeClippedSubviews={true}
                 style={this.props.containerStyle}
                 ListHeaderComponent={this.props.header}

@@ -30,7 +30,7 @@ export class AsyncContainer extends React.Component {
         const data = this.state.data;
 
         try {
-            for (const api of apis) {
+            for (const api of apis.length === 0 ? Object.keys(promise) : apis) {
                 data[api] = await promise[api]();
             }
         } catch (error) {

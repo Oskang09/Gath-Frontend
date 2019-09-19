@@ -47,13 +47,14 @@ export class VoucherScreen extends React.PureComponent {
             this.props.api.request('DELETE', '/users/voucher', { voucher: this.state.currentVoucher.id });
             this.dismissDialog();
         },
-        customSubmit: (onPress) => {
+        customSubmit: (onPress, isLoading) => {
             return (
                 <CustomButton
                     width={this.props.device.getX(25)}
                     mode="contained"
                     roundness={5}
                     onPress={onPress}
+                    loading={isLoading}
                     text="Activate"
                 />
             );
@@ -71,14 +72,14 @@ export class VoucherScreen extends React.PureComponent {
         const item = this.state.currentVoucher;
         return (
             <Portal>
-                <Dialog visible={item} dismissable={false} theme={{ roundness: 15 }}>
+                <Dialog visible={true} dismissable={false} theme={{ roundness: 15 }}>
                     <Card style={{ elevation: 4 }}>
                         <Card.Cover source={{ uri: this.props.api.cdn(`voucher-${item.voucher.id}`) }} />
                         <Card.Content>
-                            <Title style={{ fontSize: 15 }}>{item.voucher.title}</Title>
-                            <Paragraph style={{ fontSize: 11 }}>{item.voucher.description}</Paragraph>
+                            <Title style={{ fontSize: 16 }}>{item.voucher.title}</Title>
+                            <Paragraph style={{ fontSize: 12 }}>{item.voucher.description}</Paragraph>
                             <View style={{ alignItems: 'flex-end' }}>
-                                <Caption style={{ color: 'red' }}>Expired at {moment(item.expiredAt).format('YYYY / MM / DD')}</Caption>
+                                <Caption style={{ color: 'red' }}>Expired at {moment(item.voucher.expiredAt).format('YYYY / MM / DD')}</Caption>
                             </View>
                         </Card.Content>
                         <Card.Actions style={{ justifyContent: 'flex-end' }}>
@@ -92,7 +93,7 @@ export class VoucherScreen extends React.PureComponent {
         );
     }
 
-    renderStatus = ({ usedAt, expiredAt }) => {
+    renderStatus = ({ usedAt, voucher: { expiredAt } }) => {
         if (usedAt) {
             return (
                 <Image
@@ -103,7 +104,7 @@ export class VoucherScreen extends React.PureComponent {
             );
         }
 
-        if (Date.now() > expiredAt) {
+        if (Date.now() > new Date(expiredAt)) {
             return (
                 <Image
                 style={{ width: 50, height: 50, margin: 10 }}
@@ -120,7 +121,7 @@ export class VoucherScreen extends React.PureComponent {
         const height = this.props.device.getY(20);
         return (
             <View style={{ flex: 1 }}>
-                <Appbar home={true} profileBar={true} />
+                <Appbar />
                 { this.state.currentVoucher && this.renderPortalVoucher() }
                 <Text style={{ marginLeft: 10, marginTop: 10, fontSize: 19, fontWeight: 'bold' }}>Vouchers</Text>
                 <QueryableList
@@ -129,7 +130,7 @@ export class VoucherScreen extends React.PureComponent {
                     containerStyle={{ flex: 1, alignSelf: 'center' }}
                     initQuery={{ page: 1 }}
                     updateQuery={(query) => ({ page: query.page + 1 })}
-                    uri={(query) => `/users/voucher?limit=5&page=${query.page}`}
+                    uri={(query) => `/users/voucher/me?limit=5&page=${query.page}`}
                     footer={
                         <View style={{ flex: 1, alignItems: 'center', margin: 10 }}>
                             <Image style={{ width: 64, height: 64 }} source={require('#assets/fail.png')} />

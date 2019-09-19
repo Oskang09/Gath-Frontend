@@ -1,7 +1,7 @@
 import React from 'react';
 
-import { View, Text, ScrollView, BackHandler } from 'react-native';
-import { Avatar } from 'react-native-paper';
+import { View, Text, ScrollView, BackHandler, RefreshControl } from 'react-native';
+import { Avatar, List, Portal, Dialog } from 'react-native-paper';
 import PureList from '#components/PureList';
 import Button from '#components/Button';
 import Caccordion from '#components/Caccordion'
@@ -18,9 +18,12 @@ import { compose, concatRender } from '#utility';
 
 export class ProfileScreen extends React.PureComponent {
     state = {
-        id: this.props.navigation.state.params ? this.props.navigation.state.params.id : 'profile',
-        isOwner: this.props.navigation.state.params ? false : true
+        id: this.props.navigation.state.params ? this.props.navigation.state.params.id : 'me',
+        isOwner: this.props.navigation.state.params ? false : true,
+        refresh: false,
     }
+
+    dataController = null
 
     componentWillMount() {
         if (this.props.navigation.state.params) {
@@ -108,29 +111,58 @@ export class ProfileScreen extends React.PureComponent {
         );
     }
 
-    renderComments = ({ profile }) => {
+    renderReviews = ({ review }) => {
         return (
             <Caccordion
-                key="comment"
-                title="Comments"
-                subtitle={(open) => !open && "15 badge votes, 20 comments"}
+                key="review"
+                title="Reviews"
+                subtitle={`${review.numsOfBadge} badge votes, ${review.numsOfComment} comments`}
                 containerStyle={{
                     marginTop: 10,
                     marginLeft: this.props.device.getX(10),
                     marginRight: this.props.device.getX(10)
                 }}
-                showButton={true}
                 collapsed={
-                    <View>
-                        <Text>Something</Text>
-                        <Text>Somethi1ng</Text>
-                        <Text>Somethi1ng</Text>
-                        <Text>Somethi1ng</Text>
-                        <Text>Somethi1ng</Text>
-                        <Text>Somethi1ng</Text>
-                        <Text>Somethi1ng</Text>
-                        <Text>Somethi1ng</Text>
-                    </View>
+                    (close) => (
+                        <Portal>
+                            <Dialog
+                                visible={true}
+                                onDismiss={close}
+                            >
+                                <Dialog.Title>Reviews</Dialog.Title>
+                                <Dialog.ScrollArea>
+                                    <AsyncContainer
+                                        promise={{
+                                            reviews: this.props.api.build('GET', `/users/review/${this.state.id}?full=true`)
+                                        }}
+                                    >
+                                        {
+                                            ({ reviews }) => {
+                                                if (reviews.length === 0) {
+                                                    // render nothing
+                                                }
+                                                return reviews.map(
+                                                    (review, index) => (
+                                                        <List.Item
+                                                            key={`review-${index}`}
+                                                            title={review.fromUser.name}
+                                                            description={review.comment}
+                                                            left={
+                                                                (props) =>  <Avatar.Image {...props} size={50} source={{ uri: this.props.api.cdn(`user-${review.fromUser.id}`) }} />
+                                                            }
+                                                            right={
+                                                                (props) => <Image style={{ ...props, width: 75, height: 75 }} source={this.props.api.staticResource(`/images/badges/${review.badge}.webp`)} />
+                                                            }
+                                                        />
+                                                    )
+                                                );
+                                            }
+                                        }
+                                    </AsyncContainer>
+                                </Dialog.ScrollArea>
+                            </Dialog>
+                        </Portal>
+                    )
                 }
             />
         )
@@ -155,21 +187,12 @@ export class ProfileScreen extends React.PureComponent {
 
     renderButton = ({ profile }) => {
         return (
-            <View key="buttons" style={{ flex: 1, flexDirection: 'column', alignItems: 'center' }}>
-                <Button
-                    key="logout"
-                    roundness={5}
-                    onPress={
-                        async () => {
-                            await this.props.firebase.logout();
-                            this.props.navigator.switchTo('splash');
-                        }
-                    }
-                    text="Logout"
-                />
+            <View key="buttons" style={{ flex: 1, flexDirection: 'column', alignItems: 'center', margin: 10 }}>
                 <Button
                     key="update-profile"
+                    icon="edit"
                     roundness={5}
+                    width={this.props.device.getX(30)}
                     onPress={
                         () => this.props.navigator.switchTo({
                             routeName: 'update_profile',
@@ -178,6 +201,21 @@ export class ProfileScreen extends React.PureComponent {
                     }
                     text="Edit"
                 />
+                <View style={{ marginTop: 10 }}>
+                    <Button
+                        key="logout"
+                        roundness={5}
+                        width={this.props.device.getX(30)}
+                        color="#CCCCCC"
+                        onPress={
+                            async () => {
+                                await this.props.firebase.logout();
+                                this.props.navigator.switchTo('splash');
+                            }
+                        }
+                        text="Logout"
+                    />
+                </View>
             </View>
         );
     }
@@ -185,18 +223,38 @@ export class ProfileScreen extends React.PureComponent {
     render() {
         return (
             <View style={{ flex: 1 }}>
-                <Appbar profileBar={this.state.isOwner} />
-                <ScrollView showsVerticalScrollIndicator={false}>
+                <Appbar profileBar={true} profileId={this.state.id} />
+                <ScrollView
+                    horizontal={false}
+                    showsVerticalScrollIndicator={false}
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={this.state.refresh}
+                            enabled={true}
+                            onRefresh={
+                                async () => {
+                                    this.setState({ refresh: true });
+                                    await this.dataController.reload();
+                                    this.setState({ refresh: false });
+                                }
+                            }
+                        />
+                    }
+                >
                     <View style={{ marginBottom: 10 }}>
                         <AsyncContainer
-                            promise={{ profile: this.props.api.build('GET', `users/${this.state.id}`) }}
+                            controller={ctl => this.dataController = ctl}
+                            promise={{
+                                profile: this.props.api.build('GET', `/users/profile/${this.state.id}?badge=true`),
+                                review: this.props.api.build('GET', `/users/review/${this.state.id}`)
+                            }}
                         >
                             {
                                 concatRender([
                                     this.renderProfile,
                                     this.renderPersonality,
-                                    this.renderComments,
-                                    // this.renderButton
+                                    this.renderReviews,
+                                    this.state.isOwner && this.renderButton
                                 ])
                             }
                         </AsyncContainer>

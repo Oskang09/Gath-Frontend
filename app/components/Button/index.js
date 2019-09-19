@@ -16,12 +16,14 @@ export class StyledButton extends React.PureComponent {
             mode = "contained",
             width = this.props.device.getX(20),
             height = this.props.device.getY(7.5),
-            textStyle = { color: '#ffffff' }
+            textStyle = { color: '#ffffff' },
+            loading = false,
         } = this.props;
         return (
             <Button
                 compact={true}
                 mode={mode}
+                loading={loading}
                 onPress={onPress}
                 theme={{
                     colors: {

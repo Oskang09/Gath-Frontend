@@ -1,5 +1,5 @@
 import React from 'react';
-import { TouchableOpacity, View, Text } from 'react-native';
+import { TouchableOpacity } from 'react-native';
 import { Card } from 'react-native-paper';
 
 export class Caccordion extends React.PureComponent {
@@ -25,30 +25,17 @@ export class Caccordion extends React.PureComponent {
 
     render() {
         const { open } = this.state;
-        const { children, containerStyle, collapsed, collapsedStyle, showButton } = this.props;
-        if (showButton) {
-            return (
-                <Card style={open ? collapsedStyle : containerStyle}>
-                    { this.renderTitle() }
-                    <Card.Content>
-                        { children }
-                        { open && collapsed}
-                        <TouchableOpacity activeOpacity={1} onPress={this.toggleAccordion}>
-                            <View style={{ alignItems: 'center' }}>
-                                <Text>Show {this.state.open ? 'Less' : 'More'}</Text>
-                            </View>
-                        </TouchableOpacity>
-                    </Card.Content>
-                </Card>
-            );
-        }
+        const { children, containerStyle, collapsed, collapsedStyle } = this.props;
+        const styling = open ? collapsedStyle ? collapsedStyle : containerStyle : containerStyle;
+        const renderCollapsed = open && ( typeof collapsed === 'function' ? collapsed(this.toggleAccordion) : collapsed );
+
         return (
             <TouchableOpacity activeOpacity={1} onPress={this.toggleAccordion}>
-                <Card style={open ? collapsedStyle : containerStyle}>
+                <Card style={styling}>
                     { this.renderTitle() }
                     <Card.Content>
                         { children }
-                        { open && collapsed }
+                        { renderCollapsed }
                     </Card.Content>
                 </Card>
             </TouchableOpacity>

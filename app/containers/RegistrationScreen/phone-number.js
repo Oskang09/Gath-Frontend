@@ -1,53 +1,40 @@
 import React, { createRef } from 'react';
 import { View } from 'react-native';
 import { Text, ActivityIndicator, Button } from 'react-native-paper';
-import Appbar from '#components/Appbar';
+import PhoneInput from 'react-native-phone-input';
 import Confirm from 'react-native-confirmation-code-field';
 
+import Appbar from '#components/Appbar';
 import withFirebase from '#extension/firebase';
 import withDevice from '#extension/device';
 import withAPI from '#extension/apisauce';
 import withNavigator from '#extension/navigator';
+import withDialog from '#extension/dialog';
 
 import { compose } from '#utility';
-import Form from '#components/Form';
 
 export class PhoneNumber extends React.PureComponent {
     state = {
-        phone: '+60187824152',
         code: '',
         confirmCode: null,
         loading: false,
     }
+    phoneRef = null
     confirmRef = createRef()
-
-    formSetting = () => [
-        {
-            type: 'input',
-            row: 0,
-            dcc: (phone) => this.setState({ phone }),
-            key: 'phone-number',
-            props: {
-                disabled: this.state.confirmCode,
-                mode: 'outlined',
-                width: this.props.device.getX(45),
-            },
-            setting: {
-                value: this.state.phone,
-            }
-        },
-    ];
 
     verifyPhone = async () => {
         this.setState({ loading: true });
         try {
+            if (!this.phoneRef.isValidNumber()) {
+                throw Error("Invalid phone number.");
+            }
+
             this.setState({
-                confirmCode: await this.props.firebase.login(this.state.phone),
+                confirmCode: await this.props.firebase.login(this.phoneRef.getValue()),
                 loading: false,
             }, () => this.confirmRef.current.focus());
         } catch (error) {
-            this.props.showDialog(error.message);
-            this.setState({ loading: false });
+            this.setState({ loading: false }, () => this.props.showDialog(error.message));
         }
     }
 
@@ -55,14 +42,13 @@ export class PhoneNumber extends React.PureComponent {
         this.setState({ loading: true, error: null });
         try {
             const firebaseUser = await this.state.confirmCode.confirm(input);
-            this.props.api.setToken(await firebaseUser.getIdToken(true));
-            await this.props.api.loadConfig();
             
-            const result = await this.props.api.request('POST', `/users/login`, { phone: this.state.phone, uid: firebaseUser.uid });
+            this.props.api.setToken(await firebaseUser.getIdToken(true));
+            const result = await this.props.api.request('POST', `/users/login`, { phone: this.phoneRef.getValue(), uid: firebaseUser.uid });
             if (result.status === 'NEW') {
                 this.props.navigator.switchTo('detail');
             } else if (result.status === 'REGISTERED') {
-                this.props.navigator.switchTo('home');
+                this.props.navigator.switchTo('splash');
             }
         } catch (error) {
             this.confirmRef.current.clear();
@@ -76,14 +62,21 @@ export class PhoneNumber extends React.PureComponent {
                 <Appbar /> 
                 <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
                     <Text>Enter your phone number</Text>
-                    <Form
-                        formSetting={this.formSetting()}
-                        containerStyle={{ alignItems: 'center' }}
-                        rowStyle={{ flexDirection: 'row', margin: 5 }}
+                    <PhoneInput
+                        allowZeroAfterCountryCode={false}
+                        disabled={this.state.confirmCode}
+                        ref={ref => this.phoneRef = ref}
+                        style={{
+                            width: this.props.device.getX(65),
+                            alignSelf: 'center',
+                            margin: 20,
+                        }}
+                        initialCountry="my"
+                        onPressFlag={() => {}}
                     />
                     {
                         !this.state.confirmCode && (
-                            <View style={{ marginTop: this.props.device.getY(3) }}>
+                            <View>
                                 <Button mode="contained" onPress={this.verifyPhone}>
                                     <Text style={{ color: 'white' }}>REQUEST FOR TAC</Text>
                                 </Button>
@@ -131,5 +124,6 @@ export default compose(
     withFirebase,
     withDevice,
     withAPI,
-    withNavigator
+    withNavigator,
+    withDialog
 )(PhoneNumber);

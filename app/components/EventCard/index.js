@@ -37,13 +37,13 @@ export class EventCard extends React.PureComponent {
                     />
                     <List.Item
                         title={data.name}
-                        titleStyle={{ fontSize: 15 }}
+                        titleStyle={{ fontSize: 16 }}
                         description={
                             (props) => {
                                 return (
                                     <View>
-                                        <Paragraph style={{ color: props.color, fontSize: 11 }}>{moment(data.start_time).format('ddd, HH:mm')}</Paragraph>
-                                        <Paragraph style={{ color: props.color, fontSize: 11 }}>{data.location}</Paragraph>
+                                        <Paragraph style={{ color: props.color, fontSize: 12 }}>{moment(data.start_time).format('ddd, HH:mm')}</Paragraph>
+                                        <Paragraph style={{ color: props.color, fontSize: 12 }}>{data.location}</Paragraph>
                                     </View>
                                 );
                             }
