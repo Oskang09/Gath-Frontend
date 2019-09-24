@@ -21,6 +21,8 @@ import EventUser from '#containers/EventUserScreen';
 import Notification from '#containers/NotificationScreen';
 import EventHistory from '#containers/EventHistoryScreen';
 import Voucher from '#containers/VoucherScreen';
+import UserReview from '#containers/UserReviewScreen';
+
 import ReviewScreen from '#containers/ReviewScreen';
 
 import Icon from '#components/Icon';
@@ -33,6 +35,7 @@ export default {
     },
     splash: SplashScreen,
 
+    user_review: UserReview,
     user_profile: ProfileScreen,
     update_profile: ProfileUpdate,
     event_detail: EventDetail,

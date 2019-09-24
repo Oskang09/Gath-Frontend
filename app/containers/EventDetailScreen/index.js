@@ -118,7 +118,7 @@ export class EventDetailScreen extends React.PureComponent {
         );
     }
 
-    renderAction = (event, meta, shop) => {
+    renderAction = (event, meta) => {
         const buttons = [];
 
         if (meta.isNormal || meta.isRequest) {
@@ -154,7 +154,7 @@ export class EventDetailScreen extends React.PureComponent {
                         <Button
                             onPress={() => this.props.navigator.push({
                                 routeName: 'event_info',
-                                params: Object.assign({}, event, { shop })
+                                params: Object.assign({}, event)
                             })}
                             roundness={5}
                             width={this.props.device.getX(40)}
@@ -235,7 +235,13 @@ export class EventDetailScreen extends React.PureComponent {
                             () => this.props.showAlert({
                                 title: 'Request Join',
                                 content: '',
-                                submit: () => this.handleEventAction('REQUEST')
+                                submit: async () => {
+                                    try {
+                                        await this.handleEventAction('REQUEST')
+                                    } catch (error) {
+                                        this.dataController.reload();
+                                    }
+                                }
                             })
                         }
                         text="Join Event"
@@ -266,9 +272,7 @@ export class EventDetailScreen extends React.PureComponent {
                                     try {
                                         await this.handleEventAction('QUIT')
                                     } catch (error) {
-                                        if (error.message === 'EVENT_STARTED') {
-                                            this.dataController.reload();
-                                        }
+                                        this.dataController.reload();
                                     }
                                 }
                             })
@@ -290,7 +294,13 @@ export class EventDetailScreen extends React.PureComponent {
                             () => this.props.showAlert({
                                 title: 'Start Event',
                                 content: '',
-                                submit: () => this.handleEventAction('START_EVENT')
+                                submit: async () => {
+                                    try {
+                                        await this.handleEventAction('START_EVENT')
+                                    } catch (error) {
+                                        this.dataController.reload();
+                                    }
+                                }
                             })
                         }
                         text="Start Event"
@@ -305,13 +315,7 @@ export class EventDetailScreen extends React.PureComponent {
                     <Button
                         key="checkin-btn"
                         width={this.props.device.getX(45)}
-                        onPress={
-                            () => this.props.showAlert({
-                                title: 'Check In',
-                                content: '',
-                                submit: () => this.handleEventAction('CHECK_IN')
-                            })
-                        }
+                        onPress={() => this.handleEventAction('CHECK_IN')}
                         text="Check In"
                     />
                 );
@@ -362,12 +366,11 @@ export class EventDetailScreen extends React.PureComponent {
                         event: this.props.api.build('GET', `/events/${this.state.event.id}`),
                         comment: this.props.api.build('GET', `/events/${this.state.event.id}/comments?limit=4`),
                         meta: this.props.api.build('GET', `/events/${this.state.event.id}/meta`),
-                        shop: this.props.api.build('GET', `/shops/${this.state.event.shopId}`),
                         profile: this.props.api.build('GET', '/users/profile/me'),
                     }}
                 >
                     {
-                        ({ event, meta, shop, profile, comment }) => {
+                        ({ event, meta, profile, comment }) => {
                             const absoluteButton = this.renderButton(event, meta);
                             return (
                                 <View style={{ flex: 1 }}>
@@ -401,7 +404,7 @@ export class EventDetailScreen extends React.PureComponent {
                                                     data={[
                                                         moment(event.start_time).format('DD/MM/YYYY, HH:mm'),
                                                         event.location,
-                                                        shop.name,
+                                                        event.shop,
                                                         `${meta.numberOfUser} Peoples`,
                                                     ]}
                                                     render={
@@ -426,7 +429,7 @@ export class EventDetailScreen extends React.PureComponent {
                                                 {this.renderCommentForm(event, profile, meta)}
                                             </View>
                                         }
-                                        footer={this.renderAction(event, meta, shop)}
+                                        footer={this.renderAction(event, meta)}
                                         data={[
                                             {
                                                 user: { name: 'Event Description' },

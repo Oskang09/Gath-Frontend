@@ -53,7 +53,7 @@ export class Personality extends React.PureComponent {
         const { data } = this.state;
         return (
             <View style={{ flex: 1, alignItems: 'center' }}>
-                <Appbar />
+                <Appbar eventTrack={false} /> 
                 <View style={{ flex: 1, flexDirection: 'column', }}>
                     <View style={{ alignItems: 'center', flexDirection: 'row', margin: 10 }}>
                         <View style={{ flex: 1, alignItems: 'flex-start'}}>

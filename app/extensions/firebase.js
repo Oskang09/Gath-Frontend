@@ -8,7 +8,6 @@ import { injector } from '#utility';
 const authenticate = Firebase.auth();
 const fcm = Firebase.messaging();
 const notify = Firebase.notifications();
-let processNotificaiton = null;
 const androidChannel = new Firebase.notifications.Android.Channel(
     'local',
     'Local Notification',
@@ -63,9 +62,8 @@ function buildComponent(
 
                         notify.onNotificationOpened(
                             (notification) => {
-                                // ASYNC: will run through just remove notification
                                 fn(notification);
-                                return notify.removeDeliveredNotification(notification.notification.notificationId)
+                                return notify.removeDeliveredNotification(notification.notification.notificationId);
                             }
                         );
                     },

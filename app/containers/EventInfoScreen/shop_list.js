@@ -1,6 +1,8 @@
 import React from 'react';
 import { View, Text } from 'react-native';
+import { Portal, Dialog } from 'react-native-paper';
 
+import Button from '#components/Button';
 import Form from '#components/Form';
 import Image from '#components/Image';
 import Appbar from '#components/Appbar';
@@ -10,14 +12,13 @@ import ShopCard from '#components/ShopCard';
 export class ShopList extends React.Component {
 
     state = {
-        shop: '',
-        address: '',
+        shop: this.props.getState("shop") || "",
+        location: this.props.getState("location") || "",
+        custom: false,
     }
     
     listController = null
-    handleClick = (item) => {
-        this.props.nextStep(item);
-    }
+    handleClick = (item) => this.props.nextStep(item)
 
     formSetting = () => [
         {
@@ -27,7 +28,7 @@ export class ShopList extends React.Component {
             key: 'shop',
             props: {
                 mode: 'outlined',
-                width: this.props.device.getX(40),
+                width: this.props.device.getX(78),
             },
             setting: {
                 label: 'Shop',
@@ -37,7 +38,7 @@ export class ShopList extends React.Component {
         {
             type: 'input',
             row: 1,
-            dcc: (address) => this.setState({ address }),
+            dcc: (location) => this.setState({ location }),
             key: 'address',
             props: {
                 mode: 'outlined',
@@ -45,10 +46,42 @@ export class ShopList extends React.Component {
             },
             setting: {
                 label: 'Address',
-                value: this.state.address
+                value: this.state.location
             }
         }
     ]
+
+    renderCustomDialog = () => {
+        return (
+            <Portal>
+                <Dialog dismissable={false} visible={this.state.custom}>
+                    <Dialog.Title>Enter shop details</Dialog.Title>
+                    <Dialog.ScrollArea>
+                        <Form
+                            containerStyle={{ alignItems: 'center' }}
+                            rowStyle={{ flexDirection: 'row', margin: 5 }}
+                            formSetting={this.formSetting()} 
+                        />
+                    </Dialog.ScrollArea>
+                    <Dialog.Actions>
+                        <Button
+                            color="#CCCCCC"
+                            onPress={() => this.setState({ custom: false })}
+                            textStyle={{ color: 'white' }}
+                            text="Cancel"
+                            style={{ marginRight: 5 }}
+                            roundness={5}
+                        />
+                        <Button
+                            onPress={() => this.handleClick({ shop: this.state.shop, location: this.state.location })}
+                            text="Done"
+                            roundness={5}
+                        />
+                    </Dialog.Actions>
+                </Dialog>
+            </Portal>
+        )
+    }
 
     render() {
         const selectedShop = this.props.getState();
@@ -60,6 +93,7 @@ export class ShopList extends React.Component {
                     }
                     search={true}
                 />
+                { this.renderCustomDialog() }
                 <QueryableList
                     type="vertical"
                     key="all-shop"
@@ -82,11 +116,6 @@ export class ShopList extends React.Component {
                     ]}
                     header={
                         <View>
-                            <Form
-                                containerStyle={{ alignItems: 'center' }}
-                                rowStyle={{ flexDirection: 'row', margin: 5 }}
-                                formSetting={this.formSetting()} 
-                            />
                             {
                                 selectedShop && (
                                     <>
@@ -99,7 +128,20 @@ export class ShopList extends React.Component {
                                     </>
                                 )
                             }
-                            <Text style={{ marginLeft: 10, fontSize: 16, fontWeight: 'bold' }}>Shop List</Text>
+                            <View style={{ alignItems: 'center', flexDirection: 'row' }}>
+                                <View style={{ flex: 1, alignItems: 'flex-start'}}>
+                                    <Text style={{ marginLeft: 10, fontSize: 16, fontWeight: 'bold' }}>Shop List</Text>
+                                </View>
+                                <View style={{ flex: 1, alignItems: 'flex-end', marginRight: 10 }}>
+                                    <Button
+                                        mode="contained"
+                                        style={{ alignSelf: 'flex-end' }}
+                                        roundness={5}
+                                        onPress={() => this.setState({ custom: true })}
+                                        text="Custom"
+                                    />
+                                </View>
+                            </View>
                         </View>
                     }
                     footer={

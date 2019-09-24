@@ -128,7 +128,7 @@ export class UserDetail extends React.PureComponent {
             return this.props.showDialog("User name can't be empty.");
         }
 
-        if (!this.state.age || isNaN(parseInt(this.state.age))) {
+        if (!this.state.age || this.state.age === "" || isNaN(parseInt(this.state.age))) {
             return this.props.showDialog("User age mus't be number.");
         }
 

@@ -1,7 +1,6 @@
 import React from 'react';
-import { Card, TouchableRipple, Paragraph, List } from 'react-native-paper';
+import { Card, TouchableRipple, Paragraph } from 'react-native-paper';
 import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
-import Icon from '#components/Icon';
 import { compose } from '#utility';
 import withDevice from '#extension/device';
 import withAPI from '#extension/apisauce';
@@ -33,19 +32,19 @@ export class ShopCard extends React.PureComponent {
                         source={{ uri: this.props.api.cdn(`shop-${data.id}`) }} 
                     />
                     <Card.Title
-                        title={data.name}
+                        title={data.name || data.shop}
                         titleStyle={{ fontSize: 16 }}
-                        subtitle={data.locate}
+                        subtitle={data.location}
                         subtitleStyle={{ fontSize: 12 }}
                     />
-                    <Card.Content style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+                    {/* <Card.Content style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
                         <MaterialIcon size={16} name="fire" color="orange" />
                         <MaterialIcon size={16} name="fire" color="orange" />
                         <MaterialIcon size={16} name="fire" color="orange" />
                         <MaterialIcon size={16} name="fire" color="orange" />
                         <MaterialIcon size={16} name="fire" />
                         <Paragraph style={{ fontSize: 12, marginLeft: 2 }}>(26)</Paragraph>
-                    </Card.Content>
+                    </Card.Content> */}
                 </Card>
             </TouchableRipple>
         );

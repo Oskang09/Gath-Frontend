@@ -22,12 +22,12 @@ export class EventForm extends React.Component {
             const {
                 type, name, start_time: start, id,
                 desc,
-                shop
+                shop, location,
             } = this.props.navigation.state.params;
 
             state.push({ type, name, start, id });
             state.push(desc);
-            state.push(shop);
+            state.push({ shop, location });
         }
         return (
             <StepContainer
@@ -54,10 +54,10 @@ export class EventForm extends React.Component {
                                 await this.props.api.request('PUT', `/events/${this.props.navigation.state.params.id}`, state);
                                 this.props.navigator.back();
                             } else {
-                                const resposne = await this.props.api.request('POST', '/events', state);
+                                const response = await this.props.api.request('POST', '/events', state);
                                 this.props.navigator.replace({
                                     routeName: 'event_detail',
-                                    params: resposne
+                                    params: response
                                 });
                             }
                         }

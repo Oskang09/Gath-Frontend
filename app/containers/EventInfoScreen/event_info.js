@@ -11,7 +11,7 @@ export class EventInfoScreen extends React.Component {
     state = {
         name: this.props.getState('name'),
         start: this.props.getState('start') || Date.now(),
-        type: this.props.getState('type'),
+        type: this.props.getState('type') || "DINING",
         banner: this.props.getState('banner'),
         quit: false,
     }

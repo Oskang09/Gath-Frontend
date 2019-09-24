@@ -59,7 +59,7 @@ export class Introduction extends React.PureComponent {
     render() {
         return (
             <View style={{ flex: 1 }}>
-                <Appbar /> 
+                <Appbar eventTrack={false} /> 
                 <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }} behavior="position">
                     <Card width={this.props.device.getX(90)}>
                         <Card.Title title="Describe yourself ..." />
@@ -71,7 +71,12 @@ export class Introduction extends React.PureComponent {
                             />
                         </Card.Content>
                         <Card.Actions style={{ justifyContent: 'center' }}>
-                            <Button mode="contained" width={this.props.device.getX(25)} loading={this.state.loading} onPress={this.updateDescription}>
+                            <Button
+                                mode="contained"
+                                width={this.props.device.getX(25)}
+                                loading={this.state.loading}
+                                onPress={this.updateDescription}
+                            >
                                 <Text style={{ color: 'white' }}>NEXT</Text>
                             </Button>
                         </Card.Actions>

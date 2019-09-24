@@ -157,20 +157,24 @@ export class TopBar extends React.PureComponent {
     getSearchContent = () => this.state.searchQuery
 
     render() {
-        const { search, profileBar } = this.props;
+        const { search, profileBar, eventTrack = true } = this.props;
         return (
             <Appbar theme={{ colors: { primary: '#FFFFFF' }}}>
-                <AsyncContainer
-                    loading={this.renderAppbarContent}
-                    error={() => this.renderAppbarContent()}
-                    promise={{
-                        event: this.props.api.build('GET', '/events/running')
-                    }}
-                >
-                    { 
-                        ({ event }) =>  this.renderAppbarContent(`Event is running ...`, event)
-                    }
-                </AsyncContainer>
+                {
+                    eventTrack ? (
+                        <AsyncContainer
+                            loading={this.renderAppbarContent}
+                            error={() => this.renderAppbarContent()}
+                            promise={{
+                                event: this.props.api.build('GET', '/events/running')
+                            }}
+                        >
+                            { 
+                                ({ event }) =>  this.renderAppbarContent(`Event is running ...`, event)
+                            }
+                        </AsyncContainer>
+                    ) : this.renderAppbarContent()
+                }
                 { profileBar && this.renderProfileAction() }
                 { search && this.renderSearch() }
             </Appbar>

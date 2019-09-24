@@ -7,16 +7,35 @@ import withNavigator from '#extension/navigator';
 import { compose } from '#utility';
 
 export class SplashScreen extends React.PureComponent {
-    
+  
+    state = {
+        noInternet: false,
+    }
+
+    componentDidMount() {
+        this.checkAuthAndSetting().catch(
+            () => {
+                this.setState({ noInternet: true })
+            }
+        );
+    }
+
     checkAuthAndSetting = async () => {
         const { api, firebase, navigator } = this.props;
         const firebaseUser = await firebase.getUser();
+        let user = null;
         if (!firebaseUser) {
             return navigator.switchTo('register');
         }
-        
+
         api.setToken(await firebaseUser.getIdToken(true));
         await api.loadConfig();
+        try {
+            user = await api.request('GET', '/users/profile/me')
+        } catch (error) {
+            return navigator.switchTo('register');
+        }
+
         await firebase.initialize(
             async function (message) {
                 const { data } = message.notification;
@@ -56,25 +75,19 @@ export class SplashScreen extends React.PureComponent {
                 });
             }
         }
-
-        try {
-            const user = await api.request('GET', '/users/profile/me');
-            if (user.status === 'NEW') {
-                return navigator.switchTo('detail');
-            }
-            if (user.status === 'REGISTERED') {
-                return navigator.switchTo('home');
-            } 
-        } catch (error) {
-            return navigator.switchTo('register');
+        
+        if (user.status === 'NEW') {
+            return navigator.switchTo('detail');
+        }
+        if (user.status === 'REGISTERED') {
+            return navigator.switchTo('home');
         }
     }
 
     render() {
-        this.checkAuthAndSetting();
         return (
             <View>
-                <Text>Loading</Text> 
+                <Text>{this.state.noInternet ? 'NO INTERNET' : 'Loading'}</Text> 
             </View>
         );
     }

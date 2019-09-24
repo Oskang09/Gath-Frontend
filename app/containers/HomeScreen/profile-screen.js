@@ -1,7 +1,8 @@
 import React from 'react';
 
+import moment from 'moment';
 import { View, Text, ScrollView, BackHandler, RefreshControl } from 'react-native';
-import { Avatar, List, Portal, Dialog } from 'react-native-paper';
+import { Avatar, Card, Paragraph } from 'react-native-paper';
 import PureList from '#components/PureList';
 import Button from '#components/Button';
 import Caccordion from '#components/Caccordion'
@@ -14,6 +15,7 @@ import withFirebase from '#extension/firebase'
 import withDevice from '#extension/device';
 import withAPI from '#extension/apisauce';
 import withNavigator from '#extension/navigator';
+import withAlert from '#extension/alert';
 import { compose, concatRender } from '#utility';
 
 export class ProfileScreen extends React.PureComponent {
@@ -62,8 +64,8 @@ export class ProfileScreen extends React.PureComponent {
                 }}
                 collapsedStyle={{
                     marginTop: 10,
-                    marginLeft: this.props.device.getX(10),
-                    marginRight: this.props.device.getX(10)
+                    marginLeft: this.props.device.getX(8),
+                    marginRight: this.props.device.getX(8)
                 }}
                 collapsed={
                     <View>
@@ -96,14 +98,16 @@ export class ProfileScreen extends React.PureComponent {
                 <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
                     {
                         badges.map(
-                            (badge_name, index) => (
-                                <Image
-                                    key={`badge-${badge_name}-${index}`}
-                                    source={this.props.api.staticResource(`/images/badges/${badge_name}.webp`)}
-                                    resizeMethod="resize"
-                                    style={{ width: devicePixel, height: devicePixel }}
-                                />
-                            )
+                            (badge_name, index) => {
+                                return (
+                                    <Image
+                                        key={`badge-${badge_name}-${index}`}
+                                        source={this.props.api.staticResource(`/images/badges/${badge_name}.webp`)}
+                                        resizeMethod="resize"
+                                        style={{ width: devicePixel, height: devicePixel }}
+                                    />
+                                );
+                            }
                         )
                     }
                 </View>
@@ -111,60 +115,50 @@ export class ProfileScreen extends React.PureComponent {
         );
     }
 
-    renderReviews = ({ review }) => {
+    renderReviews = ({ reviewMeta, reviews }) => {
         return (
-            <Caccordion
-                key="review"
-                title="Reviews"
-                subtitle={`${review.numsOfBadge} badge votes, ${review.numsOfComment} comments`}
-                containerStyle={{
-                    marginTop: 10,
-                    marginLeft: this.props.device.getX(10),
-                    marginRight: this.props.device.getX(10)
-                }}
-                collapsed={
-                    (close) => (
-                        <Portal>
-                            <Dialog
-                                visible={true}
-                                onDismiss={close}
-                            >
-                                <Dialog.Title>Reviews</Dialog.Title>
-                                <Dialog.ScrollArea>
-                                    <AsyncContainer
-                                        promise={{
-                                            reviews: this.props.api.build('GET', `/users/review/${this.state.id}?full=true`)
-                                        }}
-                                    >
-                                        {
-                                            ({ reviews }) => {
-                                                if (reviews.length === 0) {
-                                                    // render nothing
-                                                }
-                                                return reviews.map(
-                                                    (review, index) => (
-                                                        <List.Item
-                                                            key={`review-${index}`}
-                                                            title={review.fromUser.name}
-                                                            description={review.comment}
-                                                            left={
-                                                                (props) =>  <Avatar.Image {...props} size={50} source={{ uri: this.props.api.cdn(`user-${review.fromUser.id}`) }} />
-                                                            }
-                                                            right={
-                                                                (props) => <Image style={{ ...props, width: 75, height: 75 }} source={this.props.api.staticResource(`/images/badges/${review.badge}.webp`)} />
-                                                            }
-                                                        />
-                                                    )
-                                                );
-                                            }
-                                        }
-                                    </AsyncContainer>
-                                </Dialog.ScrollArea>
-                            </Dialog>
-                        </Portal>
-                    )
+            <Card
+                key="review-card"
+                style={{ marginTop: 10, marginLeft: this.props.device.getX(8), marginRight: this.props.device.getX(8) }}
+                onPress={
+                    () => reviews.result.length > 0 && this.props.navigator.push({
+                        routeName: 'user_review',
+                        params: {
+                            id: this.state.id
+                        }
+                    })
                 }
-            />
+            >
+                <Card.Title
+                    title="Reviews"
+                    subtitle={`${reviewMeta.numsOfBadge} badge votes, ${reviewMeta.numsOfComment} comments`}
+                />
+                <Card.Content>
+                    {
+                        reviews.result.map(
+                            (review, index) => (
+                                <Card key={`review-${index}`}>
+                                    <Card.Title
+                                        title={review.fromUser.name}
+                                        titleStyle={{ fontSize: 16 }}
+                                        subtitle={moment(review.createdAt).format('DD/MM/YYYY HH:mm')}
+                                        subtitleStyle={{ fontSize: 12 }}
+                                        left={
+                                            (props) => <Avatar.Image size={50} source={{ uri: this.props.api.cdn(`user-${review.fromUserId}`) }} />
+                                        }
+                                        right={
+                                            (props) => <Image style={{ width: 75, height: 75 }} source={this.props.api.staticResource(`/images/badges/${review.badge}.webp`)} />
+                                        }
+                                    />
+                                    <Card.Content>
+                                        <Paragraph>{review.comment}</Paragraph>
+                                    </Card.Content>
+                                </Card>
+                            )
+                        )
+                    }
+                </Card.Content>
+            </Card>
         )
     }
 
@@ -208,10 +202,23 @@ export class ProfileScreen extends React.PureComponent {
                         width={this.props.device.getX(30)}
                         color="#CCCCCC"
                         onPress={
-                            async () => {
-                                await this.props.firebase.logout();
-                                this.props.navigator.switchTo('splash');
-                            }
+                            async () => this.props.showAlert({
+                                title: 'Logout',
+                                content: '',
+                                customSubmit: (submit, isLoading) => (
+                                    <Button
+                                        roundness={5}
+                                        color="#CCCCCC"
+                                        onPress={submit}
+                                        loading={isLoading}
+                                        text="Logout"
+                                    />
+                                ),
+                                submit: async () => {
+                                    await this.props.firebase.logout();
+                                    this.props.navigator.switchTo('splash');
+                                }
+                            })
                         }
                         text="Logout"
                     />
@@ -246,7 +253,8 @@ export class ProfileScreen extends React.PureComponent {
                             controller={ctl => this.dataController = ctl}
                             promise={{
                                 profile: this.props.api.build('GET', `/users/profile/${this.state.id}?badge=true`),
-                                review: this.props.api.build('GET', `/users/review/${this.state.id}`)
+                                reviewMeta: this.props.api.build('GET', `/users/review/${this.state.id}?meta=true`),
+                                reviews: this.props.api.build(`GET`, `/users/review/${this.state.id}?limit=3`)
                             }}
                         >
                             {
@@ -269,5 +277,6 @@ export default compose(
     withDevice,
     withAPI,
     withFirebase,
-    withNavigator
+    withNavigator,
+    withAlert
 )(ProfileScreen);

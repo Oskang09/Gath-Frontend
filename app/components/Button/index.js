@@ -18,6 +18,7 @@ export class StyledButton extends React.PureComponent {
             height = this.props.device.getY(7.5),
             textStyle = { color: '#ffffff' },
             loading = false,
+            style,
         } = this.props;
         return (
             <Button
@@ -33,7 +34,8 @@ export class StyledButton extends React.PureComponent {
                 }}
                 style={{
                     width, height,
-                    justifyContent: 'center'
+                    justifyContent: 'center',
+                    ...style
                 }}
             >
                 { typeof text === 'string' ? <Text style={textStyle}>{text}</Text> : text }

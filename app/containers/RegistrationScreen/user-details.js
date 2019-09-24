@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { View } from 'react-native';
-import { Text, Card, Button, ActivityIndicator } from 'react-native-paper';
+import { Text, Card, Button } from 'react-native-paper';
 import Appbar from '#components/Appbar';
 import Form from '#components/Form';
 
@@ -13,8 +13,8 @@ import { compose, filterObject } from '#utility';
 export class UserDetail extends React.PureComponent {
 
     state = {
-        name: 'NG SZE CHEN',
-        age: '20',
+        name: '',
+        age: '',
         constellation: 'Aries',
         gender: 'Male',
         avatar: null,
@@ -118,11 +118,15 @@ export class UserDetail extends React.PureComponent {
         }
         this.setState({ loading: true });
         try {
-            if (this.state.name === "") {
+            if (!this.state.name || this.state.name === "") {
                 throw Error("User name can't be empty.");
             }
 
-            if (this.state.utag === "") {
+            if (!this.state.age || this.state.age === "" || isNaN(parseInt(this.state.age))) {
+                throw Error("User age mus't be number.");
+            }
+
+            if (!this.state.utag || this.state.utag === "") {
                 throw Error("User alias can't be empty.");
             }
 
@@ -142,7 +146,7 @@ export class UserDetail extends React.PureComponent {
     render() {
         return (
             <View style={{ flex: 1 }}>
-                <Appbar />
+                <Appbar eventTrack={false} /> 
                 <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }} behavior="position">
                     <Card width={this.props.device.getX(90)}>
                         <Card.Content>
@@ -153,7 +157,7 @@ export class UserDetail extends React.PureComponent {
                             />
                         </Card.Content>
                         <Card.Actions style={{ justifyContent: 'center' }}>
-                            <Button mode="contained" loading={true} width={this.props.device.getX(25)} onPress={this.updateProfile}>
+                            <Button mode="contained" loading={this.state.loading} width={this.props.device.getX(25)} onPress={this.updateProfile}>
                                 <Text style={{ color: 'white' }}>NEXT</Text>
                             </Button>
                         </Card.Actions>
