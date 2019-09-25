@@ -12,7 +12,7 @@ export class EventInfoScreen extends React.Component {
         name: this.props.getState('name'),
         start: this.props.getState('start') || Date.now(),
         type: this.props.getState('type') || "DINING",
-        banner: this.props.getState('banner'),
+        image: this.props.getState('image'),
         quit: false,
     }
 
@@ -23,7 +23,7 @@ export class EventInfoScreen extends React.Component {
             dcc: (banner) => this.setState({ banner }),
             key: 'event-image',
             setting: {
-                value: this.state.banner || this.props.api.cdn(`event-${this.props.getState('id')}`),
+                value: this.state.banner || this.props.api.cdn(this.props.getState('imgae')),
                 displayComponent: (value) => <Card.Cover source={value} />
             }
         },

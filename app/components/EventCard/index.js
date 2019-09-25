@@ -33,7 +33,7 @@ export class EventCard extends React.PureComponent {
                 <Card>
                     <Image
                         component={Card.Cover}
-                        source={this.props.api.cdn(`event-${data.id}`)}
+                        source={this.props.api.cdn(data.image)}
                     />
                     <List.Item
                         title={data.name}

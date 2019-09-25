@@ -74,7 +74,7 @@ export class VoucherScreen extends React.PureComponent {
             <Portal>
                 <Dialog visible={true} dismissable={false} theme={{ roundness: 15 }}>
                     <Card style={{ elevation: 4 }}>
-                        <Card.Cover source={{ uri: this.props.api.cdn(`voucher-${item.voucher.id}`) }} />
+                        <Card.Cover source={{ uri: this.props.api.cdn(item.voucher.image) }} />
                         <Card.Content>
                             <Title style={{ fontSize: 16 }}>{item.voucher.title}</Title>
                             <Paragraph style={{ fontSize: 12 }}>{item.voucher.description}</Paragraph>
@@ -142,9 +142,9 @@ export class VoucherScreen extends React.PureComponent {
                             const status = this.renderStatus(item);
                             return (
                                 <Card onPress={() => !status && this.setState({ currentVoucher: item })} style={{ elevation: 4, width, marginTop: 20 }} theme={{ roundness: 15 }}>
-                                    <Card.Cover style={{ height }} source={{ uri: this.props.api.cdn(`voucher-${item.voucher.id}`) }} />
+                                    <Card.Cover style={{ height }} source={{ uri: this.props.api.cdn(item.voucher.image) }} />
                                     <Card.Title
-                                        left={(props) => <Avatar.Image source={{ uri: this.props.api.cdn(`shop-${item.voucher.shopId}`) }} size={40} />}
+                                        left={(props) => <Avatar.Image source={{ uri: this.props.api.cdn('') }} size={40} />}
                                         right={(props) => status}
                                         title={item.voucher.title}
                                         subtitle={item.voucher.description}

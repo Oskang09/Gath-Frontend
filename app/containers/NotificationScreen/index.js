@@ -72,7 +72,7 @@ export class NotificationScreen extends React.PureComponent {
                                     (props) => (
                                         <Image
                                             style={{ width: 64, height: 64 }}
-                                            source={{ uri: this.props.api.cdn(`event-${item.event}`) }}
+                                            source={{ uri: this.props.api.cdn(item.event.image) }}
                                         />
                                     )
                                 }

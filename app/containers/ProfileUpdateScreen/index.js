@@ -19,12 +19,12 @@ export class ProfileUpdate extends React.Component {
         const state = [];
         if (this.props.navigation.state.params) {
             const {
-                name, age, constellation, gender, utag, id,
+                name, age, constellation, gender, utag, avatar,
                 personality,
                 desc
             } = this.props.navigation.state.params;
 
-            state.push({ id, name, age, constellation, gender, utag });
+            state.push({ name, age, constellation, gender, utag, image: avatar });
             state.push(personality);
             state.push(desc);
         }

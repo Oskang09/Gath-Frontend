@@ -43,7 +43,7 @@ export class UserReviewScreen extends React.PureComponent {
                     title={item.fromUser.name}
                     subtitle={'@' + item.fromUser.utag}
                     left={
-                        (props) => <Avatar.Image size={50} source={{ uri: this.props.api.cdn(`user-${item.fromUserId}`) }} />
+                        (props) => <Avatar.Image size={50} source={{ uri: this.props.api.cdn(item.fromUser.image) }} />
                     }
                     right={
                         (props) => item.badge !== 'empty-badge' && <Image style={{ width: 75, height: 75 }} source={{ uri: this.props.api.staticResource(`/images/badges/${item.badge}.webp`) }} />

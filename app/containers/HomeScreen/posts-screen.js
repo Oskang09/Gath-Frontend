@@ -53,7 +53,11 @@ export class PostScreen extends React.PureComponent {
                                 onPress={() => this.handlePostDetail(item)}
                                 style={{ flex: 1, marginLeft: 20, marginRight: 20, marginTop: 10 }}
                             >
-                                <Image component={Card.Cover} source={this.props.api.cdn(`post-${item.id}`)} fallback={this.props.api.cdn(`shop-${item.shopId}`)} />
+                                <Image
+                                    component={Card.Cover}
+                                    source={this.props.api.cdn(item.image)}
+                                    fallback={this.props.api.cdn(item.shop.image)}
+                                />
                                 <List.Item
                                     title={item.title}
                                     titleStyle={{ fontSize: 16 }}

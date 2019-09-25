@@ -79,7 +79,7 @@ export class PostDetailScreen extends React.PureComponent {
             <Portal>
                 <Dialog visible={true} dismissable={false} theme={{ roundness: 15 }}>
                     <Card style={{ elevation: 4 }}>
-                        <Card.Cover source={{ uri: this.props.api.cdn(`voucher-${item.id}`) }} />
+                        <Card.Cover source={{ uri: this.props.api.cdn(item.image) }} />
                         <Card.Content>
                             <Title style={{ fontSize: 16 }}>{item.title}</Title>
                             <Paragraph style={{ fontSize: 12 }}>{item.description}</Paragraph>
@@ -120,13 +120,12 @@ export class PostDetailScreen extends React.PureComponent {
                 <ScrollView style={{ flex: 1 }}>
                     <Image
                         style={{ height: this.props.device.getY(25) }}
-                        source={this.props.api.cdn(`post-${post.id}`)}
-                        fallback={this.props.api.cdn(`shop-${post.shopId}`)}
+                        source={this.props.api.cdn(post.image)}
+                        fallback={this.props.api.cdn(post.shop.image)}
                     />
                     <View style={{ margin: 10 }}>
                         <View style={{ flexDirection: 'row' }}>
                             <Title style={{ fontSize: 16 }}>{post.title}</Title>
-                            <Paragraph style={{ fontSize: 12 }}>{moment(post.createdAt).format('YYYY / MM / DD')}</Paragraph>
                         </View>
                         <Paragraph>{post.content}</Paragraph>
                         {
@@ -141,9 +140,9 @@ export class PostDetailScreen extends React.PureComponent {
                                             const status = this.renderStatus(voucher);
                                             return (
                                                 <Card onPress={() => !status && this.setState({ currentVoucher: voucher })} style={{ elevation: 4, width: this.props.device.getX(80), marginTop: 20, alignSelf: 'center' }} theme={{ roundness: 15 }}>
-                                                    <Card.Cover style={{ height: this.props.device.getY(20) }} source={{ uri: this.props.api.cdn(`voucher-${voucher.id}`) }} />
+                                                    <Card.Cover style={{ height: this.props.device.getY(20) }} source={{ uri: this.props.api.cdn(voucher.image) }} />
                                                     <Card.Title
-                                                        left={(props) => <Avatar.Image source={{ uri: this.props.api.cdn(`shop-${voucher.shopId}`) }} size={40} />}
+                                                        left={(props) => <Avatar.Image source={{ uri: this.props.api.cdn(voucher.shop.image) }} size={40} />}
                                                         right={(props) => status}
                                                         title={voucher.title}
                                                         subtitle={voucher.description}

@@ -46,7 +46,7 @@ export class ProfileScreen extends React.PureComponent {
     }
 
     renderProfile = ({ profile }) => {
-        const { id, gender, desc, constellation, name, utag, badge } = profile;
+        const { id, gender, desc, constellation, name, utag, badge, avatar } = profile;
         const devicePixel = this.props.device.getX(17);
         const badges = Object.keys(badge);
         if (badges.length < 4) {
@@ -75,7 +75,7 @@ export class ProfileScreen extends React.PureComponent {
             >
                 <View style={{ alignItems: 'center', marginTop: 10 }}>
                     <Avatar.Image
-                        source={{ uri: this.props.api.cdn(`user-${id}`) }}
+                        source={{ uri: this.props.api.cdn(avatar) }}
                         size={64}
                     />
                     <Text>{name}</Text>
@@ -144,7 +144,7 @@ export class ProfileScreen extends React.PureComponent {
                                         subtitle={moment(review.createdAt).format('DD/MM/YYYY HH:mm')}
                                         subtitleStyle={{ fontSize: 12 }}
                                         left={
-                                            (props) => <Avatar.Image size={50} source={{ uri: this.props.api.cdn(`user-${review.fromUserId}`) }} />
+                                            (props) => <Avatar.Image size={50} source={{ uri: this.props.api.cdn(review.fromUser.image) }} />
                                         }
                                         right={
                                             (props) => <Image style={{ width: 75, height: 75 }} source={this.props.api.staticResource(`/images/badges/${review.badge}.webp`)} />

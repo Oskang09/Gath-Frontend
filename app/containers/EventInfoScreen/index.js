@@ -20,12 +20,12 @@ export class EventForm extends React.Component {
         const state = [];
         if (this.props.navigation.state.params) {
             const {
-                type, name, start_time: start, id,
+                type, name, start_time: start, image,
                 desc,
                 shop, location,
             } = this.props.navigation.state.params;
 
-            state.push({ type, name, start, id });
+            state.push({ type, name, start, image });
             state.push(desc);
             state.push({ shop, location });
         }

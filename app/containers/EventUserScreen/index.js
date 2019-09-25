@@ -122,7 +122,7 @@ export class EventUser extends React.Component {
                                             <List.Item
                                                 key={`users-${user.id}`}
                                                 title={user.name}
-                                                left={(props) => <Avatar.Image size={50} source={{ uri: this.props.api.cdn(`user-${user.id}`) }} />}
+                                                left={(props) => <Avatar.Image size={50} source={{ uri: this.props.api.cdn(user.avatar) }} />}
                                                 right={(props) => this.buildButton(user)}
                                                 onPress={
                                                     () => this.props.navigator.push({

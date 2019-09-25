@@ -29,7 +29,7 @@ export class ShopCard extends React.PureComponent {
                 <Card>
                     <Card.Cover 
                         style={{ height: this.props.device.getY('20') }}
-                        source={{ uri: this.props.api.cdn(`shop-${data.id}`) }} 
+                        source={{ uri: this.props.api.cdn(data.image) }} 
                     />
                     <Card.Title
                         title={data.name || data.shop}

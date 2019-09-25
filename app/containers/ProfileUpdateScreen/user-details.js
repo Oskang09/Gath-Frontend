@@ -28,7 +28,7 @@ export class UserDetail extends React.PureComponent {
             dcc: (avatar) => this.setState({ avatar }),
             key: 'user-avatar',
             setting: {
-                value: this.state.avatar || this.props.api.cdn(`user-${this.props.getState().id}`),
+                value: this.state.avatar || this.props.api.cdn(this.props.getState('image')),
             }
         },
         {

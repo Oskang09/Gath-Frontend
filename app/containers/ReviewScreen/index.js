@@ -115,7 +115,7 @@ export class ReviewScreen extends React.PureComponent {
                     title={item.name}
                     subtitle={'@' + item.utag}
                     left={
-                        (props) => <Avatar.Image size={50} source={{ uri: this.props.api.cdn(`user-${item.id}`) }} />
+                        (props) => <Avatar.Image size={50} source={{ uri: this.props.api.cdn(item.avatar) }} />
                     }
                     right={
                         (props) => isForm && (

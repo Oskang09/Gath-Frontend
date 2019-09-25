@@ -86,7 +86,7 @@ export class EventCommentScreen extends React.PureComponent {
                     title={item.user.name}
                     subtitle={moment(item.createdAt).format('ddd, HH:mm')}
                     left={
-                        (props) => <Avatar.Image size={50} source={{ uri: this.props.api.cdn(`user-${item.userId}`) }} />
+                        (props) => <Avatar.Image size={50} source={{ uri: this.props.api.cdn(item.user.avatar) }} />
                     }
                 />
                 <Card.Content>
@@ -134,7 +134,7 @@ export class EventCommentScreen extends React.PureComponent {
                                                     <Card style={{ ...this.props.device.marginXY(this.props.device.getX(5), this.props.device.getY(1.25)) }}>
                                                         <Card.Title
                                                             title={profile.name}
-                                                            left={(props) => <Avatar.Image size={50} source={{ uri: this.props.api.cdn(`user-${profile.id}`) }} />}
+                                                            left={(props) => <Avatar.Image size={50} source={{ uri: this.props.api.cdn(profile.avatar) }} />}
                                                         />
                                                         <Card.Content>
                                                             <Form containerStyle={{ alignItems: 'center' }} formSetting={this.formSetting()} />
