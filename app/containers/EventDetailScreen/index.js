@@ -147,6 +147,19 @@ export class EventDetailScreen extends React.PureComponent {
             </View>
         );
 
+        if (event.status === 'END') {
+            buttons.push(
+                <View key="review-people" style={{ margin: 10 }}>
+                    <Button
+                        width={this.props.device.getX(40)}
+                        roundness={5}
+                        text="Review Peoples"
+                        onPress={() => this.props.navigator.push({ routeName: 'review', params: event })}
+                    />
+                </View>
+            );
+        }
+
         if (meta.isOwner) {
             if (event.status === 'PENDING') {
                 buttons.push(
@@ -237,7 +250,7 @@ export class EventDetailScreen extends React.PureComponent {
                                 content: '',
                                 submit: async () => {
                                     try {
-                                        await this.handleEventAction('REQUEST')
+                                        await this.handleEventAction('REQUEST');
                                     } catch (error) {
                                         this.dataController.reload();
                                     }
@@ -298,6 +311,7 @@ export class EventDetailScreen extends React.PureComponent {
                                     try {
                                         await this.handleEventAction('START_EVENT')
                                     } catch (error) {
+                                        alert(error);
                                         this.dataController.reload();
                                     }
                                 }

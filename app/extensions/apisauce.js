@@ -2,7 +2,8 @@ import React from 'react';
 import { create } from 'apisauce';
 import { injector } from '#utility';
 
-const requester = create({ baseURL: 'http://192.168.56.1:3000' });
+// const requester = create({ baseURL: 'http://192.168.56.1:3000' });
+const requester = create({ baseURL: 'https://gathfyp2019.herokuapp.com' });
 const request = async (method, path, body) => {
     const response = await requester[method.toLowerCase()](path, body);
     if (response.data) {
@@ -47,7 +48,7 @@ function buildComponent(
                     setToken: (token) => {
                         requester.setHeader('gath-token', token);
                     },
-                    cdn: (path) => `https://firebasestorage.googleapis.com/v0/b/gathfyp2019.appspot.com/o/${path}?alt=media`,
+                    cdn: (path) => `https://firebasestorage.googleapis.com/v0/b/gathfyp2019.appspot.com/o/${path}?alt=media&titme=${new Date().getTime()}`,
                     staticResource: (path) => `${requester.getBaseURL()}${path}`,
                 }
             }, this.props);

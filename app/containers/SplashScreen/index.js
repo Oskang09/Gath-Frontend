@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Image } from 'react-native';
 
+import Loading from '#components/Loading';
 import withFirebase from '#extension/firebase';
 import withAPI from '#extension/apisauce';
 import withNavigator from '#extension/navigator';
@@ -9,26 +10,26 @@ import { compose } from '#utility';
 export class SplashScreen extends React.PureComponent {
   
     state = {
-        noInternet: false,
+        display: 'Loading ...',
     }
 
-    componentDidMount() {
+    componentWillMount() {
         this.checkAuthAndSetting().catch(
-            () => {
-                this.setState({ noInternet: true })
-            }
+            () => this.setState({ display: 'No internet, please re-open application.' })
         );
     }
 
     checkAuthAndSetting = async () => {
         const { api, firebase, navigator } = this.props;
+        this.setState({ display: 'Initializing firebase authentication...' });
         const firebaseUser = await firebase.getUser();
         let user = null;
         if (!firebaseUser) {
             return navigator.switchTo('register');
         }
-
+        
         api.setToken(await firebaseUser.getIdToken(true));
+        this.setState({ display: 'Retrieving config from api server...' });
         await api.loadConfig();
         try {
             user = await api.request('GET', '/users/profile/me')
@@ -36,6 +37,7 @@ export class SplashScreen extends React.PureComponent {
             return navigator.switchTo('register');
         }
 
+        this.setState({ display: 'Initializing firebase cloud messenging...' });
         await firebase.initialize(
             async function (message) {
                 const { data } = message.notification;
@@ -85,11 +87,7 @@ export class SplashScreen extends React.PureComponent {
     }
 
     render() {
-        return (
-            <View>
-                <Text>{this.state.noInternet ? 'NO INTERNET' : 'Loading'}</Text> 
-            </View>
-        );
+        return <Loading content={this.state.display} />;
     }
 };
 

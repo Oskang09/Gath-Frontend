@@ -1,5 +1,7 @@
 import React from 'react';
 import { Text } from 'react-native';
+import Error from '#components/Error';
+import Loading from '#components/Loading';
 
 export class AsyncContainer extends React.Component {
 
@@ -45,14 +47,14 @@ export class AsyncContainer extends React.Component {
             if (this.props.loading) {
                 return this.props.loading();
             }
-            return <Text>Loading</Text>;
+            return <Loading />;
         }
 
         if (error) {
             if (this.props.error) {
                 return this.props.error(error);
             }
-            return <Text>Error {error.toString()}</Text>;
+            return <Error content={error.toString()} />;
         }
         return this.props.children(data);
     }
