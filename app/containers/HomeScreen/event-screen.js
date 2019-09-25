@@ -82,7 +82,7 @@ export class EventScreen extends React.PureComponent {
                     initQuery={{ page: 1, type: '', name: '' }}
                     updateQuery={(query) => ({ page: query.page + 1 })}
                     uri={
-                        (query) => `/events?page=${query.page}&type=${query.type}&name=${query.name}`
+                        (query) => `/events?page=${query.page}&type=${query.type}&name=${query.name}&limit=10`
                     }
                     filter={[
                         {

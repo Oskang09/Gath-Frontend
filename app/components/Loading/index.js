@@ -42,7 +42,7 @@ export class Loading extends React.PureComponent {
                 />
                 {
                     this.props.content && (
-                        <Text style={{ fontSize: 20, fontWeight: 'bold' }}>{this.props.content}</Text>
+                        <Text style={{ fontSize: 16 }}>{this.props.content}</Text>
                     )
                 }
             </View>

@@ -46,7 +46,7 @@ export class ProfileScreen extends React.PureComponent {
     }
 
     renderProfile = ({ profile }) => {
-        const { id, gender, desc, constellation, name, utag, badge, avatar } = profile;
+        const { gender, desc, constellation, name, utag, badge, avatar } = profile;
         const devicePixel = this.props.device.getX(17);
         const badges = Object.keys(badge);
         if (badges.length < 4) {

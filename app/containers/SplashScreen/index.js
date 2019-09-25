@@ -21,7 +21,7 @@ export class SplashScreen extends React.PureComponent {
 
     checkAuthAndSetting = async () => {
         const { api, firebase, navigator } = this.props;
-        this.setState({ display: 'Initializing firebase authentication...' });
+        this.setState({ display: 'Checking local user data...' });
         const firebaseUser = await firebase.getUser();
         let user = null;
         if (!firebaseUser) {
@@ -37,7 +37,6 @@ export class SplashScreen extends React.PureComponent {
             return navigator.switchTo('register');
         }
 
-        this.setState({ display: 'Initializing firebase cloud messenging...' });
         await firebase.initialize(
             async function (message) {
                 const { data } = message.notification;

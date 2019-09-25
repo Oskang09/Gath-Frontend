@@ -100,11 +100,11 @@ export class ShopList extends React.Component {
                     controller={ctl => this.listController = ctl}
                     numColumns={2}
                     resetWhenRefresh="filter"
-                    initQuery={{ page: 1, limit: 4, name: null, type: '', name: '' }}
+                    initQuery={{ page: 1, name: null, type: '', name: '' }}
                     updateQuery={(query) => ({ page: query.page + 1 })}
                     containerStyle={{ flex: 1, margin: 5 }}
                     uri={
-                        (query) => `/shops?page=${query.page}&limit=${query.limit}&type=${query.type}&name=${query.name}`
+                        (query) => `/shops?page=${query.page}&limit=10&type=${query.type}&name=${query.name}`
                     }
                     filter={[
                         {

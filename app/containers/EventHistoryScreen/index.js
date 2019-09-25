@@ -46,7 +46,7 @@ export class EventHistory extends React.PureComponent {
                     resetWhenRefresh="filter"
                     containerStyle={{ flex: 1, marginTop: 5 }}
                     initQuery={{ page: 1 }}
-                    uri={(query) => `/history?page=${query.page}`}
+                    uri={(query) => `/history?page=${query.page}&limit=10`}
                     header={
                         <View style={{ flex: 1 }}>
                             <Text style={{ marginLeft: 10, fontSize: 16, fontWeight: 'bold' }}>Event Histories</Text>

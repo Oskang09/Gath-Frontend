@@ -32,7 +32,7 @@ export class PostScreen extends React.PureComponent {
                     containerStyle={{ flex: 1 }}
                     initQuery={{ page: 1, type: '' }}
                     updateQuery={(query) => ({ page: query.page + 1 })}
-                    uri={(query) => `/posts?page=${query.page}&type=${query.type}&limit=5`}
+                    uri={(query) => `/posts?page=${query.page}&type=${query.type}&limit=10`}
                     filter={[
                         {
                             key: 'post-type',
