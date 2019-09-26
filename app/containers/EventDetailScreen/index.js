@@ -55,7 +55,7 @@ export class EventDetailScreen extends React.PureComponent {
         }
         this.setState({ loading: true });
         try {
-            if (this.state.comment === '') {
+            if (!this.state.comment || this.state.comment === '') {
                 return this.setState({ loading: false }, () => this.props.showDialog(`Comment can't be empty`));
             }
 

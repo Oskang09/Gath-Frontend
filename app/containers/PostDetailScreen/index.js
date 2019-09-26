@@ -79,7 +79,11 @@ export class PostDetailScreen extends React.PureComponent {
             <Portal>
                 <Dialog visible={true} dismissable={false} theme={{ roundness: 15 }}>
                     <Card style={{ elevation: 4 }}>
-                        <Card.Cover source={{ uri: this.props.api.cdn(item.image) }} />
+                        <Image
+                            component={Card.Cover}
+                            source={this.props.api.cdn(item.image)}
+                            fallback={this.props.api.cdn(item.shop.image)}
+                        />
                         <Card.Content>
                             <Title style={{ fontSize: 16 }}>{item.title}</Title>
                             <Paragraph style={{ fontSize: 12 }}>{item.description}</Paragraph>
@@ -140,7 +144,6 @@ export class PostDetailScreen extends React.PureComponent {
                                             const status = this.renderStatus(voucher);
                                             return (
                                                 <Card onPress={() => !status && this.setState({ currentVoucher: voucher })} style={{ elevation: 4, width: this.props.device.getX(80), marginTop: 20, alignSelf: 'center' }} theme={{ roundness: 15 }}>
-
                                                     <Image
                                                         style={{ height: this.props.device.getY(20) }}
                                                         component={Card.Cover}
