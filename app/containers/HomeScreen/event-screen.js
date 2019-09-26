@@ -113,7 +113,7 @@ export class EventScreen extends React.PureComponent {
                     }
                     render={
                         ({ item }) => (
-                            <EventCard type="vertical" data={item} onPress={this.handleClickEventCard} />
+                            <EventCard type="vertical" data={item.event} onPress={this.handleClickEventCard} />
                         )
                     }
                 />

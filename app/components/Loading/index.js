@@ -34,8 +34,8 @@ export class Loading extends React.PureComponent {
             >
                 <Animated.Image
                     style={{
-                        width: 128,
-                        height: 128,
+                        width: 64,
+                        height: 64,
                         transform: [{ rotate }]
                     }}
                     source={require('#assets/loading.png')}

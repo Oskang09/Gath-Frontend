@@ -18,7 +18,10 @@ export class EventForm extends React.Component {
 
     render() {
         const state = [];
+        let isUpdate = false;
         if (this.props.navigation.state.params) {
+            isUpdate = true;
+
             const {
                 type, name, start_time: start, image,
                 desc,
@@ -36,7 +39,7 @@ export class EventForm extends React.Component {
                 containers={[ EventInfo, EventDescription, ShopList ]}
                 onComplete={
                     async (state) => this.props.showAlert({
-                        title: 'Create Event',
+                        title: isUpdate ? 'Update Event' : 'Create Event',
                         content: '',
                         customSubmit: (submit, isLoading) => (
                             <Button
@@ -50,16 +53,15 @@ export class EventForm extends React.Component {
                             />
                         ),
                         submit: async () => {
-                            if (this.props.navigation.state.params) {
+                            if (isUpdate) {
                                 await this.props.api.request('PUT', `/events/${this.props.navigation.state.params.id}`, state);
-                                this.props.navigator.back();
-                            } else {
-                                const response = await this.props.api.request('POST', '/events', state);
-                                this.props.navigator.replace({
-                                    routeName: 'event_detail',
-                                    params: response
-                                });
+                                return this.props.navigator.back();
                             }
+                            const response = await this.props.api.request('POST', '/events', state);
+                            this.props.navigator.replace({
+                                routeName: 'event_detail',
+                                params: response
+                            });
                         }
                     })
                 }

@@ -12,13 +12,13 @@ import ShopCard from '#components/ShopCard';
 export class ShopList extends React.Component {
 
     state = {
-        shop: this.props.getState("shop") || "",
-        location: this.props.getState("location") || "",
+        shop: this.props.getState("shop"),
+        location: this.props.getState("location"),
         custom: false,
     }
     
     listController = null
-    handleClick = (item) => this.props.nextStep(item)
+    handleClick = (item) => this.props.nextStep({ shop: item.shop || item.name, location: item.location, image: item.image })
 
     formSetting = () => [
         {

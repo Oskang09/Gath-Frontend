@@ -13,7 +13,7 @@ import withDevice from '#extension/device';
 import withDialog from '#extension/dialog';
 import withNavigator from '#extension/navigator';
 import withAPI from '#extension/apisauce';
-import withAlert from '#extension/alert'; 
+import withAlert from '#extension/alert';
 
 import moment from 'moment';
 
@@ -102,7 +102,7 @@ export class PostDetailScreen extends React.PureComponent {
         if (Date.now() > new Date(expiredAt)) {
             return (
                 <Image
-                style={{ width: 50, height: 50, margin: 10 }}
+                    style={{ width: 50, height: 50, margin: 10 }}
                     resizeMode="contain"
                     source={require('#assets/expired.png')}
                 />
@@ -116,7 +116,7 @@ export class PostDetailScreen extends React.PureComponent {
         return (
             <View style={{ flex: 1 }}>
                 <Appbar />
-                { this.state.currentVoucher && this.renderPortalVoucher() }
+                {this.state.currentVoucher && this.renderPortalVoucher()}
                 <ScrollView style={{ flex: 1 }}>
                     <Image
                         style={{ height: this.props.device.getY(25) }}
@@ -140,7 +140,13 @@ export class PostDetailScreen extends React.PureComponent {
                                             const status = this.renderStatus(voucher);
                                             return (
                                                 <Card onPress={() => !status && this.setState({ currentVoucher: voucher })} style={{ elevation: 4, width: this.props.device.getX(80), marginTop: 20, alignSelf: 'center' }} theme={{ roundness: 15 }}>
-                                                    <Card.Cover style={{ height: this.props.device.getY(20) }} source={{ uri: this.props.api.cdn(voucher.image) }} />
+
+                                                    <Image
+                                                        style={{ height: this.props.device.getY(20) }}
+                                                        component={Card.Cover}
+                                                        source={this.props.api.cdn(voucher.image)}
+                                                        fallback={this.props.api.cdn(voucher.shop.image)}
+                                                    />
                                                     <Card.Title
                                                         left={(props) => <Avatar.Image source={{ uri: this.props.api.cdn(voucher.shop.image) }} size={40} />}
                                                         right={(props) => status}

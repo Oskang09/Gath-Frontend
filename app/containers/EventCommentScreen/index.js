@@ -154,7 +154,10 @@ export class EventCommentScreen extends React.PureComponent {
                                         }
                                         data={[
                                             {
-                                                user: { name: 'Event Description' },
+                                                user: {
+                                                    name: 'Event Description',
+                                                    avatar: this.state.event.image
+                                                },
                                                 userId: this.state.event.organizerId,
                                                 comment: this.state.event.desc,
                                                 createdAt: this.state.event.createdAt

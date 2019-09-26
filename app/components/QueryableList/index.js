@@ -1,5 +1,6 @@
 import React from 'react';
-import { FlatList, ActivityIndicator } from 'react-native';
+import { FlatList } from 'react-native';
+import Loading from '#components/Loading';
 import FilterBar from '#components/FilterBar';
 import withAPI from '#extension/apisauce';
 import { compose } from '#utility';
@@ -131,12 +132,11 @@ export class QueryableList extends React.PureComponent {
                     refreshControl={this.props.refreshControl}
                     style={this.props.containerStyle}
                     ListHeaderComponent={header}
-                    ListFooterComponent={footer}
+                    ListFooterComponent={this.state.refreshing ? <Loading /> : footer}
                     renderItem={render}
                     data={this.state.data}
                     extraData={this.state.data}
                     initialNumToRender={this.state.data.length}
-                    refreshing={this.state.refreshing}
                     key={this.props.key}
                     listKey={(item, index) => ` ql-${index}`}
                     keyExtractor={(item, index) => `ql-${index}`}

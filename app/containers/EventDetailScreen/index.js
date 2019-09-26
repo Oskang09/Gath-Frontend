@@ -446,7 +446,10 @@ export class EventDetailScreen extends React.PureComponent {
                                         footer={this.renderAction(event, meta)}
                                         data={[
                                             {
-                                                user: { name: 'Event Description' },
+                                                user: {
+                                                    name: 'Event Description',
+                                                    avatar: event.image
+                                                },
                                                 userId: event.organizerId,
                                                 comment: event.desc,
                                                 createdAt: event.createdAt

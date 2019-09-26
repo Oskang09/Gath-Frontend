@@ -2,8 +2,8 @@ import React from 'react';
 import { create } from 'apisauce';
 import { injector } from '#utility';
 
-// const requester = create({ baseURL: 'http://192.168.56.1:3000' });
-const requester = create({ baseURL: 'https://gathfyp2019.herokuapp.com' });
+const requester = create({ baseURL: 'http://192.168.56.1:3000' });
+// const requester = create({ baseURL: 'https://gathfyp2019.herokuapp.com' });
 const request = async (method, path, body) => {
     const response = await requester[method.toLowerCase()](path, body);
     if (response.data) {
