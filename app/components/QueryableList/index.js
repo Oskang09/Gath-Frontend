@@ -1,9 +1,12 @@
 import React from 'react';
 import { FlatList } from 'react-native';
+import { CancelToken } from 'apisauce';
+
 import Loading from '#components/Loading';
 import FilterBar from '#components/FilterBar';
 import withAPI from '#extension/apisauce';
 import { compose } from '#utility';
+
 
 export class QueryableList extends React.PureComponent {
     state = {
@@ -13,6 +16,7 @@ export class QueryableList extends React.PureComponent {
         query: null,
         configureProps: null,
         error: null,
+        cancelToken: null,
     }
     _isMounted = false
 
@@ -28,9 +32,19 @@ export class QueryableList extends React.PureComponent {
             return;
         }
 
-        this.setState({ refreshing: true });
+        if (this.state.refreshing && this.state.cancelToken) {
+            this.state.cancelToken.cancel();
+        }
 
-        const { _meta, ok, result, error } = await this.props.api.request('GET', this.props.uri(this.state.query));
+        const cancelToken = CancelToken.source();
+        this.setState({ refreshing: true, cancelToken });
+        const { _meta, ok, result, error } = await this.props.api.request(
+            'GET',
+            this.props.uri(this.state.query),
+            {},
+            cancelToken.token
+        );
+
         if (result && ok) {
             if (refreshType.includes(this.state.resetWhenRefresh)) {
                 this.state.data = result;
@@ -43,6 +57,7 @@ export class QueryableList extends React.PureComponent {
                 this.setState({
                     data: this.state.data,
                     refreshing: false,
+                    cancelToken: null,
                     configureProps: {
                         ...this.state.configureProps,
                         onEndReached: isEnd ? undefined : this.updateQuery({ page: _meta.currentPage + 1 }, 'paginate'),
@@ -52,12 +67,14 @@ export class QueryableList extends React.PureComponent {
             } else {
                 this.setState({
                     data: this.state.data,
+                    cancelToken: null,
                     refreshing: false,
                 });
             }
         } else {
             this.setState({
                 data: this.state.data,
+                cancelToken: null,
                 refreshing: false,
                 error
             });
@@ -106,6 +123,9 @@ export class QueryableList extends React.PureComponent {
 
     componentWillUnmount() {
         this._isMounted = false;
+        if (this.state.refreshing && this.state.cancelToken) {
+            this.state.cancelToken.cancel();
+        }
     }
 
     render() {
@@ -136,7 +156,7 @@ export class QueryableList extends React.PureComponent {
                     renderItem={render}
                     data={this.state.data}
                     extraData={this.state.data}
-                    initialNumToRender={this.state.data.length}
+                    initialNumToRender={this.state.data ? this.state.data.length : 0}
                     key={this.props.key}
                     listKey={(item, index) => ` ql-${index}`}
                     keyExtractor={(item, index) => `ql-${index}`}

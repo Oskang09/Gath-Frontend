@@ -4,6 +4,7 @@ import UserDetail from './user-details';
 import Personality from './personality';
 import Introduction from './introduction';
 
+import Button from '#components/Button';
 import StepContainer from '#components/StepContainer';
 
 import withFirebase from '#extension/firebase';
@@ -11,6 +12,7 @@ import withDevice from '#extension/device';
 import withAPI from '#extension/apisauce';
 import withDialog from '#extension/dialog';
 import withNavigator from '#extension/navigator';
+import withAlert from '#extension/alert';
 import { compose } from '#utility';
 
 export class ProfileUpdate extends React.Component {
@@ -35,28 +37,43 @@ export class ProfileUpdate extends React.Component {
                 defaultState={state}
                 containers={[ UserDetail, Personality, Introduction ]}
                 onComplete={
-                    async (state) => {
-                        try {
-                            await this.props.api.request(
-                                'POST', 
-                                `/users/profile`,
-                                {
-                                    name: state[0].name,
-                                    age: state[0].age,
-                                    constellation: state[0].constellation,
-                                    gender: state[0].gender,
-                                    avatar: state[0].avatar,
-                                    utag: state[0].utag,
-
-                                    personality: state[1],
-                                    desc: state[2],
-                                }
-                            );
-                            this.props.navigator.switchTo('profile');
-                        } catch (error) {
-                            this.props.showDialog(error.message);
+                    async (state) => this.props.showAlert({
+                        title: 'Update Profile',
+                        content: '',
+                        customSubmit: (submit, isLoading) => (
+                            <Button
+                                mode="contained"
+                                text="Update"
+                                color={this.props.device.primaryColor}
+                                textStyle={{ color: '#ffffff' }}
+                                roundness={5}
+                                onPress={submit}
+                                loading={isLoading}
+                            />
+                        ),
+                        submit: async () => {
+                            try {
+                                await this.props.api.request(
+                                    'POST', 
+                                    `/users/profile`,
+                                    {
+                                        name: state[0].name,
+                                        age: state[0].age,
+                                        constellation: state[0].constellation,
+                                        gender: state[0].gender,
+                                        avatar: state[0].avatar,
+                                        utag: state[0].utag,
+    
+                                        personality: state[1],
+                                        desc: state[2],
+                                    }
+                                );
+                                this.props.navigator.switchTo('profile');
+                            } catch (error) {
+                                this.props.showDialog(error.message);
+                            }
                         }
-                    }
+                    })
                 }
             />
         )
@@ -68,5 +85,6 @@ export default compose(
     withDevice,
     withFirebase,
     withDialog,
+    withAlert,
     withNavigator
 )(ProfileUpdate);

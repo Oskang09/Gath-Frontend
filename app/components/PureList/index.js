@@ -24,7 +24,7 @@ export class PureList extends React.PureComponent {
                 ListFooterComponent={this.props.footer}
                 data={this.props.data}
                 extraData={this.state}
-                initialNumToRender={this.props.data.length}
+                initialNumToRender={this.props.data ? this.props.data.length : 0}
                 key={this.props.key}
                 listKey={(item, index) => ` pl-${index}`}
                 keyExtractor={(item, index) => `pl-${index}`}

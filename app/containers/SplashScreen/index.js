@@ -1,6 +1,5 @@
 import React from 'react';
-import { View, Image } from 'react-native';
-
+import { NetInfo } from 'react-native';
 import Loading from '#components/Loading';
 import withFirebase from '#extension/firebase';
 import withAPI from '#extension/apisauce';
@@ -20,6 +19,12 @@ export class SplashScreen extends React.PureComponent {
     }
 
     checkAuthAndSetting = async () => {
+        this.setState({ display: 'Checking network connectivity...'});
+        const connected = await NetInfo.isConnected.fetch();
+        if (!connected) {
+            throw "NO_INTERNET";
+        }
+
         const { api, firebase, navigator } = this.props;
         this.setState({ display: 'Checking local user data...' });
         const firebaseUser = await firebase.getUser();

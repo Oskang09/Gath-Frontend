@@ -2,6 +2,7 @@ import React from 'react';
 import { View, BackHandler, TouchableWithoutFeedback, Image, Text } from 'react-native';
 import { Avatar, Card, Portal, Dialog } from 'react-native-paper';
 
+import ErrorView from '#components/Error';
 import PureList from '#components/PureList';
 import Button from '#components/Button';
 import Form from '#components/Form';
@@ -159,6 +160,9 @@ export class ReviewScreen extends React.PureComponent {
                 >
                     {
                         ({ users }) => {
+                            if (!users) {
+                                return <ErrorView />
+                            }
                             if (users.length === 0) {
                                 return (
                                     <Text>You completed your reviews.</Text>
