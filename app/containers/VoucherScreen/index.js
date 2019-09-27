@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Image, Text, BackHandler } from 'react-native';
+import { View, Text, BackHandler } from 'react-native';
 import {
     Card,
     Avatar,
@@ -12,6 +12,7 @@ import {
 } from 'react-native-paper';
 import moment from 'moment';
 
+import Image from '#components/Image';
 import CustomButton from '#components/Button';
 import QueryableList from '#components/QueryableList';
 import Appbar from '#components/Appbar';
@@ -153,16 +154,7 @@ export class VoucherScreen extends React.PureComponent {
                                         fallback={this.props.api.cdn(item.voucher.shop.image)}
                                     />
                                     <Card.Title
-                                        left={
-                                            (props) => (
-                                                <Image
-                                                    size={40}
-                                                    component={Avatar.Image}
-                                                    source={this.props.api.cdn(item.voucher.image)}
-                                                    fallback={this.props.api.cdn(item.voucher.shop.image)}
-                                                />
-                                            )
-                                        }
+                                        left={(props) => <Avatar.Image source={{ uri: this.props.api.cdn(item.voucher.shop.image) }} size={40} />}
                                         right={(props) => status}
                                         title={item.voucher.title}
                                         subtitle={item.voucher.description}
