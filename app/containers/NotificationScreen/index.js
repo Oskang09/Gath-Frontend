@@ -68,6 +68,7 @@ export class NotificationScreen extends React.PureComponent {
                             <List.Item
                                 key={`notify-${index}`}
                                 description={item.about}
+                                titleStyle={{ fontSize: 12 }}
                                 right={
                                     (props) => (
                                         <Image

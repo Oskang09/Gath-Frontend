@@ -47,18 +47,27 @@ export class EventScreen extends React.PureComponent {
         return (
             <AsyncContainer promise={{ events: this.props.api.build('GET', '/users/event/me?limit=10') }}>
                 {
-                    ({ events }) => (
-                        <PureList
-                            type="horizontal"
-                            data={events.result}
-                            containerStyle={{ flex: 1 }}
-                            render={
-                                ({ item }) => (
-                                    <EventCard type="horizontal" data={item.event} onPress={this.handleClickEventCard} />
-                                )
-                            }
-                        />
-                    )
+                    ({ events }) => {
+                        if (events.result.length === 0) {
+                            return null;
+                        }
+
+                        return (
+                            <>
+                                <Text style={{ marginLeft: 10, fontSize: 16, fontWeight: 'bold' }}>My Events</Text>
+                                <PureList
+                                    type="horizontal"
+                                    data={events.result}
+                                    containerStyle={{ flex: 1 }}
+                                    render={
+                                        ({ item }) => (
+                                            <EventCard type="horizontal" data={item.event} onPress={this.handleClickEventCard} />
+                                        )
+                                    }
+                                />
+                            </>
+                        );
+                    }
                 }
             </AsyncContainer>
         );
@@ -95,7 +104,6 @@ export class EventScreen extends React.PureComponent {
                     header={
                         (query) => query.name === "" ? (
                             <View style={{ flex: 1 }}>
-                                <Text style={{ marginLeft: 10, fontSize: 16, fontWeight: 'bold' }}>My Events</Text>
                                 { this.renderOwnEvent() }
                                 <Text style={{ marginLeft: 10, fontSize: 16, fontWeight: 'bold' }}>Other Events</Text>
                             </View>
@@ -113,7 +121,7 @@ export class EventScreen extends React.PureComponent {
                     }
                     render={
                         ({ item }) => (
-                            <EventCard type="vertical" data={item.event} onPress={this.handleClickEventCard} />
+                            <EventCard type="vertical" data={item} onPress={this.handleClickEventCard} />
                         )
                     }
                 />

@@ -53,7 +53,7 @@ export class AsyncContainer extends React.Component {
             if (this.props.error) {
                 return this.props.error(error);
             }
-            return <Error content={error.toString()} />;
+            return <Error />;
         }
         return this.props.children(data);
     }

@@ -144,7 +144,7 @@ export class ProfileScreen extends React.PureComponent {
                                         subtitle={moment(review.createdAt).format('DD/MM/YYYY HH:mm')}
                                         subtitleStyle={{ fontSize: 12 }}
                                         left={
-                                            (props) => <Avatar.Image size={50} source={{ uri: this.props.api.cdn(review.fromUser.image) }} />
+                                            (props) => <Avatar.Image size={50} source={{ uri: this.props.api.cdn(review.fromUser.avatar) }} />
                                         }
                                         right={
                                             (props) => <Image style={{ width: 75, height: 75 }} source={this.props.api.staticResource(`/images/badges/${review.badge}.webp`)} />

@@ -164,9 +164,7 @@ export class ReviewScreen extends React.PureComponent {
                                 return <ErrorView />
                             }
                             if (users.length === 0) {
-                                return (
-                                    <Text>You completed your reviews.</Text>
-                                );
+                                return <ErrorView error="You completed your reviews." />;
                             }
                             return users.map(this.renderDisplay);
                         }

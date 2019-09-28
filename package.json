@@ -26,6 +26,7 @@
         "react-native-image-crop-picker": "^0.24.1",
         "react-native-image-fallback": "^0.1.1",
         "react-native-modal-datetime-picker": "^7.5.0",
+        "react-native-open-maps": "^0.3.3",
         "react-native-paper": "^2.16.0",
         "react-native-phone-input": "^0.2.4",
         "react-native-snap-carousel": "^3.8.0",

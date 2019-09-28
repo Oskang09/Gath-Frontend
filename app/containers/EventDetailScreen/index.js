@@ -1,8 +1,9 @@
 import React from 'react';
 
 import { View, Text, BackHandler, RefreshControl } from 'react-native';
-import { Card, Paragraph, Avatar, ActivityIndicator } from 'react-native-paper';
+import { Card, Paragraph, Avatar } from 'react-native-paper';
 import moment from 'moment';
+import openMap from 'react-native-open-maps';
 
 import Button from '#components/Button';
 import Appbar from '#components/Appbar';
@@ -30,9 +31,10 @@ export class EventDetailScreen extends React.PureComponent {
 
     static iconMaps = [
         { package: 'materialicons', name: 'access-time' },
+        null,
         { package: 'entypo', name: 'location' },
-        { package: 'fontawesome5', name: 'store' },
-        { package: 'materialicons', name: 'people' },
+        { package: 'fontawesome5', name: 'comments' },
+        { package: 'materialicons', name: 'people-outline' },
     ]
 
     componentWillMount() {
@@ -124,28 +126,6 @@ export class EventDetailScreen extends React.PureComponent {
         if (meta.isNormal || meta.isRequest) {
             return null;
         }
-
-        buttons.push(
-            <View key="view-comments" style={{ margin: 10 }}>
-                <Button
-                    width={this.props.device.getX(40)}
-                    roundness={5}
-                    text="View Comments"
-                    onPress={() => this.props.navigator.push({ routeName: 'event_comment', params: { event, meta } })}
-                />
-            </View>
-        );
-
-        buttons.push(
-            <View key="view-people" style={{ margin: 10 }}>
-                <Button
-                    width={this.props.device.getX(40)}
-                    roundness={5}
-                    text="View Peoples"
-                    onPress={() => this.props.navigator.push({ routeName: 'event_user', params: { event, meta } })}
-                />
-            </View>
-        );
 
         if (event.status === 'END') {
             buttons.push(
@@ -417,19 +397,39 @@ export class EventDetailScreen extends React.PureComponent {
                                                     containerStyle={{ marginLeft: this.props.device.getX(3) }}
                                                     data={[
                                                         moment(event.start_time).format('DD/MM/YYYY, HH:mm'),
+                                                        event.type,
                                                         event.location,
-                                                        event.shop,
+                                                        `${comment._meta.totalCount} Comments`,
                                                         `${meta.numberOfUser} Peoples`,
                                                     ]}
                                                     render={
                                                         ({ item, index }) => {
-                                                            const iconSetting = EventDetailScreen.iconMaps[index];
+                                                            const iconSetting = EventDetailScreen.iconMaps[index] || this.props.api.getConfig().eventType.find((eventType) => eventType.value === item).icon;
                                                             return (
                                                                 <Card
                                                                     style={{
                                                                         margin: this.props.device.getX(2),
                                                                         width: this.props.device.getX(35)
                                                                     }}
+                                                                    onPress={
+                                                                        () => {
+                                                                            if (meta.isNormal || meta.isRequest) {
+                                                                                return;
+                                                                            }
+
+                                                                            switch (index) {
+                                                                                case 2:
+                                                                                    openMap({ query: item });
+                                                                                    break;
+                                                                                case 3:
+                                                                                    this.props.navigator.push({ routeName: 'event_comment', params: { event, meta } });
+                                                                                    break;
+                                                                                case 4:
+                                                                                    this.props.navigator.push({ routeName: 'event_user', params: { event, meta } });
+                                                                                    break;
+                                                                            }
+                                                                        }
+                                                                    }
                                                                 >
                                                                     <Card.Content style={{ alignItems: 'center' }}>
                                                                         <Icon size={33} {...iconSetting} />

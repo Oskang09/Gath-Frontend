@@ -12,13 +12,15 @@ function Error(props) {
         >
             <Image
                 style={{
-                    width: 128,
-                    height: 128,
+                    width: 64,
+                    height: 64,
                 }}
                 source={require('#assets/fail.png')}
             />
             {
-                props.content && (
+                props.error ? (
+                    <Text style={{ fontSize: 20, fontWeight: 'bold' }}>{props.error}</Text>
+                ) : (
                     <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Sorry, error occurs</Text>
                 )
             }
