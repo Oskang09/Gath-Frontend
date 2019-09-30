@@ -24,7 +24,8 @@ import withNavigator from '#extension/navigator';
 
 export class VoucherScreen extends React.PureComponent {
     state = {
-        currentVoucher: null
+        currentVoucher: null,
+        status: null,
     }
 
     componentWillMount() {
@@ -43,7 +44,7 @@ export class VoucherScreen extends React.PureComponent {
 
     useVoucher = () => this.props.showAlert({
         title: 'Activate Voucher',
-        content: 'Activate voucher cannot be undone, after used will not able to recover back.',
+        content: 'Activate voucher cannot be undone, after used will not able to recover back and stay as used status.',
         submit: async () => {
             await this.props.api.request('DELETE', '/users/voucher', { voucher: this.state.currentVoucher.voucher.id });
             this.dismissDialog();
@@ -64,7 +65,7 @@ export class VoucherScreen extends React.PureComponent {
 
     dismissDialog = () => {
         this._dialogBack.remove();
-        this.setState({ currentVoucher: null });
+        this.setState({ currentVoucher: null, status: null });
         return true;
     }
 
@@ -85,12 +86,21 @@ export class VoucherScreen extends React.PureComponent {
                             <Paragraph style={{ fontSize: 12 }}>{item.voucher.description}</Paragraph>
                             <View style={{ alignItems: 'flex-end' }}>
                                 <Caption style={{ color: 'red' }}>Expired at {moment(item.voucher.expiredAt).format('YYYY / MM / DD')}</Caption>
+                                {
+                                    this.state.status && (
+                                        <Caption style={{ color: 'red' }}>Used at {moment(item.usedAt).format('YYYY / MM / DD')}</Caption>
+                                    )
+                                }
                             </View>
                         </Card.Content>
                         <Card.Actions style={{ justifyContent: 'flex-end' }}>
-                            <Button onPress={this.useVoucher} style={{ flex: 1 }} mode="contained">
-                                <Text style={{ color: '#ffffff' }}>ACTIVATE</Text>
-                            </Button>
+                            {
+                                !this.state.status && (
+                                        <Button onPress={this.useVoucher} style={{ flex: 1 }} mode="contained">
+                                            <Text style={{ color: '#ffffff' }}>ACTIVATE</Text>
+                                        </Button>
+                                )
+                            }
                         </Card.Actions>
                     </Card>
                 </Dialog>
@@ -146,7 +156,7 @@ export class VoucherScreen extends React.PureComponent {
                         ({ item }) => {
                             const status = this.renderStatus(item);
                             return (
-                                <Card onPress={() => !status && this.setState({ currentVoucher: item })} style={{ elevation: 4, width, marginTop: 20 }} theme={{ roundness: 15 }}>
+                                <Card onPress={() => this.setState({ currentVoucher: item, status })} style={{ elevation: 4, width, marginTop: 20 }} theme={{ roundness: 15 }}>
                                     <Image
                                         style={{ height }}
                                         component={Card.Cover}

@@ -204,7 +204,7 @@ export class ProfileScreen extends React.PureComponent {
                         onPress={
                             async () => this.props.showAlert({
                                 title: 'Logout',
-                                content: '',
+                                content: 'After logout you will require login to access application.',
                                 customSubmit: (submit, isLoading) => (
                                     <Button
                                         roundness={5}

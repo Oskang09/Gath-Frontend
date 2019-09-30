@@ -1,7 +1,8 @@
 import React from 'react';
 
 import { View } from 'react-native';
-import { Text, Card, Button, Portal, Dialog, Paragraph } from 'react-native-paper';
+import { Text, Card, Button } from 'react-native-paper';
+import StyledButton from '#components/Button';
 import Appbar from '#components/Appbar';
 import Form from '#components/Form';
 
@@ -17,7 +18,6 @@ export class UserDetail extends React.PureComponent {
         avatar: null,
         utag: this.props.getState().utag,
 
-        quit: false,
         loading: false,
     }
 
@@ -113,14 +113,22 @@ export class UserDetail extends React.PureComponent {
     componentWillMount() {
         this.props.backHandler(
             () => {
-                this.setState({ quit: true });
+                this.props.showAlert({
+                    title: 'Cancel edit profile',
+                    content: 'Did you want to discard all changes?',
+                    customSubmit: (submit, isLoading) => (
+                        <StyledButton
+                            roundness={5}
+                            onPress={submit}
+                            loading={isLoading}
+                            text="Yes"
+                        />
+                    ),
+                    submit: () => this.props.navigator.switchTo('profile')
+                })
                 return true;
             }
         );
-    }
-
-    handleQuit = () => {
-        this.props.navigator.switchTo('profile');
     }
 
     nextStep = () => {
@@ -161,19 +169,6 @@ export class UserDetail extends React.PureComponent {
                         </Card.Actions>
                     </Card>
                 </View>
-                <Portal>
-                    <Dialog visible={this.state.quit} dismissable={false}>
-                        <Dialog.Content>
-                            <Paragraph>
-                                Did you want to discard all changes?
-                            </Paragraph>
-                        </Dialog.Content>
-                        <Dialog.Actions>
-                            <Button onPress={this.handleQuit}>YES</Button>
-                            <Button onPress={() => this.setState({ quit: false })}>NO</Button>
-                        </Dialog.Actions>
-                    </Dialog>
-                </Portal>
             </View>
         );
     }

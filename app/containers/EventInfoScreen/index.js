@@ -40,13 +40,13 @@ export class EventForm extends React.Component {
                 onComplete={
                     async (state) => this.props.showAlert({
                         title: isUpdate ? 'Update Event' : 'Create Event',
-                        content: '',
+                        content: isUpdate ? 
+                            'Event information will be updated.' : 
+                            'Event will be created with the information given.',
                         customSubmit: (submit, isLoading) => (
                             <Button
                                 mode="contained"
-                                text="Create"
-                                color="#CCCCCC"
-                                textStyle={{ color: '#ffffff' }}
+                                text={isUpdate ? "Update" : "Create"}
                                 roundness={5}
                                 onPress={submit}
                                 loading={isLoading}

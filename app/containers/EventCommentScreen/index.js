@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, BackHandler, Text, RefreshControl } from 'react-native';
+import { View, BackHandler, Text, RefreshControl, TouchableOpacity } from 'react-native';
 import { Avatar, Card, Paragraph } from 'react-native-paper';
 import moment from 'moment';
 
@@ -79,9 +79,20 @@ export class EventCommentScreen extends React.PureComponent {
         this._backHandler.remove();
     }
 
-    renderComments = ({ item }) => {
+    renderComments = ({ item, index }) => {
         return (
             <Card style={{ ...this.props.device.marginXY(this.props.device.getX(5), this.props.device.getY(1.25)) }}>
+            <TouchableOpacity
+                activeOpacity={1}
+                onPress={
+                    () => (index !== 0 && this.props.api.getConfig().profile !== item.user.id) && this.props.navigator.push({
+                        routeName: 'user_profile',
+                        params: {
+                            id: item.user.id,
+                        }
+                    })
+                }
+            >
                 <Card.Title
                     title={item.user.name}
                     subtitle={moment(item.createdAt).format('ddd, HH:mm')}
@@ -89,6 +100,7 @@ export class EventCommentScreen extends React.PureComponent {
                         (props) => <Avatar.Image size={50} source={{ uri: this.props.api.cdn(item.user.avatar) }} />
                     }
                 />
+            </TouchableOpacity>
                 <Card.Content>
                     <Paragraph>{item.comment}</Paragraph>
                 </Card.Content>

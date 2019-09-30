@@ -14,7 +14,7 @@ export class SplashScreen extends React.PureComponent {
 
     componentWillMount() {
         this.checkAuthAndSetting().catch(
-            () => this.setState({ display: 'No internet, please re-open application.' })
+            () => this.setState({ display: 'Error occurs, please contact admin.' })
         );
     }
 
@@ -22,7 +22,7 @@ export class SplashScreen extends React.PureComponent {
         this.setState({ display: 'Checking network connectivity...'});
         const connected = await NetInfo.isConnected.fetch();
         if (!connected) {
-            throw "NO_INTERNET";
+            return this.setState({ display: 'No internet, please re-open application.' });
         }
 
         const { api, firebase, navigator } = this.props;

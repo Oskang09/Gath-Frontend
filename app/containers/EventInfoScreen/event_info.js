@@ -1,7 +1,8 @@
 import React from 'react';
 import { View, Text } from 'react-native';
-import { Card, Button, Portal, Dialog, Paragraph } from 'react-native-paper';
+import { Card, Button } from 'react-native-paper';
 
+import StyledButton from '#components/Button';
 import Form from '#components/Form';
 import Appbar from '#components/Appbar';
 
@@ -13,7 +14,6 @@ export class EventInfoScreen extends React.Component {
         start: this.props.getState('start') || Date.now(),
         type: this.props.getState('type') || "DINING",
         banner: null,
-        quit: false,
     }
 
     imageSetting = () => [
@@ -79,18 +79,22 @@ export class EventInfoScreen extends React.Component {
     componentWillMount() {
         this.props.backHandler(
             () => {
-                this.setState({ quit: true });
+                this.props.showAlert({
+                    title: `Cancel ${this.props.navigation.state.params ? 'update' : 'create'} event`,
+                    content: 'Did you want to discard all changes?',
+                    customSubmit: (submit, isLoading) => (
+                        <StyledButton
+                            roundness={5}
+                            onPress={submit}
+                            loading={isLoading}
+                            text="Yes"
+                        />
+                    ),
+                    submit: () => this.props.navigator.back(),
+                });
                 return true;
             }
         );
-    }
-
-    handleQuit = () => {
-        if (this.props.defaultState.length === 0) {
-            this.props.navigation.navigate('event_list');
-        } else {
-            this.props.navigation.navigate({ routeName: 'event_detail', params: this.props.navigation.state.params });
-        }
     }
 
     nextStep = () => {
@@ -126,19 +130,6 @@ export class EventInfoScreen extends React.Component {
                         </Card.Actions>
                     </Card>
                 </View>
-                <Portal>
-                    <Dialog visible={this.state.quit} dismissable={false}>
-                        <Dialog.Content>
-                            <Paragraph>
-                                Did you want to discard all changes?
-                            </Paragraph>
-                        </Dialog.Content>
-                        <Dialog.Actions>
-                            <Button onPress={this.handleQuit}>YES</Button>
-                            <Button onPress={() => this.setState({ quit: false })}>NO</Button>
-                        </Dialog.Actions>
-                    </Dialog>
-                </Portal>
             </View>
         );
     }

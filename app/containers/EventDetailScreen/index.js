@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { View, Text, BackHandler, RefreshControl } from 'react-native';
+import { View, Text, BackHandler, RefreshControl, TouchableOpacity } from 'react-native';
 import { Card, Paragraph, Avatar } from 'react-native-paper';
 import moment from 'moment';
 import openMap from 'react-native-open-maps';
@@ -103,16 +103,28 @@ export class EventDetailScreen extends React.PureComponent {
         }
     }
 
-    renderComments = ({ item }) => {
+    renderComments = ({ item, index }) => {
         return (
             <Card style={{ ...this.props.device.marginXY(this.props.device.getX(5), this.props.device.getY(1.25)) }}>
-                <Card.Title
-                    title={item.user.name}
-                    subtitle={moment(item.createdAt).format('ddd, HH:mm')}
-                    left={
-                        (props) => <Avatar.Image size={50} source={{ uri: this.props.api.cdn(item.user.avatar) }} />
+                <TouchableOpacity
+                    activeOpacity={1}
+                    onPress={
+                        () => (index !== 0 && this.props.api.getConfig().profile !== item.user.id) && this.props.navigator.push({
+                            routeName: 'user_profile',
+                            params: {
+                                id: item.user.id,
+                            }
+                        })
                     }
-                />
+                >
+                    <Card.Title
+                        title={item.user.name}
+                        subtitle={moment(item.createdAt).format('ddd, HH:mm')}
+                        left={
+                            (props) => <Avatar.Image size={50} source={{ uri: this.props.api.cdn(item.user.avatar) }} />
+                        }
+                    />
+                </TouchableOpacity>
                 <Card.Content>
                     <Paragraph>{item.comment}</Paragraph>
                 </Card.Content>
@@ -163,6 +175,16 @@ export class EventDetailScreen extends React.PureComponent {
                                 () => this.props.showAlert({
                                     title: 'Delete event',
                                     content: 'Deleting the event task cannot be undone, and all data within the event will lost.',
+                                    customSubmit: () => (
+                                        <Button
+                                            mode="contained"
+                                            color="#ff0000"
+                                            loading={this.state.loading}
+                                            roundness={5}
+                                            onPress={this.submit}
+                                            text="Delete"
+                                        />
+                                    ),
                                     submit: async () => {
                                         await this.props.api.request('DELETE', `/events/${event.id}`);
                                         return this.props.navigator.switchTo('event_list');
@@ -227,7 +249,17 @@ export class EventDetailScreen extends React.PureComponent {
                         onPress={
                             () => this.props.showAlert({
                                 title: 'Request Join',
-                                content: '',
+                                content: 'You will send request to the event, please wait for owner accept your request.',
+                                customSubmit: () => (
+                                    <Button
+                                        mode="contained"
+                                        color={this.props.device.primaryColor}
+                                        loading={this.state.loading}
+                                        roundness={5}
+                                        onPress={this.submit}
+                                        text="Request"
+                                    />
+                                ),
                                 submit: async () => {
                                     try {
                                         await this.handleEventAction('REQUEST');
@@ -260,7 +292,17 @@ export class EventDetailScreen extends React.PureComponent {
                         onPress={
                             () => this.props.showAlert({
                                 title: 'Quit Event',
-                                content: '',
+                                content: 'You will quit and remove from the event. Quit event task cannot be undone.',
+                                customSubmit: () => (
+                                    <Button
+                                        mode="contained"
+                                        color="#ff0000"
+                                        loading={this.state.loading}
+                                        roundness={5}
+                                        onPress={this.submit}
+                                        text="Quit"
+                                    />
+                                ),
                                 submit: async () => {
                                     try {
                                         await this.handleEventAction('QUIT')
@@ -286,7 +328,17 @@ export class EventDetailScreen extends React.PureComponent {
                         onPress={
                             () => this.props.showAlert({
                                 title: 'Start Event',
-                                content: '',
+                                content: 'Start event action cannot be undone, Did you want to start the event now?',
+                                customSubmit: () => (
+                                    <Button
+                                        mode="contained"
+                                        color={this.props.device.primaryColor}
+                                        loading={this.state.loading}
+                                        roundness={5}
+                                        onPress={this.submit}
+                                        text="Start"
+                                    />
+                                ),
                                 submit: async () => {
                                     try {
                                         await this.handleEventAction('START_EVENT')
@@ -323,8 +375,18 @@ export class EventDetailScreen extends React.PureComponent {
                         onPress={
                             () => this.props.showAlert({
                                 title: 'End Event',
-                                content: '',
-                                submit: () => this.handleEventAction('END_EVENT')
+                                content: 'End event action cannot be undone, Did you want to end the event now',
+                                customSubmit: () => (
+                                    <Button
+                                        mode="contained"
+                                        color="#ff0000"
+                                        loading={this.state.loading}
+                                        roundness={5}
+                                        onPress={this.submit}
+                                        text="End"
+                                    />
+                                ),
+                                submit: () => this.handleEventAction('END_EVENT'),
                             })
                         }
                         text="End Event"

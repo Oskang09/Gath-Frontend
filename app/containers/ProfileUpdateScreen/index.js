@@ -39,7 +39,7 @@ export class ProfileUpdate extends React.Component {
                 onComplete={
                     async (state) => this.props.showAlert({
                         title: 'Update Profile',
-                        content: '',
+                        content: 'Profile will be updated with given information, update task cannot be undone.',
                         customSubmit: (submit, isLoading) => (
                             <Button
                                 mode="contained"

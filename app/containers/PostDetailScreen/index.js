@@ -22,6 +22,7 @@ export class PostDetailScreen extends React.PureComponent {
     state = {
         loading: false,
         currentVoucher: null,
+        status: null,
         post: this.props.navigation.state.params,
         voucher: this.props.navigation.state.params.voucherId,
     }
@@ -42,7 +43,7 @@ export class PostDetailScreen extends React.PureComponent {
 
     receiveVoucher = () => this.props.showAlert({
         title: 'Receive Voucher',
-        content: '',
+        content: 'Did you want to receive voucher?',
         submit: async () => {
             try {
                 await this.props.api.request('POST', `/users/voucher`, { voucher: this.state.voucher });
@@ -68,7 +69,7 @@ export class PostDetailScreen extends React.PureComponent {
 
     dismissDialog = () => {
         this._dialogBack.remove();
-        this.setState({ currentVoucher: null });
+        this.setState({ currentVoucher: null, status: null });
         return true;
     }
 
@@ -92,9 +93,13 @@ export class PostDetailScreen extends React.PureComponent {
                             </View>
                         </Card.Content>
                         <Card.Actions style={{ justifyContent: 'flex-end' }}>
-                            <Button onPress={this.receiveVoucher} style={{ flex: 1 }} mode="contained">
-                                <Text style={{ color: '#ffffff' }}>RECEIVE</Text>
-                            </Button>
+                            {
+                                !this.state.status && (
+                                        <Button onPress={this.receiveVoucher} style={{ flex: 1 }} mode="contained">
+                                            <Text style={{ color: '#ffffff' }}>RECEIVE</Text>
+                                        </Button>
+                                )
+                            }
                         </Card.Actions>
                     </Card>
                 </Dialog>
@@ -143,7 +148,7 @@ export class PostDetailScreen extends React.PureComponent {
                                         ({ voucher }) => {
                                             const status = this.renderStatus(voucher);
                                             return (
-                                                <Card onPress={() => !status && this.setState({ currentVoucher: voucher })} style={{ elevation: 4, width: this.props.device.getX(80), marginTop: 20, alignSelf: 'center' }} theme={{ roundness: 15 }}>
+                                                <Card onPress={() => this.setState({ currentVoucher: voucher, status })} style={{ elevation: 4, width: this.props.device.getX(80), marginTop: 20, alignSelf: 'center' }} theme={{ roundness: 15 }}>
                                                     <Image
                                                         style={{ height: this.props.device.getY(20) }}
                                                         component={Card.Cover}

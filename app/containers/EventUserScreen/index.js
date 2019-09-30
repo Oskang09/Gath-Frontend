@@ -125,7 +125,7 @@ export class EventUser extends React.Component {
                                                 left={(props) => <Avatar.Image size={50} source={{ uri: this.props.api.cdn(user.avatar) }} />}
                                                 right={(props) => this.buildButton(user)}
                                                 onPress={
-                                                    () => this.props.navigator.push({
+                                                    () => this.props.api.getConfig().profile !== user.id && this.props.navigator.push({
                                                         routeName: 'user_profile',
                                                         params: {
                                                             id: user.id,

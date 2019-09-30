@@ -45,9 +45,7 @@ export class TopBar extends React.PureComponent {
                                 size={25}
                                 color="black"
                                 onPress={
-                                    () => {
-                                        this.props.navigator.switchTo('vouchers');
-                                    }
+                                    () => this.props.navigator.switchTo('vouchers')
                                 }
                             />
                             <Appbar.Action
@@ -55,9 +53,7 @@ export class TopBar extends React.PureComponent {
                                 size={25}
                                 color="black"
                                 onPress={
-                                    () => {
-                                        this.props.navigator.switchTo('notifications');
-                                    }
+                                    () => this.props.navigator.switchTo('notifications')
                                 }
                             />
                         </>
