@@ -1,6 +1,7 @@
 import React from 'react';
-import { NetInfo } from 'react-native';
-import Loading from '#components/Loading';
+import { NetInfo, Image, View } from 'react-native';
+
+import Error from '#components/Error';
 import withFirebase from '#extension/firebase';
 import withAPI from '#extension/apisauce';
 import withNavigator from '#extension/navigator';
@@ -9,7 +10,7 @@ import { compose } from '#utility';
 export class SplashScreen extends React.PureComponent {
   
     state = {
-        display: 'Loading ...',
+        display: null,
     }
 
     componentWillMount() {
@@ -19,14 +20,12 @@ export class SplashScreen extends React.PureComponent {
     }
 
     checkAuthAndSetting = async () => {
-        this.setState({ display: 'Checking network connectivity...'});
         const connected = await NetInfo.isConnected.fetch();
         if (!connected) {
             return this.setState({ display: 'No internet, please re-open application.' });
         }
 
         const { api, firebase, navigator } = this.props;
-        this.setState({ display: 'Checking local user data...' });
         const firebaseUser = await firebase.getUser();
         let user = null;
         if (!firebaseUser) {
@@ -34,7 +33,6 @@ export class SplashScreen extends React.PureComponent {
         }
         
         api.setToken(await firebaseUser.getIdToken(true));
-        this.setState({ display: 'Retrieving config from api server...' });
         await api.loadConfig();
         try {
             user = await api.request('GET', '/users/profile/me')
@@ -91,7 +89,14 @@ export class SplashScreen extends React.PureComponent {
     }
 
     render() {
-        return <Loading content={this.state.display} />;
+        return this.state.display ? <Error error={this.state.display} /> : (
+            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                <Image
+                    source={require('#assets/icon.png')}
+                    style={{ width: 128, height: 128 }}
+            />
+            </View>
+        );
     }
 };
 

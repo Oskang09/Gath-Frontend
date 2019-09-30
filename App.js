@@ -33,13 +33,6 @@ export default class App extends React.Component {
         return (
             <PaperProvider theme={theme}>
                 <AppRouter />
-                {
-                    !this.state.hasInternet && (
-                        <View style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, backgroundColor: 'rgba(0,0,0,0.9)', justifyContent: 'center' }}>
-                            <Loading textStyle={{ color: 'white' }} content="Waiting for internet connection ..." />
-                        </View>
-                    )
-                }
             </PaperProvider>
         );
     }
