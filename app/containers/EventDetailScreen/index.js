@@ -250,13 +250,13 @@ export class EventDetailScreen extends React.PureComponent {
                             () => this.props.showAlert({
                                 title: 'Request Join',
                                 content: 'You will send request to the event, please wait for owner accept your request.',
-                                customSubmit: () => (
+                                customSubmit: (submit, isLoading) => (
                                     <Button
                                         mode="contained"
                                         color={this.props.device.primaryColor}
-                                        loading={this.state.loading}
+                                        loading={isLoading}
                                         roundness={5}
-                                        onPress={this.submit}
+                                        onPress={submit}
                                         text="Request"
                                     />
                                 ),
@@ -293,13 +293,13 @@ export class EventDetailScreen extends React.PureComponent {
                             () => this.props.showAlert({
                                 title: 'Quit Event',
                                 content: 'You will quit and remove from the event. Quit event task cannot be undone.',
-                                customSubmit: () => (
+                                customSubmit: (submit, isLoading) => (
                                     <Button
                                         mode="contained"
                                         color="#ff0000"
-                                        loading={this.state.loading}
+                                        loading={isLoading}
                                         roundness={5}
-                                        onPress={this.submit}
+                                        onPress={submit}
                                         text="Quit"
                                     />
                                 ),
@@ -329,13 +329,13 @@ export class EventDetailScreen extends React.PureComponent {
                             () => this.props.showAlert({
                                 title: 'Start Event',
                                 content: 'Start event action cannot be undone, Did you want to start the event now?',
-                                customSubmit: () => (
+                                customSubmit: (submit, isLoading) => (
                                     <Button
                                         mode="contained"
                                         color={this.props.device.primaryColor}
-                                        loading={this.state.loading}
+                                        loading={isLoading}
                                         roundness={5}
-                                        onPress={this.submit}
+                                        onPress={submit}
                                         text="Start"
                                     />
                                 ),
@@ -376,13 +376,13 @@ export class EventDetailScreen extends React.PureComponent {
                             () => this.props.showAlert({
                                 title: 'End Event',
                                 content: 'End event action cannot be undone, Did you want to end the event now',
-                                customSubmit: () => (
+                                customSubmit: (submit, isLoading) => (
                                     <Button
                                         mode="contained"
                                         color="#ff0000"
-                                        loading={this.state.loading}
+                                        loading={isLoading}
                                         roundness={5}
-                                        onPress={this.submit}
+                                        onPress={submit}
                                         text="End"
                                     />
                                 ),
