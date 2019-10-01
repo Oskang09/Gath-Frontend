@@ -175,13 +175,13 @@ export class EventDetailScreen extends React.PureComponent {
                                 () => this.props.showAlert({
                                     title: 'Delete event',
                                     content: 'Deleting the event task cannot be undone, and all data within the event will lost.',
-                                    customSubmit: () => (
+                                    customSubmit: (submit, isLoading) => (
                                         <Button
                                             mode="contained"
                                             color="#ff0000"
-                                            loading={this.state.loading}
+                                            loading={isLoading}
                                             roundness={5}
-                                            onPress={this.submit}
+                                            onPress={submit}
                                             text="Delete"
                                         />
                                     ),
