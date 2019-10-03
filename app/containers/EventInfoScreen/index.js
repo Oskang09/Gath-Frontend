@@ -47,6 +47,7 @@ export class EventForm extends React.Component {
                             <Button
                                 mode="contained"
                                 text={isUpdate ? "Update" : "Create"}
+                                width={this.props.device.getX(25)}
                                 roundness={5}
                                 onPress={submit}
                                 loading={isLoading}
@@ -54,7 +55,7 @@ export class EventForm extends React.Component {
                         ),
                         submit: async () => {
                             if (isUpdate) {
-                                await this.props.api.request('PUT', `/events/${this.props.navigation.state.params.id}`, state);
+                                const res = await this.props.api.request('PUT', `/events/${this.props.navigation.state.params.id}`, state);
                                 return this.props.navigator.back();
                             }
                             const response = await this.props.api.request('POST', '/events', state);

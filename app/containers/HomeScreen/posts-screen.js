@@ -1,6 +1,6 @@
 import React from 'react';
 import moment from 'moment';
-import { View, Text } from 'react-native';
+import { View, Text, RefreshControl } from 'react-native';
 import { Card, List, Paragraph } from 'react-native-paper';
 import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
@@ -14,6 +14,7 @@ import withAPI from '#extension/apisauce';
 
 export class PostScreen extends React.PureComponent {
 
+    listController = null
     handlePostDetail = (data) => {
         this.props.navigator.push({
             routeName: 'post_detail',
@@ -27,8 +28,18 @@ export class PostScreen extends React.PureComponent {
                 <Appbar search={true} />
                 <QueryableList
                     type="vertical"
+                    controller={ctl => this.listController = ctl}
                     numColumns={1}
-                    resetWhenRefresh="filter"
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={false}
+                            enabled={true}
+                            onRefresh={
+                                () => this.listController.updateQuery({ page: 1 }, 'manual')
+                            }
+                        />
+                    }
+                    resetWhenRefresh={[ "filter", "manual" ]}
                     containerStyle={{ flex: 1 }}
                     initQuery={{ page: 1, type: '' }}
                     updateQuery={(query) => ({ page: query.page + 1 })}

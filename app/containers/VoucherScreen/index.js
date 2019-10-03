@@ -27,6 +27,7 @@ export class VoucherScreen extends React.PureComponent {
         currentVoucher: null,
         status: null,
     }
+    dataController = null
 
     componentWillMount() {
         this._backHandler = BackHandler.addEventListener(
@@ -47,6 +48,7 @@ export class VoucherScreen extends React.PureComponent {
         content: 'Activate voucher cannot be undone, after used will not able to recover back and stay as used status.',
         submit: async () => {
             await this.props.api.request('DELETE', '/users/voucher', { voucher: this.state.currentVoucher.voucher.id });
+            this.dataController.refreshData('manual');
             this.dismissDialog();
         },
         customSubmit: (onPress, isLoading) => {
@@ -87,7 +89,7 @@ export class VoucherScreen extends React.PureComponent {
                             <View style={{ alignItems: 'flex-end' }}>
                                 <Caption style={{ color: 'red' }}>Expired at {moment(item.voucher.expiredAt).format('YYYY / MM / DD')}</Caption>
                                 {
-                                    this.state.status && (
+                                    item.usedAt && (
                                         <Caption style={{ color: 'red' }}>Used at {moment(item.usedAt).format('YYYY / MM / DD')}</Caption>
                                     )
                                 }
@@ -141,7 +143,9 @@ export class VoucherScreen extends React.PureComponent {
                 <Text style={{ marginLeft: 10, marginTop: 10, fontSize: 19, fontWeight: 'bold' }}>Vouchers</Text>
                 <QueryableList
                     type="vertical"
+                    controller={ctl => this.dataController = ctl}
                     numColumns={1}
+                    resetWhenRefresh={ [ 'manual' ]}
                     containerStyle={{ flex: 1, alignSelf: 'center' }}
                     initQuery={{ page: 1 }}
                     updateQuery={(query) => ({ page: query.page + 1 })}

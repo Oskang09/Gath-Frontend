@@ -46,7 +46,7 @@ export class QueryableList extends React.PureComponent {
         );
 
         if (result && ok) {
-            if (refreshType.includes(this.state.resetWhenRefresh)) {
+            if (this.state.resetWhenRefresh && this.state.resetWhenRefresh.includes(refreshType)) {
                 this.state.data = result;
             } else {
                 this.state.data.push(...result);

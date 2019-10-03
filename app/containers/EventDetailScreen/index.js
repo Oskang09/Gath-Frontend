@@ -30,8 +30,8 @@ export class EventDetailScreen extends React.PureComponent {
     }
 
     static iconMaps = [
-        { package: 'materialicons', name: 'access-time' },
         null,
+        { package: 'materialicons', name: 'access-time' },
         { package: 'entypo', name: 'location' },
         { package: 'fontawesome5', name: 'comments' },
         { package: 'materialicons', name: 'people-outline' },
@@ -256,6 +256,7 @@ export class EventDetailScreen extends React.PureComponent {
                                         color={this.props.device.primaryColor}
                                         loading={isLoading}
                                         roundness={5}
+                                        width={this.props.device.getX(25)}
                                         onPress={submit}
                                         text="Request"
                                     />
@@ -458,8 +459,8 @@ export class EventDetailScreen extends React.PureComponent {
                                                     type="horizontal"
                                                     containerStyle={{ marginLeft: this.props.device.getX(3) }}
                                                     data={[
-                                                        moment(event.start_time).format('DD/MM/YYYY, HH:mm'),
                                                         event.type,
+                                                        moment(event.start_time).format('DD/MM/YYYY, HH:mm'),
                                                         event.location,
                                                         `${comment._meta.totalCount} Comments`,
                                                         `${meta.numberOfUser} Peoples`,

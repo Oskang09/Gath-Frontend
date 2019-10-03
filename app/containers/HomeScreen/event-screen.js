@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { View, Text, Image } from 'react-native';
+import { View, Text, Image, RefreshControl } from 'react-native';
 import { FAB } from 'react-native-paper';
 
 import Appbar from '#components/Appbar';
@@ -86,7 +86,16 @@ export class EventScreen extends React.PureComponent {
                     type="vertical"
                     controller={ctl => this.listController = ctl}
                     numColumns={1}
-                    resetWhenRefresh="filter"
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={false}
+                            enabled={true}
+                            onRefresh={
+                                () => this.listController.updateQuery({ page: 1 }, 'manual')
+                            }
+                        />
+                    }
+                    resetWhenRefresh={[ "filter", "manual" ]}
                     containerStyle={{ flex: 1, marginTop: 5 }}
                     initQuery={{ page: 1, type: '', name: '' }}
                     updateQuery={(query) => ({ page: query.page + 1 })}

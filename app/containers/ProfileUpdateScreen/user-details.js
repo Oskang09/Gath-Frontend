@@ -15,7 +15,7 @@ export class UserDetail extends React.PureComponent {
         age: this.props.getState().age.toString(),
         constellation: this.props.getState().constellation,
         gender: this.props.getState().gender,
-        avatar: null,
+        avatar: this.props.getState('avatar'),
         utag: this.props.getState().utag,
 
         loading: false,

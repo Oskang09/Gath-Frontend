@@ -13,7 +13,7 @@ export class EventInfoScreen extends React.Component {
         name: this.props.getState('name'),
         start: this.props.getState('start') || Date.now(),
         type: this.props.getState('type') || "DINING",
-        banner: null,
+        banner: this.props.getState('banner'),
     }
 
     imageSetting = () => [
