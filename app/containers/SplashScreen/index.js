@@ -1,10 +1,10 @@
 import React from 'react';
 import { NetInfo, Image, View } from 'react-native';
 
-import Error from '#components/Error';
 import withFirebase from '#extension/firebase';
 import withAPI from '#extension/apisauce';
 import withNavigator from '#extension/navigator';
+import withDevice from '#extension/device';
 import { compose } from '#utility';
 
 export class SplashScreen extends React.PureComponent {
@@ -92,9 +92,9 @@ export class SplashScreen extends React.PureComponent {
         return this.state.display ? <Error error={this.state.display} /> : (
             <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
                 <Image
-                    source={require('#assets/icon.png')}
-                    style={{ width: 128, height: 128 }}
-            />
+                    source={require('#assets/splash.png')}
+                    style={{ width: this.props.device.getX(100), height: this.props.device.getY(100) }}
+                />
             </View>
         );
     }
@@ -104,4 +104,5 @@ export default compose(
     withFirebase,
     withAPI,
     withNavigator,
+    withDevice,
 )(SplashScreen);
