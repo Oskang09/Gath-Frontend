@@ -7,7 +7,6 @@ import FilterBar from '#components/FilterBar';
 import withAPI from '#extension/apisauce';
 import { compose } from '#utility';
 
-
 export class QueryableList extends React.PureComponent {
     state = {
         data: [],
