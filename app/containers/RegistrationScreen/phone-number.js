@@ -44,7 +44,7 @@ export class PhoneNumber extends React.PureComponent {
             const firebaseUser = await this.state.confirmCode.confirm(input);
             
             this.props.api.setToken(await firebaseUser.getIdToken(true));
-            await api.loadConfig();
+            await this.props.api.loadConfig();
             const result = await this.props.api.request('POST', `/users/login`, { phone: this.phoneRef.getValue(), uid: firebaseUser.uid });
         
             if (result.status === 'NEW') {

@@ -13,7 +13,6 @@ const androidChannel = new Firebase.notifications.Android.Channel(
     'Local Notification',
     Firebase.notifications.Android.Importance.Max
 );
-androidChannel.setDescription('Just a description');
 notify.android.createChannel(androidChannel);
 
 function buildComponent(
